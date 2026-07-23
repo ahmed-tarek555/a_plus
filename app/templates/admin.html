@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>FireBeat - Admin</title>
+	<style>
+		* {
+			box-sizing: border-box;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+		}
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+			color: #19324a;
+		}
+
+		.page {
+			min-height: 100vh;
+			padding: 40px 20px 64px;
+		}
+
+		.container {
+			width: min(1100px, 100%);
+			margin: 0 auto;
+		}
+
+		.header {
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 24px;
+			margin-bottom: 28px;
+		}
+
+		.eyebrow {
+			margin: 0 0 8px;
+			color: #2479b8;
+			font-size: 0.78rem;
+			font-weight: 800;
+			letter-spacing: 1.5px;
+			text-transform: uppercase;
+		}
+
+		h1 {
+			margin: 0;
+			color: #19324a;
+			font-size: clamp(2rem, 4vw, 3rem);
+			letter-spacing: -1px;
+		}
+
+		.header p {
+			margin: 8px 0 0;
+			color: #5b7488;
+			line-height: 1.5;
+		}
+
+		.mode-switcher {
+			display: flex;
+			gap: 8px;
+			padding: 5px;
+			border: 1px solid rgba(44, 117, 169, 0.2);
+			border-radius: 12px;
+			background: rgba(255, 255, 255, 0.7);
+		}
+
+		.mode-button {
+			border: 0;
+			border-radius: 8px;
+			padding: 11px 16px;
+			background: transparent;
+			color: #4c687e;
+			cursor: pointer;
+			font-size: 0.9rem;
+			font-weight: 700;
+			transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+		}
+
+		.mode-button:hover { transform: translateY(-1px); }
+
+		.mode-button.active {
+			background: #2f8dcc;
+			color: #fff;
+			box-shadow: 0 4px 12px rgba(47, 141, 204, 0.22);
+		}
+
+		.status {
+			min-height: 48px;
+			margin-bottom: 16px;
+			padding: 14px 16px;
+			border: 1px solid rgba(44, 117, 169, 0.18);
+			border-radius: 10px;
+			background: rgba(255, 255, 255, 0.66);
+			color: #527087;
+			font-size: 0.92rem;
+		}
+
+		.status.error {
+			border-color: rgba(192, 57, 75, 0.25);
+			background: #fff3f4;
+			color: #a93748;
+		}
+
+		.users-list {
+			display: grid;
+			gap: 14px;
+		}
+
+		.user-card {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			align-items: center;
+			gap: 22px;
+			padding: 20px 22px;
+			border: 1px solid rgba(44, 117, 169, 0.18);
+			border-radius: 14px;
+			background: rgba(255, 255, 255, 0.84);
+			box-shadow: 0 8px 24px rgba(43, 95, 130, 0.08);
+			animation: reveal 0.25s ease both;
+		}
+
+		@keyframes reveal {
+			from { opacity: 0; transform: translateY(5px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.user-heading {
+			display: flex;
+			align-items: baseline;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-bottom: 8px;
+		}
+
+		.user-name {
+			color: #19324a;
+			font-size: 1.12rem;
+			font-weight: 800;
+		}
+
+		.joined-date {
+			color: #7890a1;
+			font-size: 0.78rem;
+		}
+
+		.details {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 7px 18px;
+			color: #506c82;
+			font-size: 0.9rem;
+			line-height: 1.5;
+		}
+
+		.detail strong {
+			color: #294e6b;
+			font-weight: 700;
+		}
+
+		.actions {
+			display: flex;
+			gap: 9px;
+			flex-wrap: wrap;
+			justify-content: flex-end;
+		}
+
+		.button {
+			min-width: 94px;
+			padding: 10px 14px;
+			border: 0;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 0.88rem;
+			font-weight: 750;
+			transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+		}
+
+		.button:hover { transform: translateY(-1px); }
+		.button:disabled { cursor: wait; opacity: 0.55; transform: none; }
+
+		.approve-button {
+			background: #2f8dcc;
+			color: #fff;
+		}
+
+		.approve-button:hover { background: #2479b8; }
+
+		.delete-button {
+			border: 1px solid rgba(192, 57, 75, 0.25);
+			background: #fff3f4;
+			color: #a93748;
+		}
+
+		.delete-button:hover { background: #ffe4e7; }
+
+		.empty-state {
+			padding: 52px 24px;
+			border: 1px dashed rgba(44, 117, 169, 0.3);
+			border-radius: 14px;
+			background: rgba(255, 255, 255, 0.55);
+			color: #5b768b;
+			text-align: center;
+		}
+
+		@media (max-width: 720px) {
+			.page { padding: 28px 16px 48px; }
+			.header { align-items: flex-start; flex-direction: column; }
+			.mode-switcher { width: 100%; }
+			.mode-button { flex: 1; }
+			.user-card { grid-template-columns: 1fr; gap: 16px; }
+			.actions { justify-content: stretch; }
+			.button { flex: 1; }
+		}
+
+		@media (max-width: 420px) {
+			.user-card { padding: 17px; }
+			.details { display: grid; gap: 5px; }
+		}
+	</style>
+</head>
+<body>
+	<main class="page">
+		<div class="container">
+			<header class="header">
+				<div>
+					<p class="eyebrow">Administration</p>
+					<h1 id="pageTitle">Pending students</h1>
+					<p id="pageDescription">Review student accounts before they join the platform.</p>
+				</div>
+
+				<nav class="mode-switcher" aria-label="Pending account type">
+					<button id="studentsMode" class="mode-button active" type="button" aria-pressed="true">Students</button>
+					<button id="teachersMode" class="mode-button" type="button" aria-pressed="false">Teachers</button>
+				</nav>
+			</header>
+
+			<div id="statusMessage" class="status" role="status" aria-live="polite">Loading pending students...</div>
+			<section id="usersList" class="users-list" aria-live="polite"></section>
+		</div>
+	</main>
+
+	<script>
+		const pageTitle = document.getElementById("pageTitle");
+		const pageDescription = document.getElementById("pageDescription");
+		const statusMessage = document.getElementById("statusMessage");
+		const usersList = document.getElementById("usersList");
+		const studentsMode = document.getElementById("studentsMode");
+		const teachersMode = document.getElementById("teachersMode");
+
+		let currentMode = "students";
+
+		const modeConfig = {
+			students: {
+				endpoint: "/admin/pending_students",
+				label: "students",
+				title: "Pending students",
+				description: "Review student accounts before they join the platform."
+			},
+			teachers: {
+				endpoint: "/admin/pending_teachers",
+				label: "teachers",
+				title: "Pending teachers",
+				description: "Review teacher accounts before they join the platform."
+			}
+		};
+
+		function setStatus(text, isError = false) {
+			statusMessage.textContent = text;
+			statusMessage.classList.toggle("error", isError);
+		}
+
+		function setMode(mode) {
+			currentMode = mode;
+			const config = modeConfig[mode];
+
+			pageTitle.textContent = config.title;
+			pageDescription.textContent = config.description;
+			studentsMode.classList.toggle("active", mode === "students");
+			teachersMode.classList.toggle("active", mode === "teachers");
+			studentsMode.setAttribute("aria-pressed", String(mode === "students"));
+			teachersMode.setAttribute("aria-pressed", String(mode === "teachers"));
+			loadUsers();
+		}
+
+		function createDetail(label, value) {
+			const detail = document.createElement("span");
+			detail.className = "detail";
+
+			const strong = document.createElement("strong");
+			strong.textContent = `${label}: `;
+			detail.appendChild(strong);
+			detail.appendChild(document.createTextNode(value ?? "Not provided"));
+			return detail;
+		}
+
+		function createUserCard(user) {
+			const card = document.createElement("article");
+			card.className = "user-card";
+
+			const information = document.createElement("div");
+			const heading = document.createElement("div");
+			heading.className = "user-heading";
+
+			const name = document.createElement("span");
+			name.className = "user-name";
+			name.textContent = `${user.first_name || ""} ${user.last_name || ""}`.trim() || "Unnamed user";
+
+			const joinedDate = document.createElement("span");
+			joinedDate.className = "joined-date";
+			joinedDate.textContent = `Joined ${user.date_joined || "Unknown date"}`;
+
+			heading.append(name, joinedDate);
+
+			const details = document.createElement("div");
+			details.className = "details";
+			details.append(
+				createDetail("Email", user.email),
+				createDetail("Phone", user.phone_number),
+				currentMode === "students"
+					? createDetail("Level", user.level)
+					: createDetail("Subject", user.subject)
+			);
+
+			if (currentMode === "students") {
+				details.append(
+					createDetail("Parent", user.parent_name),
+					createDetail("Parent phone", user.parent_phone_number)
+				);
+			}
+
+			information.append(heading, details);
+
+			const actions = document.createElement("div");
+			actions.className = "actions";
+
+			const approveButton = document.createElement("button");
+			approveButton.className = "button approve-button";
+			approveButton.type = "button";
+			approveButton.textContent = "Approve";
+			approveButton.addEventListener("click", () => updateUser(user.id, "approve", card));
+
+			const deleteButton = document.createElement("button");
+			deleteButton.className = "button delete-button";
+			deleteButton.type = "button";
+			deleteButton.textContent = "Delete";
+			deleteButton.addEventListener("click", () => updateUser(user.id, "delete", card));
+
+			actions.append(approveButton, deleteButton);
+			card.append(information, actions);
+			return card;
+		}
+
+		function renderUsers(users) {
+			usersList.replaceChildren();
+
+			if (!users.length) {
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = `There are no pending ${modeConfig[currentMode].label}.`;
+				usersList.appendChild(emptyState);
+				setStatus(`No pending ${modeConfig[currentMode].label} found.`);
+				return;
+			}
+
+			users.forEach((user) => usersList.appendChild(createUserCard(user)));
+			setStatus(`${users.length} pending ${modeConfig[currentMode].label} found.`);
+		}
+
+		async function loadUsers() {
+			const config = modeConfig[currentMode];
+			setStatus(`Loading pending ${config.label}...`);
+			usersList.replaceChildren();
+
+			try {
+				const response = await fetch(config.endpoint, { credentials: "include" });
+				if (!response.ok) {
+					throw new Error(response.status === 403 ? "You are not authorized to view pending accounts." : "Unable to load pending accounts.");
+				}
+
+				const users = await response.json();
+				renderUsers(Array.isArray(users) ? users : []);
+			} catch (error) {
+				setStatus(error.message, true);
+			}
+		}
+
+		async function updateUser(id, action, card) {
+			const endpoint = action === "approve" ? `/admin/approve/${id}` : `/admin/delete_user/${id}`;
+			const buttons = card.querySelectorAll("button");
+			buttons.forEach((button) => { button.disabled = true; });
+			setStatus(`${action === "approve" ? "Approving" : "Deleting"} account...`);
+
+			try {
+				const response = await fetch(endpoint, {
+					method: "POST",
+					credentials: "include"
+				});
+
+				if (!response.ok) {
+					throw new Error(action === "approve" ? "Unable to approve this account." : "Unable to delete this account.");
+				}
+
+				card.remove();
+				const remainingUsers = usersList.querySelectorAll(".user-card");
+				if (!remainingUsers.length) {
+					renderUsers([]);
+				} else {
+					setStatus(`Account ${action === "approve" ? "approved" : "deleted"}. ${remainingUsers.length} pending ${modeConfig[currentMode].label} remaining.`);
+				}
+			} catch (error) {
+				buttons.forEach((button) => { button.disabled = false; });
+				setStatus(error.message, true);
+			}
+		}
+
+		studentsMode.addEventListener("click", () => setMode("students"));
+		teachersMode.addEventListener("click", () => setMode("teachers"));
+		loadUsers();
+	</script>
+</body>
+</html>

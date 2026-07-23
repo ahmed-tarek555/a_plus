@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: pgvector/pgvector:pg15
+    container_name: a_plus_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: a_plus_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+
+  app:
+    build: .
+    container_name: a_plus
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:admin@db:5432/a_plus_db
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./app/static:/app/static
+volumes:
+  postgres_data:

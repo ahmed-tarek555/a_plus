@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FireBeat - Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      overflow: hidden;
+      color: #19324a;
+    }
+
+    .login-container {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .login-left {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 80px;
+      gap: 40px;
+    }
+
+    .login-left-content {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .login-left-content h1 {
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+      line-height: 1;
+    }
+
+    .login-left-content h1 span {
+      color: #2479b8;
+    }
+
+    .login-left-content p {
+      color: #4d687f;
+      font-size: 1.2rem;
+      line-height: 1.8;
+    }
+
+    .login-visual {
+      min-height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @keyframes spin {
+      from {
+        transform: rotate(0);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .login-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 40px;
+      background: rgba(255, 255, 255, 0.72);
+      border-left: 1px solid rgba(44, 117, 169, 0.18);
+    }
+
+    .login-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-title {
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .form-title h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .form-title p {
+      color: #5c7488;
+      font-size: 0.9rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      color: #29455d;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    input {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(44, 117, 169, 0.22);
+      background: rgba(255, 255, 255, 0.86);
+      color: #19324a;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    input::placeholder {
+      color: #8095a7;
+    }
+
+    input:focus {
+      border-color: rgba(36, 121, 184, 0.72);
+      background: #fff;
+      box-shadow: 0 0 12px rgba(36, 121, 184, 0.14);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.25s ease;
+      border: none;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, #2f8dcc, #1d619d);
+      color: #fff;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-signup {
+      background: rgba(255, 255, 255, 0.72);
+      color: #24516f;
+      border: 1px solid rgba(44, 117, 169, 0.35);
+    }
+
+    .btn-signup:hover {
+      background: #e2f1fb;
+    }
+
+    .message {
+      margin-top: 12px;
+      min-height: 18px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #c0394b;
+    }
+
+    .footer-text {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6b8295;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1024px) {
+      .login-left {
+        flex: 1.5;
+        padding: 40px;
+      }
+
+      .login-left-content h1 {
+        font-size: 3rem;
+      }
+
+      .login-left-content p {
+        font-size: 1rem;
+      }
+
+      .disc {
+        width: 220px;
+        height: 220px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .login-left {
+        flex: auto;
+        padding: 40px 20px;
+        min-height: 50vh;
+      }
+
+      .login-right {
+        flex: auto;
+        padding: 40px 20px;
+        border-left: none;
+        border-top: 1px solid rgba(44, 117, 169, 0.18);
+      }
+
+      .login-left-content h1 {
+        font-size: 2.2rem;
+      }
+
+      .login-left-content p {
+        font-size: 0.95rem;
+      }
+
+      .disc {
+        width: 180px;
+        height: 180px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .login-left {
+        padding: 30px 16px;
+      }
+
+      .login-right {
+        padding: 30px 16px;
+      }
+
+      .login-left-content h1 {
+        font-size: 1.8rem;
+      }
+
+      .login-left-content p {
+        font-size: 0.9rem;
+      }
+
+      .disc {
+        width: 140px;
+        height: 140px;
+      }
+
+      input {
+        padding: 11px 12px;
+        font-size: 0.9rem;
+      }
+
+      .btn {
+        padding: 11px 12px;
+        font-size: 0.88rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="login-left">
+      <div class="login-left-content">
+        <p>Some another text</p>
+      </div>
+    </div>
+
+    <!-- Right Side - Login Form -->
+    <div class="login-right">
+      <div class="login-wrapper">
+        <div class="form-title">
+          <h2>Welcome Back</h2>
+          <p>Login to your account</p>
+        </div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Email</label>
+            <input
+              type="text"
+              id="username"
+              name="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <div class="button-row">
+            <button type="submit" class="btn btn-login">Login</button>
+            <a href="/signup" class="btn btn-signup">Create Account</a>
+          </div>
+
+          <div class="message" id="message"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        message.style.color = "#c0394b";
+        message.textContent = "Please enter both email and password.";
+        return;
+      }
+
+      message.style.color = "#16805b";
+      message.textContent = "Logging in...";
+      
+      fetch('/login_data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: "include"
+      })
+      .then(async response => {
+        if (response.ok) {
+          data = await response.json();
+          if (data.role === "student") {
+            window.location.href = "/";
+          }else if (data.role === "teacher") {
+            window.location.href = "/teacher";
+          }else if (data.role === "admin") {
+            window.location.href = "/admin";
+          }
+          }else {
+          if (response.status === 404) {
+            message.style.color = "#c0394b";
+            message.textContent = "Invalid email or password.";
+          } else {
+            message.style.color = "#c0394b";
+            message.textContent = "An error occurred. Please try again.";
+          }
+        }
+      })
+      .catch(error => {
+        message.style.color = "#c0394b";
+        message.textContent = "Network error. Please try again.";
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>

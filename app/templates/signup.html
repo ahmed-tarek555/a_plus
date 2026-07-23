@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FireBeat - Create Account</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+      color: #19324a;
+    }
+
+    .signup-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .signup-intro {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 80px;
+      background: radial-gradient(circle at 30% 40%, rgba(77, 157, 212, 0.18), transparent 42%);
+    }
+
+    .signup-intro h1 {
+      max-width: 560px;
+      margin: 0 0 24px;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .signup-intro h1 span {
+      color: #2479b8;
+    }
+
+    .signup-intro p {
+      max-width: 520px;
+      margin: 0;
+      color: #4d687f;
+      font-size: 1.12rem;
+      line-height: 1.8;
+    }
+
+    .signup-panel {
+      flex: 0 1 560px;
+      display: flex;
+      align-items: center;
+      padding: 48px 56px;
+      background: rgba(255, 255, 255, 0.72);
+      border-left: 1px solid rgba(44, 117, 169, 0.18);
+    }
+
+    .signup-wrapper {
+      width: 100%;
+    }
+
+    .form-title {
+      margin-bottom: 24px;
+    }
+
+    .form-title h2 {
+      margin: 0 0 6px;
+      font-size: 1.6rem;
+    }
+
+    .form-title p {
+      margin: 0;
+      color: #5c7488;
+      font-size: 0.9rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group.full-width,
+    .role-section,
+    .conditional-fields {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #29455d;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid rgba(44, 117, 169, 0.22);
+      border-radius: 10px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.86);
+      color: #19324a;
+      font-size: 0.95rem;
+      transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    input::placeholder {
+      color: #8095a7;
+    }
+
+    input:focus {
+      border-color: rgba(36, 121, 184, 0.72);
+      background: #fff;
+      box-shadow: 0 0 12px rgba(36, 121, 184, 0.14);
+    }
+
+    .role-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .role-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .role-option {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .role-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .role-option span {
+      display: block;
+      padding: 11px 14px;
+      border: 1px solid rgba(44, 117, 169, 0.22);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.74);
+      color: #49667d;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .role-option input:checked+span {
+      border-color: #2479b8;
+      background: #dceefa;
+      color: #174e78;
+    }
+
+    .conditional-fields {
+      display: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      padding-top: 2px;
+    }
+
+    .conditional-fields.visible {
+      display: grid;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2f8dcc, #1d619d);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      border: 1px solid rgba(44, 117, 169, 0.35);
+      background: rgba(255, 255, 255, 0.72);
+      color: #24516f;
+    }
+
+    .btn-secondary:hover {
+      background: #e2f1fb;
+    }
+
+    .message {
+      min-height: 20px;
+      margin-top: 14px;
+      color: #c0394b;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    @media (max-width: 850px) {
+      .signup-container {
+        flex-direction: column;
+      }
+
+      .signup-intro {
+        min-height: 34vh;
+        padding: 48px 32px 32px;
+      }
+
+      .signup-intro h1 {
+        font-size: 3rem;
+      }
+
+      .signup-panel {
+        flex: 1;
+        padding: 40px 32px 56px;
+        border-top: 1px solid rgba(44, 117, 169, 0.18);
+        border-left: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .signup-intro {
+        padding: 36px 18px 24px;
+      }
+
+      .signup-intro h1 {
+        font-size: 2.35rem;
+      }
+
+      .signup-intro p {
+        font-size: 0.95rem;
+      }
+
+      .signup-panel {
+        padding: 32px 18px 44px;
+      }
+
+      .form-grid,
+      .conditional-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full-width,
+      .role-section,
+      .conditional-fields {
+        grid-column: auto;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="signup-container">
+    <section class="signup-intro">
+      <h1>A<span>PLUS</span></h1>
+      <p>some text i guess</p>
+    </section>
+
+    <section class="signup-panel">
+      <div class="signup-wrapper">
+        <div class="form-title">
+          <h2>Create your account</h2>
+          <p>Tell us a little about yourself to get started.</p>
+        </div>
+
+        <form id="signupForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="firstName">First name</label>
+              <input type="text" id="firstName" name="first_name" placeholder="First name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last name</label>
+              <input type="text" id="lastName" name="last_name" placeholder="Last name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" required />
+            </div>
+
+            <div class="form-group">
+              <label for="phoneNumber">Phone number</label>
+              <input type="tel" id="phoneNumber" name="phone_number" placeholder="Phone number" required />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="Create a password" minlength="8"
+                required />
+            </div>
+
+            <div class="role-section">
+              <label>Account type</label>
+              <div class="role-options">
+                <label class="role-option">
+                  <input type="radio" name="role" value="student" required />
+                  <span>Student</span>
+                </label>
+                <label class="role-option">
+                  <input type="radio" name="role" value="teacher" />
+                  <span>Teacher</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="studentFields" class="conditional-fields">
+              <div class="form-group">
+                <label for="level">Level</label>
+                <input type="number" id="level" name="level" min="1" step="1" placeholder="e.g. 3" />
+              </div>
+              <div class="form-group">
+                <label for="parentName">Parent name</label>
+                <input type="text" id="parentName" name="parent_name" placeholder="Parent or guardian name" />
+              </div>
+              <div class="form-group full-width">
+                <label for="parentPhoneNumber">Parent phone number</label>
+                <input type="tel" id="parentPhoneNumber" name="parent_phone_number"
+                  placeholder="Parent or guardian phone number" />
+              </div>
+            </div>
+
+            <div id="teacherFields" class="conditional-fields">
+              <div class="form-group full-width">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" placeholder="e.g. Music production" />
+              </div>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button type="submit" class="btn btn-primary">Create account</button>
+            <a href="/login" class="btn btn-secondary">Log in</a>
+          </div>
+          <div class="message" id="message" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const signupForm = document.getElementById("signupForm");
+    const studentFields = document.getElementById("studentFields");
+    const teacherFields = document.getElementById("teacherFields");
+    const level = document.getElementById("level");
+    const parentName = document.getElementById("parentName");
+    const parentPhoneNumber = document.getElementById("parentPhoneNumber");
+    const subject = document.getElementById("subject");
+    const message = document.getElementById("message");
+
+    function updateRoleFields() {
+      const role = document.querySelector('input[name="role"]:checked')?.value;
+      const isStudent = role === "student";
+      const isTeacher = role === "teacher";
+
+      studentFields.classList.toggle("visible", isStudent);
+      teacherFields.classList.toggle("visible", isTeacher);
+      level.required = isStudent;
+      parentName.required = isStudent;
+      parentPhoneNumber.required = isStudent;
+      subject.required = isTeacher;
+    }
+
+    document.querySelectorAll('input[name="role"]').forEach((roleInput) => {
+      roleInput.addEventListener("change", updateRoleFields);
+    });
+
+    signupForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      updateRoleFields();
+
+      if (!signupForm.checkValidity()) {
+        signupForm.reportValidity();
+        return;
+      }
+
+      const formData = new FormData(signupForm);
+      const role = formData.get("role");
+      const payload = {
+        first_name: formData.get("first_name").trim(),
+        last_name: formData.get("last_name").trim(),
+        email: formData.get("email").trim(),
+        phone_number: formData.get("phone_number").trim(),
+        password: formData.get("password"),
+        role,
+        parent_name: role === "student" ? formData.get("parent_name").trim() : null,
+        parent_phone_number: role === "student" ? formData.get("parent_phone_number").trim() : null,
+        level: role === "student" ? Number(formData.get("level")) : null,
+        subject: role === "teacher" ? formData.get("subject").trim() : null
+      };
+
+      message.style.color = "#16805b";
+      message.textContent = "Creating your account...";
+
+      try {
+        const response = await fetch("/signup/get_signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          credentials: "include"
+        });
+
+        if (!response.ok) {
+          if (response.status === 406) {
+            message.style.color = "#c0394b";
+            message.textContent = "Please fill the parent name and phone number.";
+            return;
+          }else if (response.status === 400) {
+            message.style.color = "#c0394b";
+            message.textContent = "Email or phone number already exists.";
+            return;
+          }else {
+            message.style.color = "#c0394b";
+            message.textContent = "An error occurred. Please try again.";
+            return;
+          }
+        }
+
+        data = await response.json();
+
+        message.textContent = "Account created successfully. Redirecting...";
+        if (data.role === "student") {
+          window.location.href = "/";
+
+        } else if (data.role === "teacher") {
+          window.location.href = "/teacher";
+
+        }else {
+          window.location.href = "/";
+          
+        }
+
+      } catch (error) {
+        message.style.color = "#c0394b";
+        message.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+
+</html>
