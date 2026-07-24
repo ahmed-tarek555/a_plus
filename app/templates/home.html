@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FireBeat - Home</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+      color: #19324a;
+    }
+
+    .page-shell {
+      width: min(1240px, calc(100% - 32px));
+      margin: 28px auto;
+      padding: 24px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(36, 121, 184, 0.15);
+      box-shadow: 0 20px 70px rgba(17, 66, 102, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      color: #1d5d88;
+    }
+
+    .search-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .search-form {
+      width: min(620px, 100%);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 13px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(44, 117, 169, 0.25);
+      background: rgba(255, 255, 255, 0.9);
+      color: #19324a;
+      font-size: 0.98rem;
+      outline: none;
+      transition: 0.25s ease;
+    }
+
+    .search-input:focus {
+      border-color: rgba(36, 121, 184, 0.72);
+      box-shadow: 0 0 12px rgba(36, 121, 184, 0.14);
+    }
+
+    .search-btn {
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #2f8dcc, #1d619d);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(32, 95, 145, 0.24);
+    }
+
+    .hero {
+      margin-bottom: 28px;
+      padding: 26px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(36, 121, 184, 0.12), rgba(255, 255, 255, 0.75));
+      border: 1px solid rgba(36, 121, 184, 0.15);
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 8px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span {
+      color: #2479b8;
+    }
+
+    .hero p {
+      color: #567086;
+      max-width: 760px;
+      line-height: 1.7;
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-header h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .section-header small {
+      color: #6b8295;
+    }
+
+    .teachers-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(220px, 1fr);
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scroll-snap-type: x proximity;
+    }
+
+    .teachers-row::-webkit-scrollbar,
+    .courses-grid::-webkit-scrollbar {
+      height: 9px;
+      width: 9px;
+    }
+
+    .teachers-row::-webkit-scrollbar-thumb,
+    .courses-grid::-webkit-scrollbar-thumb {
+      background: rgba(36, 121, 184, 0.35);
+      border-radius: 999px;
+    }
+
+    .teacher-card,
+    .course-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(44, 117, 169, 0.18);
+      box-shadow: 0 12px 30px rgba(21, 67, 102, 0.08);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .teacher-card {
+      scroll-snap-align: start;
+      padding: 18px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .teacher-avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(36, 121, 184, 0.24);
+      margin-bottom: 12px;
+      background: #e5f1fa;
+    }
+
+    .teacher-card h3 {
+      font-size: 1.02rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .teacher-card p,
+    .course-card p {
+      color: #5e7386;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .course-card {
+      padding: 18px;
+    }
+
+    .course-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .course-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #1d619d;
+      background: rgba(36, 121, 184, 0.1);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .course-price {
+      font-weight: 900;
+      color: #113a5c;
+    }
+
+    .course-card h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .course-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      font-size: 0.84rem;
+      color: #6b8295;
+    }
+
+    .empty-state {
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.75);
+      color: #5c7488;
+      border: 1px solid rgba(44, 117, 169, 0.18);
+    }
+
+    @media (max-width: 720px) {
+      .page-shell {
+        width: min(100% - 18px, 1240px);
+        margin: 10px auto;
+        padding: 16px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-wrap {
+        width: 100%;
+      }
+
+      .search-form {
+        width: 100%;
+      }
+
+      .teachers-row {
+        grid-auto-columns: minmax(210px, 80%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <div class="topbar">
+      <div class="brand">A PLUS</div>
+
+      <div class="search-wrap">
+        <form class="search-form" id="searchForm">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search teachers, subjects, or courses"
+            aria-label="Search"
+          />
+          <button class="search-btn" type="submit">Search</button>
+          <a href="/login" class="search-btn" type="submit">Login</a>
+          <a href="/signup" class="search-btn" type="submit">Signup</a>
+        </form>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1>Learn with <span>top educators</span></h1>
+      <p>
+        Explore expert-led courses, discover teachers you can trust, and browse your next learning journey in one clean space.
+      </p>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>Teachers</h2>
+        <small>Scroll sideways</small>
+      </div>
+      <div class="teachers-row" id="teachersRow"></div>
+    </section>
+
+    <section class="section" style="margin-top: 26px;">
+      <div class="section-header">
+        <h2>Courses</h2>
+        <small>Available now</small>
+      </div>
+      <div class="courses-grid" id="coursesGrid"></div>
+    </section>
+  </div>
+
+  <script>
+    const teachersRow = document.getElementById('teachersRow');
+    const coursesGrid = document.getElementById('coursesGrid');
+    const searchForm = document.getElementById('searchForm');
+
+    searchForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+    });
+
+    function renderTeachers(teachers) {
+      if (!Array.isArray(teachers) || !teachers.length) {
+        teachersRow.innerHTML = '<div class="empty-state">No teachers available right now.</div>';
+        return;
+      }
+
+      teachersRow.innerHTML = teachers.map((teacher) => {
+        const fullName = [teacher.first_name, teacher.last_name].filter(Boolean).join(' ');
+        const imageSrc = teacher.pfp_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(fullName || 'Teacher') + '&background=E2F1FB&color=1d619d';
+
+        return `
+          <a href="/teacher_profile/${teacher.id}" class="teacher-card">
+            <img class="teacher-avatar" src="${imageSrc}" alt="${fullName}" />
+            <h3>${fullName}</h3>
+          </a>
+        `;
+      }).join('');
+    }
+
+    function renderCourses(courses) {
+      if (!Array.isArray(courses) || !courses.length) {
+        coursesGrid.innerHTML = '<div class="empty-state">No courses available right now.</div>';
+        return;
+      }
+
+      coursesGrid.innerHTML = courses.map((course) => {
+        return `
+          <article class="course-card">
+            <div class="course-top">
+              <span class="course-tag">${course.subject || 'General'}</span>
+              <span class="course-price">$${Number(course.price || 0).toFixed(2)}</span>
+            </div>
+            <h3>${course.subject || 'Course'}</h3>
+            <p>
+              Taught by ${course.teacher_first_name || ''} ${course.teacher_last_name || ''}
+            </p>
+            <div class="course-meta">
+              <span>${course.student_count || 0} students</span>
+              <span>Course ID: ${course.id}</span>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    fetch('/home/teachers', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() : [])
+      .then((teachers) => renderTeachers(teachers))
+      .catch(() => renderTeachers([]));
+
+    fetch('/home/courses', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() : [])
+      .then((courses) => renderCourses(courses))
+      .catch(() => renderCourses([]));
+  </script>
+</body>
+</html>

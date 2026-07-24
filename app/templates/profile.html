@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #19324a;
+}
+
+.profile-card {
+  width: 380px;
+  padding: 40px 30px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(44, 117, 169, 0.18);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* CLICKABLE PFP WRAPPER */
+.pfp-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+/* IMAGE */
+.pfp {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(44, 117, 169, 0.2);
+  box-shadow: 0 6px 20px rgba(36, 121, 184, 0.15);
+  transition: 0.25s;
+}
+
+.pfp-wrapper:hover .pfp {
+  opacity: 0.7;
+}
+
+/* HOVER TEXT */
+.pfp-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1d619d;
+  opacity: 0;
+  transition: 0.25s;
+}
+
+.pfp-wrapper:hover .pfp-overlay {
+  opacity: 1;
+}
+
+/* HIDDEN INPUT */
+#pfpInput {
+  display: none;
+}
+
+.name {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: #5c7488;
+  font-weight: 600;
+}
+
+.value {
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(44, 117, 169, 0.22);
+}
+
+.status-active {
+  color: #2ecc71;
+  font-weight: 700;
+}
+
+.status-inactive {
+  color: #e74c3c;
+  font-weight: 700;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="profile-card">
+
+  <!-- CLICKABLE IMAGE -->
+
+  <div class="pfp-wrapper" onclick="document.getElementById('pfpInput').click()">
+    <img id="pfp" class="pfp" src="" alt="Profile Picture">
+    <div class="pfp-overlay">Change</div>
+  </div>
+
+  <!-- HIDDEN FILE INPUT -->
+
+  <input type="file" id="pfpInput" accept="image/*">
+
+  <div class="name" id="name">Loading...</div>
+
+  <div class="info">
+    <div class="info-item">
+      <span class="label">Email</span>
+      <span class="value" id="email"></span>
+    </div>
+
+```
+<div class="info-item">
+  <span class="label">Phone Number</span>
+  <span class="value" id="phone"></span>
+</div>
+
+<div class="info-item">
+  <span class="label">Date Joined</span>
+  <span class="value" id="joined"></span>
+</div>
+
+<div class="info-item">
+  <span class="label">Status</span>
+  <span class="value" id="status"></span>
+</div>
+```
+
+  </div>
+
+</div>
+
+<script>
+async function loadProfile() {
+  const res = await fetch("/profile/data", {
+    method: "GET",
+    credentials: "include"
+  });
+
+  if (!res.ok) {
+    alert("Failed to load profile");
+    return;
+  }
+
+  const data = await res.json();
+
+  document.getElementById("pfp").src =
+    data.pfp_url || "https://via.placeholder.com/150";
+
+  document.getElementById("name").textContent =
+    data.first_name + " " + data.last_name;
+
+  document.getElementById("email").textContent = data.email;
+  document.getElementById("phone").textContent = data.phone_number;
+
+  document.getElementById("joined").textContent =
+    new Date(data.date_joined).toLocaleDateString();
+
+  const statusEl = document.getElementById("status");
+
+  if (data.is_active) {
+    statusEl.textContent = "Active";
+    statusEl.classList.add("status-active");
+  } else {
+    statusEl.textContent = "Inactive";
+    statusEl.classList.add("status-inactive");
+  }
+}
+
+/* UPLOAD HANDLER */
+document.getElementById("pfpInput").addEventListener("change", async function () {
+  const file = this.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("pfp", file);
+
+  try {
+    const res = await fetch("/profile/upload_pfp", {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      alert("Upload failed");
+      return;
+    }
+
+    const data = await res.json();
+
+    // UPDATE IMAGE INSTANTLY
+    document.getElementById("pfp").src = data.pfp_url;
+
+  } catch (err) {
+    console.error(err);
+    alert("Error uploading image");
+  }
+});
+
+loadProfile();
+</script>
+
+</body>
+</html>
