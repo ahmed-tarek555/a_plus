@@ -308,8 +308,8 @@
             </div>
 
             <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" placeholder="you@example.com" required />
+              <label for="username">Username</label>
+              <input type="text" id="username" name="username" placeholder="Choose a username" required />
             </div>
 
             <div class="form-group">
@@ -343,6 +343,10 @@
                 <input type="number" id="level" name="level" min="1" step="1" placeholder="e.g. 3" />
               </div>
               <div class="form-group">
+                <label for="stage">Stage</label>
+                <input type="text" id="stage" name="stage" placeholder="e.g. High School" />
+              </div>
+              <div class="form-group">
                 <label for="parentName">Parent name</label>
                 <input type="text" id="parentName" name="parent_name" placeholder="Parent or guardian name" />
               </div>
@@ -350,13 +354,6 @@
                 <label for="parentPhoneNumber">Parent phone number</label>
                 <input type="tel" id="parentPhoneNumber" name="parent_phone_number"
                   placeholder="Parent or guardian phone number" />
-              </div>
-            </div>
-
-            <div id="teacherFields" class="conditional-fields">
-              <div class="form-group full-width">
-                <label for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" placeholder="e.g. Music production" />
               </div>
             </div>
           </div>
@@ -374,11 +371,10 @@
   <script>
     const signupForm = document.getElementById("signupForm");
     const studentFields = document.getElementById("studentFields");
-    const teacherFields = document.getElementById("teacherFields");
     const level = document.getElementById("level");
+    const stage = document.getElementById("stage");
     const parentName = document.getElementById("parentName");
     const parentPhoneNumber = document.getElementById("parentPhoneNumber");
-    const subject = document.getElementById("subject");
     const message = document.getElementById("message");
 
     function updateRoleFields() {
@@ -387,11 +383,10 @@
       const isTeacher = role === "teacher";
 
       studentFields.classList.toggle("visible", isStudent);
-      teacherFields.classList.toggle("visible", isTeacher);
       level.required = isStudent;
       parentName.required = isStudent;
       parentPhoneNumber.required = isStudent;
-      subject.required = isTeacher;
+      stage.required = isStudent;
     }
 
     document.querySelectorAll('input[name="role"]').forEach((roleInput) => {
@@ -412,14 +407,14 @@
       const payload = {
         first_name: formData.get("first_name").trim(),
         last_name: formData.get("last_name").trim(),
-        email: formData.get("email").trim(),
+        username: formData.get("username").trim(),
         phone_number: formData.get("phone_number").trim(),
         password: formData.get("password"),
         role,
         parent_name: role === "student" ? formData.get("parent_name").trim() : null,
         parent_phone_number: role === "student" ? formData.get("parent_phone_number").trim() : null,
         level: role === "student" ? Number(formData.get("level")) : null,
-        subject: role === "teacher" ? formData.get("subject").trim() : null
+        stage: role === "student" ? formData.get("stage").trim() : null
       };
 
       message.style.color = "#16805b";
@@ -440,7 +435,7 @@
             return;
           }else if (response.status === 400) {
             message.style.color = "#c0394b";
-            message.textContent = "Email or phone number already exists.";
+            message.textContent = "Username or phone number already exists.";
             return;
           }else {
             message.style.color = "#c0394b";

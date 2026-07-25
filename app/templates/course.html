@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ course.subject or 'Course' }} | A+</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+            color: #19324a;
+        }
+
+        nav {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.86);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .nav-brand {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #2f8dcc;
+            text-decoration: none;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        .breadcrumb {
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: #5b7488;
+        }
+
+        .breadcrumb a {
+            color: #2f8dcc;
+            text-decoration: none;
+        }
+
+        .course-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) 360px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .course-card,
+        .course-summary {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(44, 117, 169, 0.16);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 18px 40px rgba(43, 95, 130, 0.08);
+        }
+
+        .course-card h1 {
+            margin: 0 0 16px;
+            font-size: clamp(2rem, 3vw, 2.6rem);
+            letter-spacing: -0.04em;
+        }
+
+        .course-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 22px;
+            margin-bottom: 26px;
+            color: #506c82;
+            font-size: 0.95rem;
+        }
+
+        .course-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: rgba(47, 141, 204, 0.08);
+        }
+
+        .section-title {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #294e6b;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .course-description {
+            margin: 0 0 22px;
+            color: #4d6b80;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .teacher-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 16px 0 0;
+        }
+
+        .teacher-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(47, 141, 204, 0.16);
+            background: #eef6fc;
+        }
+
+        .teacher-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .teacher-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #19324a;
+        }
+
+        .teacher-label {
+            font-size: 0.95rem;
+            color: #5b7488;
+        }
+
+        .course-summary p,
+        .course-summary .summary-detail {
+            margin: 0 0 18px;
+            color: #4d6b80;
+            line-height: 1.75;
+        }
+
+        .summary-detail {
+            font-size: 0.98rem;
+        }
+
+        .course-price {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: 18px;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f4f78;
+        }
+
+        .enroll-button {
+            width: 100%;
+            padding: 16px 18px;
+            border: 0;
+            border-radius: 14px;
+            background: #2f8dcc;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .enroll-button:hover {
+            background: #2479b8;
+            transform: translateY(-1px);
+        }
+
+        .enroll-button:disabled {
+            background: #aacfe2;
+            cursor: wait;
+            transform: none;
+        }
+
+        .status-message {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(44, 117, 169, 0.16);
+            color: #264765;
+            min-height: 48px;
+        }
+
+        .status-message.error {
+            border-color: rgba(192, 57, 75, 0.2);
+            background: #fff3f4;
+            color: #a93748;
+        }
+
+        @media (max-width: 900px) {
+            .course-shell {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .page {
+                padding: 24px 16px 48px;
+            }
+
+            .course-card,
+            .course-summary {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="nav-brand">A+</a>
+            <a href="/" class="nav-brand" style="font-size:0.95rem; font-weight:400; color:#5b7488; text-decoration:none;">Back to courses</a>
+        </div>
+    </nav>
+
+    <main class="page">
+        <div class="breadcrumb">
+            <a href="/">Home</a> / <a href="/">Courses</a> / {{ course.subject or 'Course' }}
+        </div>
+
+        <div class="course-shell">
+            <article class="course-card">
+                <h1>{{ course.subject or 'Course Information' }}</h1>
+
+                <div class="course-meta">
+                    <span>Stage: {{ course.stage or 'N/A' }}</span>
+                    <span>Level: {{ course.level or 'N/A' }}</span>
+                    <span>Enrolled: {{ course.student_count or 0 }}</span>
+                </div>
+
+                <p class="course-description">This course is taught by {{ course.teacher_first_name or 'Instructor' }} {{ course.teacher_last_name or '' }} and covers the material suited for {{ course.stage or 'any' }} students at the {{ course.level or 'all' }} level.</p>
+
+                <div class="teacher-card">
+                    <img class="teacher-avatar" src="{{ course.teacher_pfp_url or 'https://ui-avatars.com/api/?name=' + (course.teacher_first_name or 'Teacher') + '+' + (course.teacher_last_name or 'Profile') + '&background=DBEAFE&color=2563EB' }}" alt="{{ course.teacher_first_name or '' }} {{ course.teacher_last_name or '' }}" />
+                    <div class="teacher-info">
+                        <span class="teacher-name">{{ course.teacher_first_name or 'Teacher' }} {{ course.teacher_last_name or '' }}</span>
+                        <span class="teacher-label">Course teacher</span>
+                    </div>
+                </div>
+            </article>
+
+            <aside class="course-summary">
+                <div class="section-title">Course details</div>
+                <p class="summary-detail">Use the button below to enroll in this course if you are a student. You will be redirected back to this page after the enrollment attempt.</p>
+
+                <div class="course-price">${{ "%.2f" | format(course.price or 0) }}</div>
+
+                <button id="enrollButton" class="enroll-button" type="button">Enroll</button>
+                <div id="statusMessage" class="status-message" role="status" aria-live="polite">Ready to enroll.</div>
+            </aside>
+        </div>
+    </main>
+
+    <script>
+        const enrollButton = document.getElementById('enrollButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const courseId = "{{ course.id }}";
+
+        function setStatus(text, isError = false) {
+            statusMessage.textContent = text;
+            statusMessage.classList.toggle('error', isError);
+        }
+
+        async function enrollCourse() {
+            enrollButton.disabled = true;
+            setStatus('Enrolling in course...');
+
+            try {
+                const response = await fetch(`/student/enroll/${courseId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    let message = 'Unable to enroll in this course.';
+                    if (response.status === 403){
+                        message = 'Only active students can enroll in courses.';
+                    }
+                    else if (response.status === 409) {
+                        message = 'You are already enrolled in this course.';
+                    }
+                    else {
+                        message = 'Unable to enroll in this course.';
+                    }
+                    throw new Error(message);
+                }
+                enrollButton.disabled = false;
+
+                const result = await response.json();
+                if (result && result.success) {
+                    setStatus('Enrollment successful!');
+                    enrollButton.textContent = 'Enrolled';
+                    enrollButton.disabled = true;
+                } else {
+                    throw new Error('Enrollment failed.');
+                }
+            } catch (error) {
+                setStatus(error.message, true);
+                enrollButton.disabled = false;
+            }
+        }
+
+        enrollButton.addEventListener('click', enrollCourse);
+    </script>
+</body>
+</html>

@@ -26,22 +26,31 @@ async def signup_page(request: Request):
 async def signup(usercreate: UserCreate,
                 db: Session = Depends(get_db)):
 
-    user = db.query(User).filter(or_(User.email==usercreate.email, User.phone_number==usercreate.phone_number)).first()
+    user = db.query(User).filter(or_(User.username==usercreate.username, User.phone_number==usercreate.phone_number)).first()
     if user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email or phone number already exists")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username or phone number already exists")
 
     if usercreate.role != "student" and usercreate.role != "teacher":
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Invalid role")
 
     if usercreate.role == "student" and usercreate.parent_name is None:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="You have to enter the parent name")
     if usercreate.role == "student" and usercreate.parent_phone_number is None:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="You have to enter the parent phone number")
+
+    if usercreate.role == "student" and usercreate.level is None:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="You have to enter the level")
+    if usercreate.role == "student" and usercreate.stage is None:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail="You have to enter the stage")
+
+    if usercreate.stage is not None and usercreate.stage not in ("الثانوية", "الاعدادية", "الابتدائية"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid stage")
+
 
     new_user = User(
         first_name=usercreate.first_name,
         last_name=usercreate.last_name,
-        email=usercreate.email,
+        username=usercreate.username,
         phone_number=usercreate.phone_number,
         password=hash_password(usercreate.password),
         parent_name=usercreate.parent_name,
@@ -56,14 +65,14 @@ async def signup(usercreate: UserCreate,
     if usercreate.role == "student":
         new_student = Student(
             user_id=new_user.id,
-            level=usercreate.level
+            level=usercreate.level,
+            stage=usercreate.stage
         )
         db.add(new_student)
 
     elif usercreate.role == "teacher":
         new_teacher = Teacher(
             user_id=new_user.id,
-            subject=usercreate.subject
         )
         db.add(new_teacher)
 

@@ -20,7 +20,7 @@ async def login_page(request: Request):
 @router.post("/login_data")
 async def login(userlogin: UserLogin,
                 db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == userlogin.email).first()
+    user = db.query(User).filter(User.username == userlogin.username).first()
     if not user or not verify_password(userlogin.password, user.password):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     token = create_access_token({

@@ -22,6 +22,7 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
         .join(Teacher, Course.teacher_id == Teacher.id)
         .join(User, Teacher.user_id == User.id)
         .outerjoin(Enrollment, Enrollment.course_id == Course.id)
+        .filter(Course.is_public == True)
         .group_by(Course.id, User.id)
         .all()
     )
@@ -31,6 +32,8 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
             "id": row.Course.id,
             "price": float(row.Course.price),
             "subject": row.Course.subject,
+            "stage": row.Course.stage,
+            "level": row.Course.level,
             "teacher_first_name": row.User.first_name,
             "teacher_last_name": row.User.last_name,
             "student_count": row.student_count

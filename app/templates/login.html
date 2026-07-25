@@ -302,12 +302,12 @@
 
         <form id="loginForm">
           <div class="form-group">
-            <label for="username">Email</label>
+            <label for="username">Username</label>
             <input
               type="text"
               id="username"
-              name="email"
-              placeholder="Enter your email"
+              name="username"
+              placeholder="Enter your username"
               required
             />
           </div>
@@ -341,12 +341,12 @@
     loginForm.addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const email = document.getElementById("username").value.trim();
+      const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      if (!email || !password) {
+      if (!username || !password) {
         message.style.color = "#c0394b";
-        message.textContent = "Please enter both email and password.";
+        message.textContent = "Please enter both username and password.";
         return;
       }
 
@@ -356,7 +356,7 @@
       fetch('/login_data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
         credentials: "include"
       })
       .then(async response => {
@@ -365,14 +365,14 @@
           if (data.role === "student") {
             window.location.href = "/";
           }else if (data.role === "teacher") {
-            window.location.href = "/profile";
+            window.location.href = "/teacher";
           }else if (data.role === "admin") {
             window.location.href = "/admin";
           }
           }else {
           if (response.status === 404) {
             message.style.color = "#c0394b";
-            message.textContent = "Invalid email or password.";
+            message.textContent = "Invalid username or password.";
           } else {
             message.style.color = "#c0394b";
             message.textContent = "An error occurred. Please try again.";

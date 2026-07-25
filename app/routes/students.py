@@ -17,7 +17,7 @@ from app.schemas.courses import AddCourse
 from app.config import BASE_DIR
 from zoneinfo import ZoneInfo
 
-router = APIRouter(prefix="/teacher")
+router = APIRouter(prefix="/student")
 
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
@@ -45,6 +45,12 @@ def enroll_course(request: Request, id: int, db: Session = Depends(get_db)):
     user, student = result
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    course = db.query(Course).filter(Course.id == id).first()
+    if not course:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course does not exist")
+    enrollment = db.query(Enrollment).filter(Enrollment.student_id == student.id, Enrollment.course_id == id).first()
+    if enrollment is not None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
 
     enrollment = Enrollment(
         student_id=student.id,
@@ -53,7 +59,7 @@ def enroll_course(request: Request, id: int, db: Session = Depends(get_db)):
     try:
         db.add(enrollment)
         db.commit()
-        db.refresh()
+        db.refresh(enrollment)
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

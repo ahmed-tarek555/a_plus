@@ -316,15 +316,13 @@
 			const details = document.createElement("div");
 			details.className = "details";
 			details.append(
-				createDetail("Email", user.email),
-				createDetail("Phone", user.phone_number),
-				currentMode === "students"
-					? createDetail("Level", user.level)
-					: createDetail("Subject", user.subject)
+				createDetail("Phone", user.phone_number)
 			);
 
 			if (currentMode === "students") {
 				details.append(
+					createDetail("Level", user.level),
+					createDetail("Stage", user.stage),
 					createDetail("Parent", user.parent_name),
 					createDetail("Parent phone", user.parent_phone_number)
 				);

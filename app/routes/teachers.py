@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
-from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,10 +8,8 @@ from app.models.teachers_model import Teacher
 from app.models.students_model import Student
 from app.models.courses_model import Course
 from app.models.enrollments_model import Enrollment
-from app.core.security import verify_password
-from app.core.auth import create_access_token, validate_user
+from app.core.auth import validate_user
 from app.database import get_db
-from app.schemas.user import UserLogin
 from app.schemas.courses import AddCourse
 from app.config import BASE_DIR
 from zoneinfo import ZoneInfo
@@ -56,7 +53,10 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
         {
             "id": course.id,
             "price": course.price,
+            "stage": course.stage,
+            "level": course.level,
             "subject": course.subject,
+            "is_public": course.is_public,
             "student_count": student_count
         }
         for course, student_count in results
@@ -75,10 +75,16 @@ def add_course(request: Request, new_course: AddCourse, db: Session = Depends(ge
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
 
+    if new_course.stage not in ("الثانوية", "الاعدادية", "الابتدائية"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid stage")
+
     course = Course(
         teacher_id=teacher.id,
         price=new_course.price,
-        subject=new_course.subject
+        stage=new_course.stage,
+        level=new_course.level,
+        subject=new_course.subject,
+        is_public=True
     )
     try:
         db.add(course)

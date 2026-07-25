@@ -1,16 +1,12 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
-from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from app.models.users_model import User
-from app.models.teachers_model import Teacher
 from app.models.students_model import Student
-from app.core.security import verify_password
-from app.core.auth import create_access_token, validate_user
+from app.core.auth import validate_user
 from app.database import get_db
-from app.schemas.user import UserLogin
 from app.config import BASE_DIR
 from zoneinfo import ZoneInfo
 
@@ -48,17 +44,18 @@ def get_pending_students(request: Request, db: Session = Depends(get_db)):
 
     return [
         {
-            "id": row.User.id,
-            "first_name": row.User.first_name,
-            "last_name": row.User.last_name,
-            "email": row.User.email,
-            "phone_number": row.User.phone_number,
-            "parent_name": row.User.parent_name,
-            "parent_phone_number": row.User.parent_phone_number,
-            "date_joined": row.User.date_joined.astimezone(ZoneInfo("Africa/Cairo")).strftime("%B %d, %Y"),
-            "level": row.Student.level
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "username": user.username,
+            "phone_number": user.phone_number,
+            "parent_name": user.parent_name,
+            "parent_phone_number": user.parent_phone_number,
+            "date_joined": user.date_joined.astimezone(ZoneInfo("Africa/Cairo")).strftime("%B %d, %Y"),
+            "level": student.level,
+            "stage": student.stage
         }
-        for row in results
+        for user, student in results
     ]
 
 @router.get("/pending_teachers")
@@ -73,20 +70,19 @@ def get_pending_teachers(request: Request, db: Session = Depends(get_db)):
     if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    resutls = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.role == "teacher", User.is_active == False).all()
+    users = db.query(User).filter(User.role == "teacher", User.is_active == False).all()
 
 
     return [
         {
-            "id": row.User.id,
-            "first_name": row.User.first_name,
-            "last_name": row.User.last_name,
-            "email": row.User.email,
-            "phone_number": row.User.phone_number,
-            "date_joined": row.User.date_joined.astimezone(ZoneInfo("Africa/Cairo")).strftime("%B %d, %Y"),
-            "subject": row.Teacher.subject
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "username": user.username,
+            "phone_number": user.phone_number,
+            "date_joined": user.date_joined.astimezone(ZoneInfo("Africa/Cairo")).strftime("%B %d, %Y"),
         }
-        for row in resutls
+        for user in users
     ]
 
 @router.post("/approve/{id}")
@@ -100,6 +96,9 @@ def approve_user(request: Request, id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    to_be_approved = db.query(User).filter(User.id == id).first()
+    if not to_be_approved:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     try:
         db.execute(update(User).where(User.id == id).values(is_active=True))
