@@ -10,7 +10,7 @@ from app.models.users_model import User
 from app.core.security import hash_password
 from app.core.auth import validate_user
 from app.config import BASE_DIR
-from app.routes import home, login, signup, admin, profile, teachers, students, teacher_profile, course_page
+from app.routes import home, login, signup, admin, profile, teachers, students, teacher_profile, course, manage_course
 from datetime import datetime, timezone
 
 load_dotenv()
@@ -41,7 +41,8 @@ app.include_router(profile.router)
 app.include_router(students.router)
 app.include_router(teachers.router)
 app.include_router(teacher_profile.router)
-app.include_router(course_page.router)
+app.include_router(course.router)
+app.include_router(manage_course.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):

@@ -28,7 +28,14 @@ def login_page(request: Request, id: int, db: Session = Depends(get_db)):
         "pfp_url": generate_url(user.pfp_public_id)
     }
 
-    courses = db.query(Course).join(Teacher, Teacher.id == Course.teacher_id).filter(Teacher.user_id == id, Course.is_public == True).all()
+    result = (
+        db.query(Course, func.count(Enrollment.id).label("student_count"))
+        .join(Teacher, Teacher.id == Course.teacher_id)
+        .outerjoin(Enrollment, Enrollment.course_id == Course.id)
+        .filter(Teacher.user_id == id, Course.is_public == True)
+        .group_by(Course.id)
+        .all()
+    )
 
     teacher_courses = [
         {
@@ -37,8 +44,9 @@ def login_page(request: Request, id: int, db: Session = Depends(get_db)):
             "stage": course.stage,
             "level": course.level,
             "subject": course.subject,
+            "student_count": student_count
         }
-        for course in courses
+        for course, student_count in result
     ]
 
     return templates.TemplateResponse("teacher_profile.html", {"request": request, "data": teacher_data, "courses": teacher_courses})

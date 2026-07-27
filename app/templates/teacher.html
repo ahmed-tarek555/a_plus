@@ -61,7 +61,7 @@
 						<input id="subject" name="subject" type="text" required />
 					</div>
 					<div class="field">
-						<label for="price">Price (USD)</label>
+						<label for="price">Price (EGP)</label>
 						<input id="price" name="price" type="number" step="0.01" min="0" required />
 					</div>
 					<div class="field">
@@ -124,8 +124,8 @@
 
 				const viewBtn = document.createElement('a');
 				viewBtn.className = 'btn view';
-				viewBtn.href = `/course/${course.id}`;
-				viewBtn.textContent = 'View';
+				viewBtn.href = `/manage_course/${course.id}`;
+				viewBtn.textContent = 'Manage';
 
 				const deleteBtn = document.createElement('button');
 				deleteBtn.className = 'btn delete';

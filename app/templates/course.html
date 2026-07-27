@@ -298,6 +298,9 @@
                     else if (response.status === 409) {
                         message = 'You are already enrolled in this course.';
                     }
+                    else if (response.status === 401) {
+                        message = 'Please log in first to enroll in this course.';
+                    }
                     else {
                         message = 'Unable to enroll in this course.';
                     }

@@ -28,6 +28,16 @@ def upload_pfp(file: UploadFile):
     )
     return result["public_id"]
 
+def upload_file(file: UploadFile):
+    result = cloudinary.uploader.upload(
+        file.file,
+        folder="homework",
+        transformation=[
+            {"quality": "auto"}
+        ]
+    )
+    return result["public_id"]
+
 
 def generate_url(public_id):
     url, _ = cloudinary.utils.cloudinary_url(
