@@ -1,23 +1,23 @@
 from typing import Optional
-
-from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFile, File
+from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFile, File, Form
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from app.models.users_model import User
 from app.models.teachers_model import Teacher
 from app.models.courses_model import Course
-from app.models.enrollments_model import Enrollment
 from app.models.exams_model import Exam
 from app.models.questions_model import Question
 from app.models.choices_model import Choice
 from app.models.homeworks_model import Homework
 from app.schemas.exam import ExamCreate
 from app.core.auth import validate_user
+from app.services.embedder import get_embedding
 from app.database import get_db
 from app.utils import is_valid_image, upload_file, generate_url
 from app.config import BASE_DIR
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
+
 
 router = APIRouter(prefix="/manage_course")
 
@@ -67,9 +67,8 @@ def add_exam(request: Request, payload: ExamCreate, id: int, db: Session = Depen
     exam = Exam(
         course_id=id,
         title=payload.title,
-        description=payload.description,
-        due_date=payload.due_date,
-        created_at=datetime.now(timezone.utc)
+        start_time=payload.start_time,
+        end_time= payload.start_time + timedelta(hours=payload.time),
     )
     db.add(exam)
     db.flush()
@@ -80,6 +79,8 @@ def add_exam(request: Request, payload: ExamCreate, id: int, db: Session = Depen
             is_choices=q.is_choices,
             head=q.head,
             correct_choice=q.correct_choice,
+            model_answer=q.model_answer,
+            answer_embedding=get_embedding(q.model_answer) if q.model_answer is not None else None,
             mark=q.mark
         )
         db.add(question)
@@ -98,7 +99,7 @@ def add_exam(request: Request, payload: ExamCreate, id: int, db: Session = Depen
     return {"success": True}
 
 @router.post("/add_homework/{id}")
-def add_homework(request: Request, id: int, title: str, due_date: Optional[datetime] = None, homework: UploadFile = File(...), db: Session = Depends(get_db)):
+def add_homework(request: Request, id: int, title: str = Form(...), due_date: Optional[datetime] = Form(...), homework: UploadFile = File(...), db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
     user_id, user_role = validate_user(token)
     if user_role != "teacher":
@@ -182,8 +183,8 @@ def get_exams(request: Request, id: int, db: Session = Depends(get_db)):
         {
             "id": exam.id,
             "title": exam.title,
-            "description": exam.description,
-            "due_date": exam.due_date
+            "start_time": exam.start_time,
+            "end_time": exam.end_time
         }
         for exam in exams
     ]

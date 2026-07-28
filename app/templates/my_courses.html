@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Courses | A+</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    nav {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+    }
+
+    .nav-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .nav-brand {
+      text-decoration: none;
+      color: #2563eb;
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+
+    .page-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2rem, 2.5vw, 2.6rem);
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .course-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      border-color: #c7d2fe;
+      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.1);
+    }
+
+    .course-card__top {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .course-badge {
+      display: inline-flex;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .course-tag {
+      font-size: 0.82rem;
+      color: #475569;
+    }
+
+    .course-card h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #0f172a;
+      padding: 0 20px;
+    }
+
+    .course-card p {
+      padding: 14px 20px 0;
+      color: #475569;
+      line-height: 1.7;
+      flex: 1;
+    }
+
+    .course-card__footer {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    .course-footer-item {
+      color: #64748b;
+      font-size: 0.92rem;
+    }
+
+    .view-link {
+      background: #2563eb;
+      color: white;
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: background 0.2s ease;
+    }
+
+    .view-link:hover {
+      background: #1d4ed8;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      background: #eff6ff;
+      border: 1px dashed #bfdbfe;
+      border-radius: 18px;
+      padding: 40px 28px;
+      text-align: center;
+      color: #1e293b;
+    }
+
+    .empty-state h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .empty-state p {
+      color: #475569;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 640px) {
+      .page-shell {
+        padding: 24px 16px;
+      }
+
+      .course-card__top,
+      .course-card__footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .data-section {
+      margin-top: 40px;
+    }
+
+    .data-section h2 {
+      margin-bottom: 18px;
+      font-size: 1.6rem;
+      color: #111827;
+    }
+
+    .data-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .item-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    .item-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+      color: #0f172a;
+    }
+
+    .item-card p {
+      margin: 0 8px 0;
+      color: #475569;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .item-card a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .item-card a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">A+</a>
+      <a href="/profile" class="view-link">Profile</a>
+    </div>
+  </nav>
+
+  <main class="page-shell">
+    <div class="page-header">
+      <div>
+        <h1>My Courses</h1>
+        <p style="color: #475569; margin-top: 10px;">Review the courses you are enrolled in and visit each course page.</p>
+      </div>
+      <a href="/" class="view-link">Back to Home</a>
+    </div>
+
+    <div class="courses-grid">
+      {% if courses %}
+        {% for course in courses %}
+        <article class="course-card">
+          <div class="course-card__top">
+            <span class="course-badge">{{ course.subject or 'Course' }}</span>
+            <span class="course-tag">Stage {{ course.stage or 'N/A' }}</span>
+          </div>
+          <h2>{{ course.subject or 'Untitled Course' }}</h2>
+          <p>Level {{ course.level or 'N/A' }} � Students can access homework and exams for this course.</p>
+          <div class="course-card__footer">
+            <span class="course-footer-item">ID: {{ course.id }}</span>
+            <a href="/course/{{ course.id }}" class="view-link">View course</a>
+          </div>
+        </article>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <h2>No enrolled courses yet</h2>
+          <p>It looks like you are not enrolled in any courses right now. Visit the home page to browse available courses.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <section class="data-section">
+      <h2>My Homeworks</h2>
+      <div id="homeworksContainer" class="data-list">
+        <div class="empty-state">Loading homeworks…</div>
+      </div>
+    </section>
+
+    <section class="data-section">
+      <h2>My Exams</h2>
+      <div id="examsContainer" class="data-list">
+        <div class="empty-state">Loading exams…</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function formatDate(value) {
+      if (!value) return 'N/A';
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+    }
+
+    function renderList(container, items, emptyText, renderer) {
+      container.innerHTML = '';
+      if (!Array.isArray(items) || items.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.textContent = emptyText;
+        container.appendChild(empty);
+        return;
+      }
+      items.forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'item-card';
+        card.innerHTML = renderer(item);
+        container.appendChild(card);
+      });
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url, { credentials: 'include' });
+      if (!response.ok) {
+        throw new Error(`Failed to load ${url}: ${response.status}`);
+      }
+      return response.json();
+    }
+
+    async function loadHomeworks() {
+      const container = document.getElementById('homeworksContainer');
+      try {
+        const homeworks = await fetchJson('/student/homeworks');
+        renderList(container, homeworks, 'No homeworks available.', hw => `
+          <h3>${hw.title || 'Untitled homework'}</h3>
+          <p><strong>Due:</strong> ${formatDate(hw.due_date)}</p>
+          <p><a href="${hw.url}" target="_blank" rel="noreferrer">Open homework file</a></p>
+        `);
+      } catch (error) {
+        renderList(container, [], error.message || 'Unable to load homeworks.');
+      }
+    }
+
+    async function loadExams() {
+      const container = document.getElementById('examsContainer');
+      try {
+        const exams = await fetchJson('/student/exams');
+        renderList(container, exams, 'No exams available.', exam => `
+          <h3>${exam.title || 'Untitled exam'}</h3>
+          <p><strong>Starts:</strong> ${formatDate(exam.start_time)}</p>
+          <p><strong>Ends:</strong> ${formatDate(exam.end_time)}</p>
+        `);
+      } catch (error) {
+        renderList(container, [], error.message || 'Unable to load exams.');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHomeworks();
+      loadExams();
+    });
+  </script>
+</body>
+</html>

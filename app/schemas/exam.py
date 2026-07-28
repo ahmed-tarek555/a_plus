@@ -13,38 +13,42 @@ class QuestionCreate(BaseModel):
     mark: int
     choices: Optional[List[ChoiceCreate]] = None
     correct_choice: Optional[str] = None
+    model_answer: Optional[str] = None
 
     @root_validator
     def validate_choice_fields(cls, values):
         is_choices = values.get("is_choices")
         choices = values.get("choices")
         correct_choice = values.get("correct_choice")
+        model_answer = values.get("model_answer")
 
         if is_choices:
             if not choices or len(choices) < 2:
                 raise ValueError("Multiple choice questions need at least 2 choices")
             choice_texts = [c.text for c in choices]
             if correct_choice not in choice_texts:
-                raise ValueError("correct_choice must match one of the choices")
+                raise ValueError("correct choice must match one of the choices")
         else:
             if choices or correct_choice is not None:
                 raise ValueError("Text questions should not include choices or correct_choice")
+            if not model_answer:
+                raise ValueError("Text questions should include the model answer")
 
         return values
 
 
 class ExamCreate(BaseModel):
     title: str
-    description: Optional[str] = None
-    due_date: Optional[datetime] = None
+    start_time: datetime
+    time: int
     questions: List[QuestionCreate] = []
 
 
 # example payload
 # {
 #   "title": "Chapter 3 Quiz",
-#   "description": "Covers photosynthesis",
-#   "due_date": "2026-08-01T23:59:00",
+#   "start_time": "2026-08-01T23:59:00",
+#   "time": 2
 #   "questions": [
 #     {
 #       "is_choices": true,
@@ -56,6 +60,7 @@ class ExamCreate(BaseModel):
 #     {
 #       "is_choices": false,
 #       "head": "Explain photosynthesis.",
+#       "model_answer": "the answer the teacher entered"
 #       "mark": 5
 #     }
 #   ]

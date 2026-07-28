@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from pgvector.sqlalchemy import Vector
 from app.database import Base
 
 class Question(Base):
@@ -9,4 +10,6 @@ class Question(Base):
     is_choices = Column(Boolean, nullable=False)
     head = Column(String, nullable=False)
     correct_choice = Column(String, nullable=True)
+    model_answer = Column(String, nullable=True)
+    answer_embedding = Column(Vector(384), nullable=False)
     mark = Column(Integer, nullable=False)

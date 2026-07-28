@@ -322,7 +322,7 @@
                     </div>
                     <div class="field">
                         <label for="hwDueDate">Due date</label>
-                        <input id="hwDueDate" name="due_date" type="datetime-local" />
+                        <input id="hwDueDate" name="due_date" type="datetime-local" required />
                     </div>
                     <div class="field">
                         <label for="hwFile">Homework file (image)</label>
@@ -341,12 +341,12 @@
                         <input id="examTitle" name="title" type="text" required />
                     </div>
                     <div class="field">
-                        <label for="examDescription">Description</label>
-                        <textarea id="examDescription" name="description"></textarea>
+                        <label for="examStartDate">Start date</label>
+                        <input id="examStartDate" name="start_time" type="datetime-local" required />
                     </div>
                     <div class="field">
-                        <label for="examDueDate">Due date</label>
-                        <input id="examDueDate" name="due_date" type="datetime-local" />
+                        <label for="examTime">Duration (hours)</label>
+                        <input id="examTime" name="time" type="number" min="1" step="1" value="1" required />
                     </div>
                     <div class="actions">
                         <button id="addQuestion" class="btn secondary" type="button">Add question</button>
@@ -442,13 +442,16 @@
         function setQuestionType(questionCard, isChoices) {
             const choiceSection = questionCard.querySelector('.choices-section');
             const correctBox = questionCard.querySelector('.correct-choice-field');
+            const modelAnswerBox = questionCard.querySelector('.model-answer-field');
             if (isChoices) {
                 choiceSection.classList.remove('hidden');
                 correctBox.classList.remove('hidden');
+                modelAnswerBox.classList.add('hidden');
                 updateCorrectChoiceOptions(questionCard);
             } else {
                 choiceSection.classList.add('hidden');
                 correctBox.classList.add('hidden');
+                modelAnswerBox.classList.remove('hidden');
             }
         }
 
@@ -499,6 +502,13 @@
                 <select class="question-correct-choice"></select>
             `;
 
+            const modelAnswerField = document.createElement('div');
+            modelAnswerField.className = 'field model-answer-field';
+            modelAnswerField.innerHTML = `
+                <label>Model answer</label>
+                <textarea class="question-model-answer" placeholder="Enter the model answer for written questions" rows="3" required></textarea>
+            `;
+
             const removeButton = document.createElement('button');
             removeButton.type = 'button';
             removeButton.className = 'btn secondary';
@@ -514,7 +524,7 @@
             questionRow.className = 'question-row';
             questionRow.append(questionText, markField);
 
-            card.append(header, questionRow, typeField, choicesSection, correctField, removeButton);
+            card.append(header, questionRow, typeField, choicesSection, correctField, modelAnswerField, removeButton);
 
             typeField.querySelector('.question-type').addEventListener('change', (event) => {
                 setQuestionType(card, event.target.value === 'true');
@@ -570,6 +580,12 @@
                     }
                     question.choices = choices.map(text => ({ text }));
                     question.correct_choice = correctChoice;
+                } else {
+                    const modelAnswer = card.querySelector('.question-model-answer').value.trim();
+                    if (!modelAnswer) {
+                        throw new Error('Each written question must include a model answer.');
+                    }
+                    question.model_answer = modelAnswer;
                 }
 
                 return question;
@@ -618,8 +634,8 @@
                 const data = await res.json();
                 renderList(examsList, data, 'No exams created yet.', exam => `
                     <h3>${exam.title}</h3>
-                    <p>${exam.description || 'No description.'}</p>
-                    <p><strong>Due date:</strong> ${exam.due_date ? new Date(exam.due_date).toLocaleString() : 'Not set'}</p>
+                    <p><strong>Start date:</strong> ${exam.start_time ? new Date(exam.start_time).toLocaleString() : 'Not set'}</p>
+                    <p><strong>End date:</strong> ${exam.end_time ? new Date(exam.end_time).toLocaleString() : 'Not set'}</p>
                 `);
                 setStatus(examStatus, 'Exam list updated.');
             } catch (err) {
@@ -645,9 +661,7 @@
             try {
                 const formData = new FormData();
                 formData.append('title', title);
-                if (dueDate) {
-                    formData.append('due_date', dueDate);
-                }
+                formData.append('due_date', dueDate);
                 formData.append('homework', fileInput.files[0]);
                 const res = await fetch(`/manage_course/add_homework/${courseId}`, {
                     method: 'POST',
@@ -672,15 +686,18 @@
 
         submitExam.addEventListener('click', async () => {
             const title = document.getElementById('examTitle').value.trim();
-            const description = document.getElementById('examDescription').value.trim();
-            const dueDate = document.getElementById('examDueDate').value;
+            const start_time = document.getElementById('examStartDate').value;
+            const time = parseInt(document.getElementById('examTime').value, 10) || 1;
 
             try {
                 if (!title) {
                     throw new Error('Please enter an exam title.');
                 }
+                if (!Number.isInteger(time) || time < 1) {
+                    throw new Error('Please provide a valid duration in whole hours (>=1).');
+                }
                 const questions = collectExamQuestions();
-                const payload = { title, description, due_date: dueDate || null, questions };
+                const payload = { title, start_time, time, questions };
                 submitExam.disabled = true;
                 setStatus(examStatus, 'Creating exam…');
                 const res = await fetch(`/manage_course/add_exam/${courseId}`, {
