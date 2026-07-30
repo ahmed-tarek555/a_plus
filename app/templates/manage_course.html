@@ -617,6 +617,7 @@
                 const data = await res.json();
                 renderList(homeworksList, data, 'No homeworks uploaded yet.', hw => `
                     <h3>${hw.title}</h3>
+                    <a href="/teacher/submitted_homeworks/${hw.id}" style="text-decoration:none; color:#2f8dcc; font-weight:700">View submitted homeworks</a>
                     <p><a href="${hw.url}" target="_blank" rel="noreferrer">View uploaded file</a></p>
                 `);
                 setStatus(homeworkStatus, 'Homework list updated.');
@@ -634,6 +635,7 @@
                 const data = await res.json();
                 renderList(examsList, data, 'No exams created yet.', exam => `
                     <h3>${exam.title}</h3>
+                    <a href="/teacher/submitted_exams/${exam.id}" style="text-decoration:none; color:#2f8dcc; font-weight:700">View submitted exams</a>
                     <p><strong>Start date:</strong> ${exam.start_time ? new Date(exam.start_time).toLocaleString() : 'Not set'}</p>
                     <p><strong>End date:</strong> ${exam.end_time ? new Date(exam.end_time).toLocaleString() : 'Not set'}</p>
                 `);
@@ -650,7 +652,8 @@
 
         submitHomework.addEventListener('click', async () => {
             const title = document.getElementById('hwTitle').value.trim();
-            const dueDate = document.getElementById('hwDueDate').value;
+            const localValue = document.getElementById('hwDueDate').value;
+            const dueDate = new Date(localValue).toISOString();
             const fileInput = document.getElementById('hwFile');
             if (!title || !fileInput.files.length) {
                 setStatus(homeworkStatus, 'Please provide a title and select an image file.', true);
@@ -686,7 +689,8 @@
 
         submitExam.addEventListener('click', async () => {
             const title = document.getElementById('examTitle').value.trim();
-            const start_time = document.getElementById('examStartDate').value;
+            const localValue = document.getElementById('examStartDate').value;
+            const start_time = new Date(localValue).toISOString();
             const time = parseInt(document.getElementById('examTime').value, 10) || 1;
 
             try {

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ exam.title or 'Exam' }} | A+</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; }
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+    .page-shell {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+    .page-header {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 24px 28px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      margin-bottom: 24px;
+    }
+    .page-header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      color: #475569;
+      line-height: 1.6;
+    }
+    .question-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+    .question-head {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 12px;
+    }
+    .question-meta {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+    .choices-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .choice-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fbfdff;
+    }
+    .choice-item input {
+      margin-top: 3px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px 14px;
+      resize: vertical;
+      font-size: 0.95rem;
+      color: #0f172a;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .submit-row {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .submit-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background: #1d4ed8;
+    }
+    .empty-state {
+      background: white;
+      border: 1px dashed #bfdbfe;
+      border-radius: 18px;
+      padding: 40px 24px;
+      text-align: center;
+      color: #475569;
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <section class="page-header">
+      <h1>{{ exam.title or 'Exam' }}</h1>
+      <p>Answer each question below. Choice questions allow you to pick an option, and written questions should be answered in the text area.</p>
+      <h3>You can only submit your answers once.</h3>
+    </section>
+
+    {% if exam.questions %}
+      <form id="exam-form">
+        {% for question in exam.questions %}
+          <article class="question-card">
+            <div class="question-head">{{ loop.index }}. {{ question.head }}</div>
+            <div class="question-meta">Marks: {{ question.mark }}</div>
+
+            {% if question.is_choices %}
+              <div class="choices-list">
+                {% for choice in question.choices or [] %}
+                  <label class="choice-item">
+                    <input type="radio" name="question-{{ question.id }}" value="{{ choice.id }}" />
+                    <span>{{ choice.text }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            {% else %}
+              <textarea name="question-{{ question.id }}" placeholder="Write your answer here..."></textarea>
+            {% endif %}
+          </article>
+        {% endfor %}
+
+        <div class="submit-row">
+          <button class="submit-btn" type="submit">Submit answers</button>
+        </div>
+        <div id="submit-result" style="margin-top:12px; text-align:right; color:#0f172a;"></div>
+      </form>
+    {% else %}
+      <div class="empty-state">No questions are available for this exam yet.</div>
+    {% endif %}
+  </main>
+  <script>
+    (function () {
+      const form = document.getElementById('exam-form');
+      const resultEl = document.getElementById('submit-result');
+      if (!form) return;
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        resultEl.textContent = '';
+        const answers = [];
+
+        const elements = form.querySelectorAll('input[type="radio"], textarea');
+        const seenQuestionIds = new Set();
+
+        elements.forEach((el) => {
+          const name = el.name || '';
+          // Expect names like "question-<id>"
+          const match = name.match(/^question-(\d+)$/);
+          if (!match) return;
+          const qid = parseInt(match[1], 10);
+          if (seenQuestionIds.has(qid)) return;
+
+          if (el.tagName.toLowerCase() === 'textarea') {
+            const textarea = el;
+            const val = textarea.value && textarea.value.trim();
+            if (val) {
+              answers.push({ question_id: qid, answer: val });
+            }
+            seenQuestionIds.add(qid);
+            return;
+          }
+
+          const checked = form.querySelector('input[name="' + name + '"]:checked');
+          if (checked) {
+            answers.push({ question_id: qid, answer: checked.value });
+          }
+          seenQuestionIds.add(qid);
+        });
+
+        if (answers.length === 0) {
+          resultEl.textContent = 'You did not answer any questions.';
+          return;
+        }
+
+        // Disable submit button while sending
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+          const resp = await fetch('/student/submit_exam/{{ exam.id }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ answers })
+          });
+
+          if (!resp.ok) {
+            if (resp.status === 409) {
+            resultEl.textContent = "You have already submitted this exam.";
+            } else {
+              resultEl.textContent = "Submission failed";
+            }
+            return;
+          }
+
+          const data = await resp.json();
+          if (data && typeof data.mark !== 'undefined') {
+            resultEl.textContent = 'Submitted — your mark: ' + data.mark;
+          } else {
+            resultEl.textContent = 'Submitted successfully.';
+          }
+        } catch (err) {
+          resultEl.textContent = 'Submission error: ' + err.message;
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

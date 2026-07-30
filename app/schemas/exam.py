@@ -43,6 +43,12 @@ class ExamCreate(BaseModel):
     time: int
     questions: List[QuestionCreate] = []
 
+class AnswerSubmit(BaseModel):
+    question_id: int
+    answer: str
+
+class ExamSubmit(BaseModel):
+    answers: List[AnswerSubmit]
 
 # example payload
 # {

@@ -186,7 +186,7 @@
 
         .enroll-button:disabled {
             background: #aacfe2;
-            cursor: wait;
+            cursor: not-allowed;
             transform: none;
         }
 
@@ -264,8 +264,8 @@
 
                 <div class="course-price">${{ "%.2f" | format(course.price or 0) }}</div>
 
-                <button id="enrollButton" class="enroll-button" type="button">Enroll</button>
-                <div id="statusMessage" class="status-message" role="status" aria-live="polite">Ready to enroll.</div>
+                <button id="enrollButton" class="enroll-button" type="button" {% if course.enrolled %}disabled{% endif %}>{{ 'Enrolled' if course.enrolled else 'Enroll' }}</button>
+                <div id="statusMessage" class="status-message" role="status" aria-live="polite">{{ 'You are already enrolled in this course.' if course.enrolled else 'Ready to enroll.' }}</div>
             </aside>
         </div>
     </main>
@@ -306,7 +306,6 @@
                     }
                     throw new Error(message);
                 }
-                enrollButton.disabled = false;
 
                 const result = await response.json();
                 if (result && result.success) {
@@ -318,7 +317,12 @@
                 }
             } catch (error) {
                 setStatus(error.message, true);
-                enrollButton.disabled = false;
+                if (error.message === 'You are already enrolled in this course.') {
+                    enrollButton.textContent = 'Enrolled';
+                    enrollButton.disabled = true;
+                } else {
+                    enrollButton.disabled = false;
+                }
             }
         }
 

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Submission Overview</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f4f9ff, #eaf5ff 45%, #dceefa 100%);
+            color: #16324a;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(47, 140, 204, 0.12);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 14px 36px rgba(25, 61, 92, 0.08);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-flex;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: #eef6ff;
+            color: #2469a7;
+            font-weight: 700;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .list-card {
+            border: 1px solid rgba(47, 140, 204, 0.12);
+            border-radius: 16px;
+            padding: 16px;
+            background: #f8fbff;
+        }
+
+        .list-card h2 {
+            margin: 0 0 12px;
+            font-size: 1.1rem;
+        }
+
+        .item {
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid rgba(47, 140, 204, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .item h3 {
+            margin: 0 0 4px;
+            font-size: 1rem;
+        }
+
+        .muted {
+            color: #5d7488;
+            font-size: 0.95rem;
+            margin: 3px 0;
+        }
+
+        .link {
+            color: #2f8dcc;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .empty {
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #eef3f7;
+            color: #5b7187;
+        }
+
+        @media (max-width: 860px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page">
+        <section class="card">
+            <div class="header">
+                <div>
+                    <h1 style="margin:0 0 6px; font-size: 1.7rem;">{{ item_title or 'Submission overview' }}</h1>
+                    <p style="margin:0; color:#58738a;">Teacher view for {{ submission_type|title if submission_type
+                        else 'submission' }} progress.</p>
+                </div>
+                <div class="pill">{{ submittions|length }} submitted · {{ late_students|length }} pending</div>
+            </div>
+
+            <div class="grid">
+                <div class="list-card">
+                    <h2>Submitted students</h2>
+                    {% if submittions %}
+                    {% for submission in submittions %}
+                    <div class="item">
+                        <h3>{{ submission.student.first_name }} {{ submission.student.last_name }}</h3>
+                        <p class="muted">Student phone: {{ submission.student.phone_number or 'Not provided' }}</p>
+                        <p class="muted">Parent phone: {{ submission.student.parent_phone_number or 'Not provided' }}</p>
+                        <p class="muted">Parent name: {{ submission.student.parent_name or 'Not provided' }}</p>
+                        {% if submission.url %}
+                        <p class="muted"><a class="link" href="{{ submission.url }}" target="_blank"
+                                rel="noreferrer">Open homework file</a></p>
+                        {% endif %}
+                        {% if submission_type == 'exam' and submission.mark is not none %}
+                        <p class="muted">Mark: {{ submission.mark }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty">No students have submitted this {{ submission_type|default('item') }} yet.</div>
+                    {% endif %}
+                </div>
+
+                <div class="list-card">
+                    <h2>Not submitted yet</h2>
+                    {% if late_students %}
+                    {% for student in late_students %}
+                    <div class="item">
+                        <h3>{{ student.first_name }} {{ student.last_name }}</h3>
+                        <p class="muted">Student phone: {{ student.phone_number or 'Not provided' }}</p>
+                        <p class="muted">Parent phone: {{ student.parent_phone_number or 'Not provided' }}</p>
+                        <p class="muted">Parent name: {{ student.parent_name or 'Not provided' }}</p>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="empty">All enrolled students have submitted.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

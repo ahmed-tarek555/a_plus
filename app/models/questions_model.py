@@ -11,5 +11,5 @@ class Question(Base):
     head = Column(String, nullable=False)
     correct_choice = Column(String, nullable=True)
     model_answer = Column(String, nullable=True)
-    answer_embedding = Column(Vector(384), nullable=False)
+    answer_embedding = Column(Vector(384), nullable=True)
     mark = Column(Integer, nullable=False)

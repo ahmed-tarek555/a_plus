@@ -495,17 +495,6 @@ body {
 
     </div>
   </div>
-
-  <!-- RIGHT SIDE: COURSES (for teachers only) -->
-  <div class="profile-right" id="coursesContainer" style="display: none;">
-    <div class="courses-section">
-      <h2 class="courses-title">Your Courses</h2>
-      <div class="courses-list" id="coursesList">
-        <div class="courses-loading">Loading courses...</div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <script>
@@ -524,13 +513,6 @@ function showMessage(text, type = "success") {
       messageDiv.className = "message";
     }, 300);
   }, 4000);
-}
-
-const userRole = "{{ data.role }}";
-
-// Check if user is a teacher and load courses
-if (userRole === "teacher") {
-  loadCourses();
 }
 
 /* EDIT NAME */
@@ -664,67 +646,6 @@ async function savePassword() {
   }
 }
 
-/* LOAD TEACHER COURSES */
-async function loadCourses() {
-  try {
-    const coursesContainer = document.getElementById("coursesContainer");
-    const coursesList = document.getElementById("coursesList");
-
-    // Show the courses container
-    coursesContainer.style.display = "flex";
-
-    // Fetch courses from the endpoint
-    const res = await fetch("/profile/courses", {
-      credentials: "include"
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to load courses");
-    }
-
-    const courses = await res.json();
-
-    // Clear loading message
-    coursesList.innerHTML = "";
-
-    if (courses.length === 0) {
-      coursesList.innerHTML = '<div class="no-courses">No courses published yet</div>';
-      return;
-    }
-
-    // Render courses
-    courses.forEach(course => {
-      const courseCard = document.createElement("div");
-      courseCard.className = "course-card";
-      courseCard.innerHTML = `
-        <div class="course-subject">${course.subject}</div>
-        <div class="course-info">
-          <div class="course-info-item">
-            <span class="course-info-label">Stage</span>
-            <span class="course-info-value">${course.stage}</span>
-          </div>
-          <div class="course-info-item">
-            <span class="course-info-label">Level</span>
-            <span class="course-info-value">${course.level}</span>
-          </div>
-          <div class="course-info-item">
-            <span class="course-info-label">Price</span>
-            <span class="course-info-value">$${course.price}</span>
-          </div>
-        </div>
-        <div class="course-students">
-          <strong>${course.student_count}</strong> student${course.student_count !== 1 ? 's' : ''}
-        </div>
-      `;
-      coursesList.appendChild(courseCard);
-    });
-  } catch (err) {
-    console.error("Error loading courses:", err);
-    document.getElementById("coursesList").innerHTML = '<div class="no-courses">Error loading courses</div>';
-  }
-}
-
-/* UPLOAD HANDLER */
 document.getElementById("pfpInput").addEventListener("change", async function () {
   const file = this.files[0];
   if (!file) return;

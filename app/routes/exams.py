@@ -28,7 +28,7 @@ def course_data(request: Request, id: int, db: Session = Depends(get_db)):
     if not exam:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if exam.start_time > now or exam.end_time < now:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Exam hasn't started yet")
 
     questions = db.query(Question).filter(Question.exam_id == exam.id).all()
     question_ids = [q.id for q in questions]

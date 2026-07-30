@@ -7,10 +7,12 @@ from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 from app.database import engine, Base, get_db
 from app.models.users_model import User
+from app.models.students_model import Student
+from app.models.teachers_model import Teacher
 from app.core.security import hash_password
 from app.core.auth import validate_user
 from app.config import BASE_DIR
-from app.routes import home, login, signup, admin, profile, teachers, students, teacher_profile, course, manage_course
+from app.routes import home, login, signup, admin, profile, teachers, students, teacher_profile, course, manage_course, exams
 from datetime import datetime, timezone
 
 load_dotenv()
@@ -43,6 +45,7 @@ app.include_router(teachers.router)
 app.include_router(teacher_profile.router)
 app.include_router(course.router)
 app.include_router(manage_course.router)
+app.include_router(exams.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
@@ -66,6 +69,42 @@ async def home(request: Request, db: Session = Depends(get_db)):
             is_active=True
         )
         db.add(new_admin)
+        new_student = User(
+            first_name="student",
+            last_name="student",
+            username="student",
+            phone_number="011",
+            password=hash_password("123"),
+            role="student",
+            parent_name="Tarek",
+            parent_phone_number="01234",
+            date_joined=datetime.now(timezone.utc),
+            is_active=True,
+        )
+        db.add(new_student)
+        db.flush()
+        student = Student(
+            user_id=new_student.id,
+            level=3,
+            stage="الثانوية"
+        )
+        db.add(student)
+        new_teacher = User(
+            first_name="teacher",
+            last_name="teacher",
+            username="teacher",
+            phone_number="011231",
+            password=hash_password("123"),
+            role="teacher",
+            date_joined=datetime.now(timezone.utc),
+            is_active=True,
+        )
+        db.add(new_teacher)
+        db.flush()
+        teacher = Teacher(
+            user_id = new_teacher.id
+        )
+        db.add(teacher)
         db.commit()
 
     return templates.TemplateResponse("home.html", {"request": request, "is_logged": is_logged})

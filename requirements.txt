@@ -16,3 +16,4 @@ pgvector
 cloudinary
 pillow
 sentence_transformers
+numpy

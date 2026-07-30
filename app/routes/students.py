@@ -1,24 +1,23 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFile, File
-from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import update
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import Session
 from app.models.homeworks_model import Homework
+from app.models.questions_model import Question
 from app.models.submitted_homeworks import SubmittedHomework
+from app.models.submittted_exams import SubmittedExam
 from app.models.users_model import User
-from app.models.teachers_model import Teacher
 from app.models.students_model import Student
 from app.models.courses_model import Course
 from app.models.enrollments_model import Enrollment
 from app.models.exams_model import Exam
-from app.core.security import verify_password
-from app.core.auth import create_access_token, validate_user
+from app.core.auth import validate_user
 from app.database import get_db
-from app.schemas.user import UserLogin
-from app.schemas.courses import AddCourse
+from app.schemas.exam import ExamSubmit
 from app.config import BASE_DIR
-from zoneinfo import ZoneInfo
+from datetime import datetime, timezone
+
+from app.services.embedder import get_embedding, cosine_similarity
 from app.utils import generate_url, is_valid_image, upload_file
 
 router = APIRouter(prefix="/student")
@@ -117,13 +116,16 @@ def get_homeworks(request: Request, db: Session = Depends(get_db)):
     user, student = result
 
     homeworks = db.query(Homework).join(Course, Course.id == Homework.course_id).join(Enrollment, Enrollment.course_id == Course.id).filter(Enrollment.student_id == student.id).all()
+    submitted_homeworks = db.query(SubmittedHomework).filter(SubmittedHomework.student_id == student.id).all()
+    submitted_hm_ids = [row.homework_id for row in submitted_homeworks]
 
     return [
         {
             "id": hm.id,
             "title": hm.title,
             "due_date": hm.due_date,
-            "url": generate_url(hm.public_id)
+            "url": generate_url(hm.public_id),
+            "submitted": True if hm.id in submitted_hm_ids else False
         }
         for hm in homeworks
     ]
@@ -164,6 +166,9 @@ def submit_homework(request: Request, id: int, hm: UploadFile = File(...), db: S
     if not homework:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
+    if homework.due_date < datetime.now(timezone.utc):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
     if not is_valid_image(hm):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     public_id = upload_file(hm)
@@ -178,7 +183,58 @@ def submit_homework(request: Request, id: int, hm: UploadFile = File(...), db: S
     try:
         db.commit()
         db.refresh(new_submitted_hm)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Homework is already submitted")
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return {"success": True}
+
+@router.post("/submit_exam/{id}")
+def submit_exam(request: Request, id: int, payload: ExamSubmit, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "student":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Student).join(Student, Student.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user, student = result
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account isn't active")
+    exam = db.query(Exam).filter(Exam.id == id).first()
+    if not exam:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    now = datetime.now(timezone.utc)
+    if exam.start_time > now or exam.end_time < now:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Exam is not currently active")
+
+    submitted_questions_ids = [row.question_id for row in payload.answers]
+    questions = db.query(Question).filter(Question.id.in_(submitted_questions_ids)).all()
+    answers = {row.question_id: row.answer for row in payload.answers}
+    total_mark = 0
+    for question in questions:
+        if question.is_choices:
+            if answers[question.id] == question.correct_choice:
+                total_mark += question.mark
+        else:
+            if cosine_similarity(get_embedding(answers[question.id]), question.answer_embedding) > 0.5:
+                total_mark += question.mark
+    new_submitted_exam = SubmittedExam(
+        exam_id=id,
+        student_id=student.id,
+        mark=total_mark
+    )
+    db.add(new_submitted_exam)
+    try:
+        db.commit()
+        db.refresh(new_submitted_exam)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Exam already submitted")
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"mark": total_mark}

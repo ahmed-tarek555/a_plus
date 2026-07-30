@@ -3,6 +3,10 @@ from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFi
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+
+from app.models.enrollments_model import Enrollment
+from app.models.submitted_homeworks import SubmittedHomework
+from app.models.submittted_exams import SubmittedExam
 from app.models.users_model import User
 from app.models.teachers_model import Teacher
 from app.models.courses_model import Course
@@ -10,6 +14,7 @@ from app.models.exams_model import Exam
 from app.models.questions_model import Question
 from app.models.choices_model import Choice
 from app.models.homeworks_model import Homework
+from app.models.students_model import Student
 from app.schemas.exam import ExamCreate
 from app.core.auth import validate_user
 from app.services.embedder import get_embedding
@@ -188,3 +193,93 @@ def get_exams(request: Request, id: int, db: Session = Depends(get_db)):
         }
         for exam in exams
     ]
+
+@router.get("/submitted_homeworks/{id}")
+def get_submitted_hms(request: Request, id: int, course_id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "teacher":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    submitted_hms = db.query(SubmittedHomework).join(Homework, Homework.id == SubmittedHomework.homework_id).filter(Homework.id == id).all()
+    student_ids = [row.student_id for row in submitted_hms]
+    results = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.id.in_(student_ids)).all()
+    student_lookup = {row.id: {"first_name": row.first_name,
+                               "last_name": row.last_name,
+                               "phone_number": row.phone_number,
+                               "parent_name": row.parent_name,
+                               "parent_phone_number": row.parent_phone_number}
+                                for row, student in results
+                                }
+    submittions = [
+        {
+            "id": hm.id,
+            "url": generate_url(hm.public_id),
+            "student": student_lookup[hm.student_id],
+        }
+        for hm in submitted_hms
+    ]
+
+    rest_students = (
+        db.query(User).join(Student, Student.user_id == User.id).join(Enrollment, Enrollment.student_id == Student.id)
+        .filter(Enrollment.course_id == course_id, Student.id.notin_(student_ids)).all())
+
+    late_students = [
+        {
+            "first_name": student.first_name,
+            "last_name": student.last_name,
+            "phone_number": student.phone_number,
+            "parent_name": student.parent_name,
+            "parent_phone_number": student.parent_phone_number
+        }
+        for student in rest_students
+    ]
+
+    return templates.TemplateResponse("submittions.html",{"request": request, "submittions": submittions, "late_students": late_students})
+
+@router.get("/submitted_exams/{id}")
+def get_submitted_exams(request: Request, id: int, course_id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "teacher":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    submitted_exams = db.query(SubmittedExam).join(Exam, Exam.id == SubmittedExam.exam_id).filter(Exam.id == id).all()
+    student_ids = [row.student_id for row in submitted_exams]
+    results = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.id.in_(student_ids)).all()
+    student_lookup = {row.id: {"first_name": row.first_name,
+                               "last_name": row.last_name,
+                               "phone_number": row.phone_number,
+                               "parent_name": row.parent_name,
+                               "parent_phone_number": row.parent_phone_number}
+                                for row, student in results
+                                }
+    submittions = [
+        {
+            "id": exam.id,
+            "mark": exam.mark,
+            "student": student_lookup[exam.student_id],
+        }
+        for exam in submitted_exams
+    ]
+
+    rest_students = (db.query(User).join(Student, Student.user_id == User.id).join(Enrollment, Enrollment.student_id == Student.id)
+                     .filter(Enrollment.course_id == course_id, Student.id.notin_(student_ids)).all())
+
+    late_students = [
+        {
+            "first_name": student.first_name,
+            "last_name": student.last_name,
+            "phone_number": student.phone_number,
+            "parent_name": student.parent_name,
+            "parent_phone_number": student.parent_phone_number
+        }
+        for student in rest_students
+    ]
+    return templates.TemplateResponse("submittions.html", {"request": request, "submittions": submittions, "late_students": late_students})

@@ -143,6 +143,7 @@
     }
 
     .view-link {
+      cursor: pointer;
       background: #2563eb;
       color: white;
       border-radius: 10px;
@@ -154,6 +155,16 @@
 
     .view-link:hover {
       background: #1d4ed8;
+    }
+
+    .view-link:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.9;
+    }
+
+    .view-link:disabled:hover {
+      background: #94a3b8;
     }
 
     .empty-state {
@@ -264,7 +275,7 @@
             <span class="course-tag">Stage {{ course.stage or 'N/A' }}</span>
           </div>
           <h2>{{ course.subject or 'Untitled Course' }}</h2>
-          <p>Level {{ course.level or 'N/A' }} � Students can access homework and exams for this course.</p>
+          <p>Level {{ course.level or 'N/A' }} </p>
           <div class="course-card__footer">
             <span class="course-footer-item">ID: {{ course.id }}</span>
             <a href="/course/{{ course.id }}" class="view-link">View course</a>
@@ -281,6 +292,7 @@
 
     <section class="data-section">
       <h2>My Homeworks</h2>
+      <div id="homeworkStatus" class="empty-state" style="display:none; margin-bottom: 12px;"></div>
       <div id="homeworksContainer" class="data-list">
         <div class="empty-state">Loading homeworks…</div>
       </div>
@@ -326,17 +338,60 @@
       return response.json();
     }
 
+    function setHomeworkStatus(message, isError = false) {
+      const status = document.getElementById('homeworkStatus');
+      if (!status) return;
+      status.style.display = message ? 'block' : 'none';
+      status.textContent = message || '';
+      status.style.color = isError ? '#b91c1c' : '#0f766e';
+    }
+
+    async function submitHomeworkImage(homeworkId, input) {
+      const file = input.files && input.files[0];
+      if (!file) {
+        setHomeworkStatus('Select an image file before submitting.', true);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('hm', file);
+
+      try {
+        const response = await fetch(`/student/submit_homework/${homeworkId}`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || 'Unable to submit homework.');
+        }
+
+        setHomeworkStatus('Homework submitted successfully.');
+        input.value = '';
+        await loadHomeworks();
+      } catch (error) {
+        setHomeworkStatus(error.message || 'Unable to submit homework.', true);
+      }
+    }
+
     async function loadHomeworks() {
       const container = document.getElementById('homeworksContainer');
       try {
         const homeworks = await fetchJson('/student/homeworks');
         renderList(container, homeworks, 'No homeworks available.', hw => `
-          <h3>${hw.title || 'Untitled homework'}</h3>
+          <a href="${hw.url}" target="_blank" rel="noreferrer"><h3>${hw.title || 'Untitled homework'}</h3></a>
           <p><strong>Due:</strong> ${formatDate(hw.due_date)}</p>
-          <p><a href="${hw.url}" target="_blank" rel="noreferrer">Open homework file</a></p>
+          <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <input id="homework-file-${hw.id}" type="file" accept="image/*" hidden onchange="submitHomeworkImage(${hw.id}, this)">
+            <button type="button" class="view-link" ${hw.submitted ? 'disabled' : ''} onclick="${hw.submitted ? '' : `document.getElementById('homework-file-${hw.id}').click()`}">${hw.submitted ? 'Submitted' : 'Submit image'}</button>
+          </div>
         `);
+        setHomeworkStatus('');
       } catch (error) {
         renderList(container, [], error.message || 'Unable to load homeworks.');
+        setHomeworkStatus(error.message || 'Unable to load homeworks.', true);
       }
     }
 
@@ -345,9 +400,11 @@
       try {
         const exams = await fetchJson('/student/exams');
         renderList(container, exams, 'No exams available.', exam => `
+          <a href="/exam/${exam.id}" target="_blank" rel="noreferrer">
           <h3>${exam.title || 'Untitled exam'}</h3>
           <p><strong>Starts:</strong> ${formatDate(exam.start_time)}</p>
           <p><strong>Ends:</strong> ${formatDate(exam.end_time)}</p>
+          </a>
         `);
       } catch (error) {
         renderList(container, [], error.message || 'Unable to load exams.');

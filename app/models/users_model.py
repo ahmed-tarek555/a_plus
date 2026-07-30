@@ -14,5 +14,5 @@ class User(Base):
     parent_phone_number = Column(String, nullable=True)
     pfp_public_id = Column(String, nullable=True)
     role = Column(String, nullable=False)
-    date_joined = Column(DateTime, nullable=False)
+    date_joined = Column(DateTime(timezone=True), nullable=False)
     is_active = Column(Boolean, nullable=False)

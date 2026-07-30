@@ -13,5 +13,3 @@ def verify_password(password: str, hashed_password: str) -> bool:
         password.encode('utf-8'),
         hashed_password.encode('utf-8')
     )
-
-print(hash_password("123"))
