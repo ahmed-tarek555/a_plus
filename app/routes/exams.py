@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-
 from app.models.questions_model import Question
 from app.models.users_model import User
 from app.models.teachers_model import Teacher
@@ -28,7 +27,7 @@ def course_data(request: Request, id: int, db: Session = Depends(get_db)):
     if not exam:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if exam.start_time > now or exam.end_time < now:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Exam hasn't started yet")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Exam is currently not active")
 
     questions = db.query(Question).filter(Question.exam_id == exam.id).all()
     question_ids = [q.id for q in questions]

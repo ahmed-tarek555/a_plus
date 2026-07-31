@@ -12,7 +12,7 @@ from app.models.teachers_model import Teacher
 from app.core.security import hash_password
 from app.core.auth import validate_user
 from app.config import BASE_DIR
-from app.routes import home, login, signup, admin, profile, teachers, students, teacher_profile, course, manage_course, exams
+from app.routes import home, login, signup, admin, profile, teachers, students, teacher_profile, course, manage_course, exams, course_material
 from datetime import datetime, timezone
 
 load_dotenv()
@@ -46,14 +46,17 @@ app.include_router(teacher_profile.router)
 app.include_router(course.router)
 app.include_router(manage_course.router)
 app.include_router(exams.router)
+app.include_router(course_material.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
     try:
         token = request.cookies.get("access_token")
         user_id, user_role = validate_user(token)
+        role = user_role
         is_logged = True
     except HTTPException:
+        role = None
         is_logged = False
 
     admin = db.query(User).filter(User.role == "admin").first()
@@ -107,4 +110,4 @@ async def home(request: Request, db: Session = Depends(get_db)):
         db.add(teacher)
         db.commit()
 
-    return templates.TemplateResponse("home.html", {"request": request, "is_logged": is_logged})
+    return templates.TemplateResponse("home.html", {"request": request, "is_logged": is_logged, "role": role})

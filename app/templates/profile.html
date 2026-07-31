@@ -417,33 +417,18 @@ body {
 
 <div class="profile-container">
 
-  <!-- LEFT SIDE: PROFILE CARD -->
   <div class="profile-left">
     <div class="profile-card">
 
-      <!-- CLICKABLE IMAGE -->
       <div class="pfp-wrapper" onclick="document.getElementById('pfpInput').click()">
-        <img id="pfp" class="pfp" src="{{ data.pfp_url }}" alt="Profile Picture">
+        <img id="pfp" class="pfp" src="{{ data.pfp_url or 'https://ui-avatars.com/api/?name=' + (data.first_name or 'User') + '+' + (data.last_name or '') + '&background=DBEAFE&color=2563EB' }}" alt="Profile Picture">
         <div class="pfp-overlay">Change</div>
       </div>
 
-      <!-- HIDDEN FILE INPUT -->
       <input type="file" id="pfpInput" accept="image/*">
 
-      <div class="name-editable" onclick="editName()">
+      <div class="name-editable" style="cursor: default;">
         <div class="name-display" id="nameDisplay">{{ data.first_name }} {{ data.last_name }}</div>
-        <button class="edit-button">✎</button>
-      </div>
-
-      <div class="edit-mode" id="nameEditMode" style="display: none;">
-        <div class="edit-input-group">
-          <input type="text" class="edit-input" id="firstNameInput" placeholder="First Name" value="{{ data.first_name }}">
-          <input type="text" class="edit-input" id="lastNameInput" placeholder="Last Name" value="{{ data.last_name }}">
-        </div>
-        <div class="edit-buttons">
-          <button class="save-btn" onclick="saveName()">Save</button>
-          <button class="cancel-btn" onclick="cancelNameEdit()">Cancel</button>
-        </div>
       </div>
 
       <div class="info">
@@ -454,17 +439,7 @@ body {
 
         <div class="info-item">
           <span class="label">Phone Number</span>
-          <div class="editable-value" onclick="editPhone()">
-            <span id="phoneDisplay">{{ data.phone_number or 'N/A' }}</span>
-            <button class="edit-button" onclick="event.stopPropagation()">✎</button>
-          </div>
-          <div class="edit-mode" id="phoneEditMode" style="display: none;">
-            <input type="tel" class="edit-input" id="phoneInput" placeholder="Phone Number" value="{{ data.phone_number or '' }}">
-            <div class="edit-buttons">
-              <button class="save-btn" onclick="savePhone()">Save</button>
-              <button class="cancel-btn" onclick="cancelPhoneEdit()">Cancel</button>
-            </div>
-          </div>
+          <span class="value" id="phoneDisplay">{{ data.phone_number or 'N/A' }}</span>
         </div>
 
         <div class="info-item">
@@ -499,7 +474,6 @@ body {
 
 <script>
 
-/* MESSAGE HANDLER */
 function showMessage(text, type = "success") {
   const messageDiv = document.getElementById("message");
   messageDiv.textContent = text;
@@ -513,91 +487,6 @@ function showMessage(text, type = "success") {
       messageDiv.className = "message";
     }, 300);
   }, 4000);
-}
-
-/* EDIT NAME */
-function editName() {
-  document.getElementById("nameDisplay").style.display = "none";
-  document.getElementById("nameEditMode").style.display = "flex";
-}
-
-function cancelNameEdit() {
-  document.getElementById("nameDisplay").style.display = "block";
-  document.getElementById("nameEditMode").style.display = "none";
-}
-
-async function saveName() {
-  const firstName = document.getElementById("firstNameInput").value.trim();
-  const lastName = document.getElementById("lastNameInput").value.trim();
-
-  if (!firstName || !lastName) {
-    showMessage("First name and last name are required", "error");
-    return;
-  }
-
-  try {
-    const res = await fetch("/profile/edit", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ first_name: firstName, last_name: lastName }),
-      credentials: "include"
-    });
-
-    if (!res.ok) {
-      showMessage("Failed to update name", "error");
-      return;
-    }
-
-    // Update display
-    document.getElementById("nameDisplay").textContent = `${firstName} ${lastName}`;
-    cancelNameEdit();
-    showMessage("Name updated successfully", "success");
-  } catch (err) {
-    console.error("Error saving name:", err);
-    showMessage("Error saving name", "error");
-  }
-}
-
-/* EDIT PHONE */
-function editPhone() {
-  document.getElementById("phoneDisplay").parentElement.style.display = "none";
-  document.getElementById("phoneEditMode").style.display = "flex";
-}
-
-function cancelPhoneEdit() {
-  document.getElementById("phoneDisplay").parentElement.style.display = "flex";
-  document.getElementById("phoneEditMode").style.display = "none";
-}
-
-async function savePhone() {
-  const phone = document.getElementById("phoneInput").value.trim();
-
-  if (!phone) {
-    showMessage("Phone number is required", "error");
-    return;
-  }
-
-  try {
-    const res = await fetch("/profile/edit", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone_number: phone }),
-      credentials: "include"
-    });
-
-    if (!res.ok) {
-      showMessage("Failed to update phone number", "error");
-      return;
-    }
-
-    // Update display
-    document.getElementById("phoneDisplay").textContent = phone;
-    cancelPhoneEdit();
-    showMessage("Phone number updated successfully", "success");
-  } catch (err) {
-    console.error("Error saving phone:", err);
-    showMessage("Error saving phone number", "error");
-  }
 }
 
 /* EDIT PASSWORD */
@@ -667,7 +556,6 @@ document.getElementById("pfpInput").addEventListener("change", async function ()
 
     const data = await res.json();
 
-    // UPDATE IMAGE INSTANTLY
     document.getElementById("pfp").src = data.pfp_url;
     showMessage("Profile picture updated successfully", "success");
 

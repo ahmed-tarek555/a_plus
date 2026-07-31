@@ -262,7 +262,7 @@
                 <div class="section-title">Course details</div>
                 <p class="summary-detail">Use the button below to enroll in this course if you are a student. You will be redirected back to this page after the enrollment attempt.</p>
 
-                <div class="course-price">${{ "%.2f" | format(course.price or 0) }}</div>
+                <div class="course-price">EGP{{ "%.2f" | format(course.price or 0) }}</div>
 
                 <button id="enrollButton" class="enroll-button" type="button" {% if course.enrolled %}disabled{% endif %}>{{ 'Enrolled' if course.enrolled else 'Enroll' }}</button>
                 <div id="statusMessage" class="status-message" role="status" aria-live="polite">{{ 'You are already enrolled in this course.' if course.enrolled else 'Ready to enroll.' }}</div>

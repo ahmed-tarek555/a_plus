@@ -17,7 +17,4 @@ class UserLogin(BaseModel):
     password: str
 
 class EditProfile(BaseModel):
-    first_name: str = None
-    last_name: str = None
-    phone_number: str = None
     password: str = None

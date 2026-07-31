@@ -321,15 +321,6 @@
   <nav>
     <div class="nav-container">
       <a href="/" class="nav-brand">A+</a>
-      <div class="nav-actions">
-        {% if is_logged %}
-        <a href="/profile" class="nav-btn nav-btn-profile"><span>👤</span><span>Profile</span></a>
-        <a href="/logout" class="nav-btn nav-btn-profile">Log out</a>
-        {% else %}
-        <a href="/login" class="nav-btn nav-btn-secondary">Log in</a>
-        <a href="/signup" class="nav-btn nav-btn-secondary">Sign up</a>
-        {% endif %}
-      </div>
     </div>
   </nav>
 
@@ -362,7 +353,7 @@
           <a href="/course/{{ course.id }}" class="course-card" style="text-decoration: none; color: inherit;">
             <div class="course-top">
               <span class="course-tag">{{ course.subject or 'Course' }}</span>
-              <span class="course-price">${{ "%.2f"|format(course.price or 0) }}</span>
+              <span class="course-price">EGP{{ "%.2f"|format(course.price or 0) }}</span>
             </div>
             <h3>{{ course.stage }} - Level {{ course.level }}</h3>
             <p>Learn this course from our expert instructor</p>

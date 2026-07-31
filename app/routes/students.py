@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFile, File
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import Session
 from app.models.homeworks_model import Homework
@@ -16,7 +17,6 @@ from app.database import get_db
 from app.schemas.exam import ExamSubmit
 from app.config import BASE_DIR
 from datetime import datetime, timezone
-
 from app.services.embedder import get_embedding, cosine_similarity
 from app.utils import generate_url, is_valid_image, upload_file
 
@@ -115,7 +115,7 @@ def get_homeworks(request: Request, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user, student = result
 
-    homeworks = db.query(Homework).join(Course, Course.id == Homework.course_id).join(Enrollment, Enrollment.course_id == Course.id).filter(Enrollment.student_id == student.id).all()
+    result = db.query(Homework, Course).join(Course, Course.id == Homework.course_id).join(Enrollment, Enrollment.course_id == Course.id).filter(Enrollment.student_id == student.id).all()
     submitted_homeworks = db.query(SubmittedHomework).filter(SubmittedHomework.student_id == student.id).all()
     submitted_hm_ids = [row.homework_id for row in submitted_homeworks]
 
@@ -124,10 +124,11 @@ def get_homeworks(request: Request, db: Session = Depends(get_db)):
             "id": hm.id,
             "title": hm.title,
             "due_date": hm.due_date,
+            "course": course.subject,
             "url": generate_url(hm.public_id),
             "submitted": True if hm.id in submitted_hm_ids else False
         }
-        for hm in homeworks
+        for hm, course in result
     ]
 
 @router.get("/exams")
@@ -140,16 +141,31 @@ def get_exams(request: Request, db: Session = Depends(get_db)):
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user, student = result
-    exams = db.query(Exam).join(Course, Course.id == Exam.course_id).join(Enrollment, Enrollment.course_id == Course.id).filter(Enrollment.student_id == student.id).all()
+    exams = (
+        db.query(Exam, Course, SubmittedExam)
+              .join(Course, Course.id == Exam.course_id)
+              .outerjoin(
+                SubmittedExam,
+                and_(
+                    SubmittedExam.exam_id == Exam.id,
+                    SubmittedExam.student_id == student.id
+                    )
+              )
+              .join(Enrollment, Enrollment.course_id == Course.id)
+              .filter(Enrollment.student_id == student.id)
+              .all()
+              )
 
     return [
         {
             "id": exam.id,
             "title": exam.title,
+            "mark": submitted.mark if submitted is not None else None,
+            "course": course.subject,
             "start_time": exam.start_time,
             "end_time": exam.end_time
         }
-        for exam in exams
+        for exam, course, submitted in exams
     ]
 
 @router.post("/submit_homework/{id}")
@@ -211,6 +227,7 @@ def submit_exam(request: Request, id: int, payload: ExamSubmit, db: Session = De
     if exam.start_time > now or exam.end_time < now:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Exam is not currently active")
 
+    answers_data = []
     submitted_questions_ids = [row.question_id for row in payload.answers]
     questions = db.query(Question).filter(Question.id.in_(submitted_questions_ids)).all()
     answers = {row.question_id: row.answer for row in payload.answers}
@@ -219,9 +236,12 @@ def submit_exam(request: Request, id: int, payload: ExamSubmit, db: Session = De
         if question.is_choices:
             if answers[question.id] == question.correct_choice:
                 total_mark += question.mark
+                answers_data.append({"question_id": question.id, "mark": question.mark})
         else:
-            if cosine_similarity(get_embedding(answers[question.id]), question.answer_embedding) > 0.5:
-                total_mark += question.mark
+            mark = int(round(question.mark * cosine_similarity(get_embedding(answers[question.id]), question.answer_embedding)))
+            total_mark += mark
+            answers_data.append({"question_id": question.id, "mark": mark})
+
     new_submitted_exam = SubmittedExam(
         exam_id=id,
         student_id=student.id,
@@ -237,4 +257,4 @@ def submit_exam(request: Request, id: int, payload: ExamSubmit, db: Session = De
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    return {"mark": total_mark}
+    return answers_data

@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFi
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-
 from app.models.enrollments_model import Enrollment
 from app.models.submitted_homeworks import SubmittedHomework
 from app.models.submittted_exams import SubmittedExam

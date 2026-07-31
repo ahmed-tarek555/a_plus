@@ -69,26 +69,35 @@
     }
 
     .course-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid #dbe7ff;
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 14px 36px rgba(37, 99, 235, 0.08);
       transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
       display: flex;
       flex-direction: column;
       text-decoration: none;
       color: inherit;
+      position: relative;
+    }
+
+    .course-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
     }
 
     .course-card:hover {
       transform: translateY(-4px);
-      border-color: #c7d2fe;
-      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.1);
+      border-color: #93c5fd;
+      box-shadow: 0 22px 48px rgba(37, 99, 235, 0.14);
     }
 
     .course-card__top {
-      padding: 20px;
+      padding: 20px 20px 12px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -101,66 +110,81 @@
       border-radius: 999px;
       background: #eff6ff;
       color: #1d4ed8;
-      font-size: 0.8rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
     }
 
     .course-tag {
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       color: #475569;
+      font-weight: 700;
     }
 
     .course-card h2 {
       margin: 0;
       font-size: 1.3rem;
       font-weight: 800;
-      line-height: 1.2;
+      line-height: 1.3;
       color: #0f172a;
       padding: 0 20px;
     }
 
-    .course-card p {
-      padding: 14px 20px 0;
+    .course-card__description {
+      padding: 10px 20px 0;
       color: #475569;
       line-height: 1.7;
       flex: 1;
+      font-weight: 600;
     }
 
     .course-card__footer {
-      padding: 20px;
+      padding: 18px 20px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      border-top: 1px solid #f3f4f6;
+      border-top: 1px solid #e8eefc;
+      margin-top: 18px;
     }
 
     .course-footer-item {
       color: #64748b;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
+      font-weight: 700;
     }
 
-    .view-link {
+    .view-link,
+    .link-button {
       cursor: pointer;
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: white;
       border-radius: 10px;
       padding: 10px 14px;
       text-decoration: none;
       font-weight: 700;
-      transition: background 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
     }
 
-    .view-link:hover {
-      background: #1d4ed8;
+    .view-link:hover,
+    .link-button:hover {
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+      transform: translateY(-1px);
     }
 
     .view-link:disabled {
       background: #94a3b8;
       cursor: not-allowed;
-      opacity: 0.9;
+      opacity: 0.95;
+      box-shadow: none;
+      transform: none;
     }
 
     .view-link:disabled:hover {
@@ -169,18 +193,19 @@
 
     .empty-state {
       grid-column: 1 / -1;
-      background: #eff6ff;
+      background: #f8fbff;
       border: 1px dashed #bfdbfe;
       border-radius: 18px;
-      padding: 40px 28px;
+      padding: 34px 24px;
       text-align: center;
       color: #1e293b;
+      box-shadow: inset 0 0 0 1px rgba(191, 219, 254, 0.38);
     }
 
     .empty-state h2 {
       font-size: 1.5rem;
       font-weight: 800;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .empty-state p {
@@ -202,7 +227,7 @@
     }
 
     .data-section {
-      margin-top: 40px;
+      margin-top: 42px;
     }
 
     .data-section h2 {
@@ -213,29 +238,100 @@
 
     .data-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 20px;
     }
 
     .item-card {
-      background: white;
-      border: 1px solid #e5e7eb;
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+      border: 1px solid #dbe7ff;
       border-radius: 18px;
       padding: 20px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .item-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .item-chip,
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .item-chip {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .status-chip.success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-chip.pending {
+      background: #fef3c7;
+      color: #92400e;
     }
 
     .item-card h3 {
-      margin: 0 0 10px;
+      margin: 0;
       font-size: 1.15rem;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+
+    .item-card__meta {
+      display: grid;
+      gap: 8px;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.92rem;
+      color: #475569;
+      border-bottom: 1px solid #eef2ff;
+      padding-bottom: 8px;
+    }
+
+    .meta-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .meta-label {
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .meta-value {
+      text-align: right;
+      font-weight: 600;
       color: #0f172a;
     }
 
-    .item-card p {
-      margin: 0 8px 0;
-      color: #475569;
-      line-height: 1.6;
-      font-size: 0.95rem;
+    .item-card__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: auto;
     }
 
     .item-card a {
@@ -244,8 +340,14 @@
       font-weight: 700;
     }
 
+    .item-card a.link-button,
+    .item-card a.link-button:hover {
+      color: #ffffff !important;
+      text-decoration: none;
+    }
+
     .item-card a:hover {
-      text-decoration: underline;
+      text-decoration: none;
     }
   </style>
 </head>
@@ -274,11 +376,11 @@
             <span class="course-badge">{{ course.subject or 'Course' }}</span>
             <span class="course-tag">Stage {{ course.stage or 'N/A' }}</span>
           </div>
-          <h2>{{ course.subject or 'Untitled Course' }}</h2>
-          <p>Level {{ course.level or 'N/A' }} </p>
+          <h2>{{ course.subject or 'Course' }}</h2>
+          <p class="course-card__description">Level {{ course.level or 'N/A' }}</p>
           <div class="course-card__footer">
-            <span class="course-footer-item">ID: {{ course.id }}</span>
-            <a href="/course/{{ course.id }}" class="view-link">View course</a>
+            <span class="course-footer-item">Course ID: {{ course.id }}</span>
+            <a href="/course_material/{{ course.id }}" class="view-link">View material</a>
           </div>
         </article>
         {% endfor %}
@@ -310,7 +412,15 @@
     function formatDate(value) {
       if (!value) return 'N/A';
       const date = new Date(value);
-      return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+      if (Number.isNaN(date.getTime())) return value;
+
+      return date.toLocaleString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
 
     function renderList(container, items, emptyText, renderer) {
@@ -381,9 +491,19 @@
       try {
         const homeworks = await fetchJson('/student/homeworks');
         renderList(container, homeworks, 'No homeworks available.', hw => `
-          <a href="${hw.url}" target="_blank" rel="noreferrer"><h3>${hw.title || 'Untitled homework'}</h3></a>
-          <p><strong>Due:</strong> ${formatDate(hw.due_date)}</p>
-          <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <div class="item-card__header">
+            <span class="item-chip">${hw.course || 'Unknown course'}</span>
+            <span class="status-chip ${hw.submitted ? 'success' : 'pending'}">${hw.submitted ? 'Submitted' : 'Pending'}</span>
+          </div>
+          <h3>${hw.title || 'Untitled homework'}</h3>
+          <div class="item-card__meta">
+            <div class="meta-row">
+              <span class="meta-label">Due</span>
+              <span class="meta-value">${formatDate(hw.due_date)}</span>
+            </div>
+          </div>
+          <div class="item-card__actions">
+            <a href="${hw.url}" class="link-button" target="_blank" rel="noreferrer">Open file</a>
             <input id="homework-file-${hw.id}" type="file" accept="image/*" hidden onchange="submitHomeworkImage(${hw.id}, this)">
             <button type="button" class="view-link" ${hw.submitted ? 'disabled' : ''} onclick="${hw.submitted ? '' : `document.getElementById('homework-file-${hw.id}').click()`}">${hw.submitted ? 'Submitted' : 'Submit image'}</button>
           </div>
@@ -400,11 +520,24 @@
       try {
         const exams = await fetchJson('/student/exams');
         renderList(container, exams, 'No exams available.', exam => `
-          <a href="/exam/${exam.id}" target="_blank" rel="noreferrer">
+          <div class="item-card__header">
+            <span class="item-chip">${exam.course || 'Unknown course'}</span>
+            <span class="status-chip ${exam.mark != null ? 'success' : 'pending'}">${exam.mark != null ? `Mark ${exam.mark}` : 'Not attempted'}</span>
+          </div>
           <h3>${exam.title || 'Untitled exam'}</h3>
-          <p><strong>Starts:</strong> ${formatDate(exam.start_time)}</p>
-          <p><strong>Ends:</strong> ${formatDate(exam.end_time)}</p>
-          </a>
+          <div class="item-card__meta">
+            <div class="meta-row">
+              <span class="meta-label">Starts</span>
+              <span class="meta-value">${formatDate(exam.start_time)}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Ends</span>
+              <span class="meta-value">${formatDate(exam.end_time)}</span>
+            </div>
+          </div>
+          <div class="item-card__actions">
+            <a href="/exam/${exam.id}" class="link-button" target="_blank" rel="noreferrer">Open exam</a>
+          </div>
         `);
       } catch (error) {
         renderList(container, [], error.message || 'Unable to load exams.');

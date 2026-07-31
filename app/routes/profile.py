@@ -113,12 +113,6 @@ def edit_info(request: Request, edit_profile: EditProfile, db: Session = Depends
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    if edit_profile.first_name is not None:
-        user.first_name = edit_profile.first_name
-    if edit_profile.last_name is not None:
-        user.last_name = edit_profile.last_name
-    if edit_profile.phone_number is not None:
-        user.phone_number = edit_profile.phone_number
     if edit_profile.password is not None:
         user.password = hash_password(edit_profile.password)
 

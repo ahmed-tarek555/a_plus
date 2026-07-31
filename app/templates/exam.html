@@ -42,11 +42,27 @@
       margin-bottom: 16px;
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
     }
+    .question-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
     .question-head {
       font-size: 1.05rem;
       font-weight: 700;
       color: #111827;
-      margin-bottom: 12px;
+    }
+    .question-result {
+      color: #15803d;
+      background: #ecfdf3;
+      border: 1px solid #a7f3d0;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      white-space: nowrap;
     }
     .question-meta {
       color: #64748b;
@@ -124,14 +140,17 @@
       <form id="exam-form">
         {% for question in exam.questions %}
           <article class="question-card">
-            <div class="question-head">{{ loop.index }}. {{ question.head }}</div>
+            <div class="question-head-row">
+              <div class="question-head">{{ loop.index }}. {{ question.head }}</div>
+              <div class="question-result" id="question-result-{{ question.id }}" aria-live="polite"></div>
+            </div>
             <div class="question-meta">Marks: {{ question.mark }}</div>
 
             {% if question.is_choices %}
               <div class="choices-list">
                 {% for choice in question.choices or [] %}
                   <label class="choice-item">
-                    <input type="radio" name="question-{{ question.id }}" value="{{ choice.id }}" />
+                    <input type="radio" name="question-{{ question.id }}" value="{{ choice.text }}" data-choice-text="{{ choice.text }}" />
                     <span>{{ choice.text }}</span>
                   </label>
                 {% endfor %}
@@ -143,6 +162,7 @@
         {% endfor %}
 
         <div class="submit-row">
+          <div id="submit-summary" style="display:none; margin-right:12px; font-weight:700; color:#166534;" aria-live="polite"></div>
           <button class="submit-btn" type="submit">Submit answers</button>
         </div>
         <div id="submit-result" style="margin-top:12px; text-align:right; color:#0f172a;"></div>
@@ -185,7 +205,8 @@
 
           const checked = form.querySelector('input[name="' + name + '"]:checked');
           if (checked) {
-            answers.push({ question_id: qid, answer: checked.value });
+            const selectedText = checked.dataset.choiceText || checked.value || '';
+            answers.push({ question_id: qid, answer: selectedText });
           }
           seenQuestionIds.add(qid);
         });
@@ -217,8 +238,31 @@
           }
 
           const data = await resp.json();
-          if (data && typeof data.mark !== 'undefined') {
-            resultEl.textContent = 'Submitted — your mark: ' + data.mark;
+          const marks = Array.isArray(data)
+            ? data
+            : (data && typeof data.mark !== 'undefined' ? [{ question_id: null, mark: data.mark }] : []);
+          const totalMarks = marks.reduce((sum, item) => sum + Number(item.mark || 0), 0);
+          const summaryEl = document.getElementById('submit-summary');
+
+          document.querySelectorAll('[id^="question-result-"]').forEach((el) => {
+            el.textContent = '';
+          });
+
+          marks.forEach((item) => {
+            if (!item || typeof item.question_id === 'undefined' || item.question_id === null) return;
+            const markEl = document.getElementById('question-result-' + item.question_id);
+            if (markEl) {
+              markEl.textContent = 'Mark: ' + item.mark;
+            }
+          });
+
+          if (summaryEl) {
+            summaryEl.style.display = 'inline-block';
+            summaryEl.textContent = 'Total: ' + totalMarks;
+          }
+
+          if (marks.length > 0) {
+            resultEl.textContent = 'Submitted successfully.';
           } else {
             resultEl.textContent = 'Submitted successfully.';
           }
