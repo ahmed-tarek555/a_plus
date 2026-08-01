@@ -380,7 +380,7 @@
           <p class="course-card__description">Level {{ course.level or 'N/A' }}</p>
           <div class="course-card__footer">
             <span class="course-footer-item">Course ID: {{ course.id }}</span>
-            <a href="/course_material/{{ course.id }}" class="view-link">View material</a>
+            <a href="/student/materials/{{ course.id }}" class="view-link">View material</a>
           </div>
         </article>
         {% endfor %}
@@ -391,15 +391,6 @@
         </div>
       {% endif %}
     </div>
-
-    <section class="data-section">
-      <h2>My Homeworks</h2>
-      <div id="homeworkStatus" class="empty-state" style="display:none; margin-bottom: 12px;"></div>
-      <div id="homeworksContainer" class="data-list">
-        <div class="empty-state">Loading homeworks…</div>
-      </div>
-    </section>
-
     <section class="data-section">
       <h2>My Exams</h2>
       <div id="examsContainer" class="data-list">
@@ -448,73 +439,6 @@
       return response.json();
     }
 
-    function setHomeworkStatus(message, isError = false) {
-      const status = document.getElementById('homeworkStatus');
-      if (!status) return;
-      status.style.display = message ? 'block' : 'none';
-      status.textContent = message || '';
-      status.style.color = isError ? '#b91c1c' : '#0f766e';
-    }
-
-    async function submitHomeworkImage(homeworkId, input) {
-      const file = input.files && input.files[0];
-      if (!file) {
-        setHomeworkStatus('Select an image file before submitting.', true);
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('hm', file);
-
-      try {
-        const response = await fetch(`/student/submit_homework/${homeworkId}`, {
-          method: 'POST',
-          credentials: 'include',
-          body: formData
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(errorText || 'Unable to submit homework.');
-        }
-
-        setHomeworkStatus('Homework submitted successfully.');
-        input.value = '';
-        await loadHomeworks();
-      } catch (error) {
-        setHomeworkStatus(error.message || 'Unable to submit homework.', true);
-      }
-    }
-
-    async function loadHomeworks() {
-      const container = document.getElementById('homeworksContainer');
-      try {
-        const homeworks = await fetchJson('/student/homeworks');
-        renderList(container, homeworks, 'No homeworks available.', hw => `
-          <div class="item-card__header">
-            <span class="item-chip">${hw.course || 'Unknown course'}</span>
-            <span class="status-chip ${hw.submitted ? 'success' : 'pending'}">${hw.submitted ? 'Submitted' : 'Pending'}</span>
-          </div>
-          <h3>${hw.title || 'Untitled homework'}</h3>
-          <div class="item-card__meta">
-            <div class="meta-row">
-              <span class="meta-label">Due</span>
-              <span class="meta-value">${formatDate(hw.due_date)}</span>
-            </div>
-          </div>
-          <div class="item-card__actions">
-            <a href="${hw.url}" class="link-button" target="_blank" rel="noreferrer">Open file</a>
-            <input id="homework-file-${hw.id}" type="file" accept="image/*" hidden onchange="submitHomeworkImage(${hw.id}, this)">
-            <button type="button" class="view-link" ${hw.submitted ? 'disabled' : ''} onclick="${hw.submitted ? '' : `document.getElementById('homework-file-${hw.id}').click()`}">${hw.submitted ? 'Submitted' : 'Submit image'}</button>
-          </div>
-        `);
-        setHomeworkStatus('');
-      } catch (error) {
-        renderList(container, [], error.message || 'Unable to load homeworks.');
-        setHomeworkStatus(error.message || 'Unable to load homeworks.', true);
-      }
-    }
-
     async function loadExams() {
       const container = document.getElementById('examsContainer');
       try {
@@ -545,7 +469,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      loadHomeworks();
       loadExams();
     });
   </script>

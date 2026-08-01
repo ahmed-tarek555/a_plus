@@ -334,6 +334,22 @@
                     <div id="homeworkStatus" class="status">Upload an image file and submit.</div>
                 </form>
 
+                <h2 style="margin-top:32px;">Add new lecture</h2>
+                <form id="materialForm" onsubmit="return false;">
+                    <div class="field">
+                        <label for="materialTitle">Lecture title</label>
+                        <input id="materialTitle" name="title" type="text" required />
+                    </div>
+                    <div class="field">
+                        <label for="materialUrl">Lecture link</label>
+                        <input id="materialUrl" name="url" type="url" placeholder="https://example.com" required />
+                    </div>
+                    <div class="actions">
+                        <button id="submitMaterial" class="btn primary" type="button">Upload lecture</button>
+                    </div>
+                    <div id="materialStatus" class="status">Add a title and a public URL for the lecture.</div>
+                </form>
+
                 <h2 style="margin-top:32px;">Create new exam</h2>
                 <form id="examForm" onsubmit="return false;">
                     <div class="field">
@@ -360,7 +376,11 @@
             </section>
 
             <section class="panel">
-                <h2>Existing homeworks</h2>
+                <h2>Existing lectures</h2>
+                <div id="materialsList" class="list">
+                    <div class="list-empty">Loading lectures…</div>
+                </div>
+                <h2 style="margin-top:28px;">Existing homeworks</h2>
                 <div id="homeworksList" class="list">
                     <div class="list-empty">Loading homeworks…</div>
                 </div>
@@ -375,13 +395,17 @@
     <script>
         const courseId = "{{ course_info.id }}";
         const homeworkForm = document.getElementById('homeworkForm');
+        const materialForm = document.getElementById('materialForm');
         const examForm = document.getElementById('examForm');
         const submitHomework = document.getElementById('submitHomework');
+        const submitMaterial = document.getElementById('submitMaterial');
         const submitExam = document.getElementById('submitExam');
         const addQuestion = document.getElementById('addQuestion');
         const questionsContainer = document.getElementById('questionsContainer');
         const homeworkStatus = document.getElementById('homeworkStatus');
+        const materialStatus = document.getElementById('materialStatus');
         const examStatus = document.getElementById('examStatus');
+        const materialsList = document.getElementById('materialsList');
         const homeworksList = document.getElementById('homeworksList');
         const examsList = document.getElementById('examsList');
 
@@ -609,6 +633,24 @@
             });
         }
 
+        async function loadMaterials() {
+            setStatus(materialStatus, 'Refreshing lecture list…');
+            try {
+                const res = await fetch(`/manage_course/lectures/${courseId}`, { credentials: 'include' });
+                if (!res.ok) throw new Error('Unable to load lectures');
+                const data = await res.json();
+                renderList(materialsList, data, 'No lectures uploaded yet.', material => `
+                    <h3>${material.title}</h3>
+                    <p><a href="${material.url}" target="_blank" rel="noreferrer">Open lecture</a></p>
+                    <p><a href="/attendance/${material.id}" target="_blank" rel="noreferrer">View attendance</a></p>
+                `);
+                setStatus(materialStatus, 'Lecture list updated.');
+            } catch (err) {
+                setStatus(materialStatus, err.message || 'Failed to load lectures', true);
+                renderList(materialsList, [], 'Unable to load lectures.', () => '');
+            }
+        }
+
         async function loadHomeworks() {
             setStatus(homeworkStatus, 'Refreshing homework list…');
             try {
@@ -617,7 +659,7 @@
                 const data = await res.json();
                 renderList(homeworksList, data, 'No homeworks uploaded yet.', hw => `
                     <h3>${hw.title}</h3>
-                    <a href="/teacher/submitted_homeworks/${hw.id}" style="text-decoration:none; color:#2f8dcc; font-weight:700">View submitted homeworks</a>
+                    <a href="/manage_course/submitted_homeworks/${hw.id}" style="text-decoration:none; color:#2f8dcc; font-weight:700">View submitted homeworks</a>
                     <p><a href="${hw.url}" target="_blank" rel="noreferrer">View uploaded file</a></p>
                 `);
                 setStatus(homeworkStatus, 'Homework list updated.');
@@ -635,7 +677,7 @@
                 const data = await res.json();
                 renderList(examsList, data, 'No exams created yet.', exam => `
                     <h3>${exam.title}</h3>
-                    <a href="/teacher/submitted_exams/${exam.id}" style="text-decoration:none; color:#2f8dcc; font-weight:700">View submitted exams</a>
+                    <a href="/manage_course/submitted_exams/${exam.id}" style="text-decoration:none; color:#2f8dcc; font-weight:700">View submitted exams</a>
                     <p><strong>Start date:</strong> ${exam.start_time ? new Date(exam.start_time).toLocaleString() : 'Not set'}</p>
                     <p><strong>End date:</strong> ${exam.end_time ? new Date(exam.end_time).toLocaleString() : 'Not set'}</p>
                 `);
@@ -687,6 +729,38 @@
             }
         });
 
+        submitMaterial.addEventListener('click', async () => {
+            const title = document.getElementById('materialTitle').value.trim();
+            const url = document.getElementById('materialUrl').value.trim();
+            if (!title || !url) {
+                setStatus(materialStatus, 'Please provide both a title and a URL.', true);
+                return;
+            }
+            submitMaterial.disabled = true;
+            setStatus(materialStatus, 'Uploading material…');
+            try {
+                const res = await fetch(`/manage_course/upload_lecture/${courseId}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, url })
+                });
+                if (!res.ok) throw new Error('Unable to upload material');
+                const data = await res.json();
+                if (data.success) {
+                    setStatus(materialStatus, 'Material uploaded. Reloading list…');
+                    materialForm.reset();
+                    await loadMaterials();
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (err) {
+                setStatus(materialStatus, err.message || 'Upload failed', true);
+            } finally {
+                submitMaterial.disabled = false;
+            }
+        });
+
         submitExam.addEventListener('click', async () => {
             const title = document.getElementById('examTitle').value.trim();
             const localValue = document.getElementById('examStartDate').value;
@@ -730,6 +804,7 @@
             }
         });
 
+        loadMaterials();
         loadHomeworks();
         loadExams();
     </script>

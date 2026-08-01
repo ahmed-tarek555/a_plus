@@ -6,3 +6,7 @@ class AddCourse(BaseModel):
     stage: str
     level: int
     subject: str
+
+class UploadLecture(BaseModel):
+    title: str
+    url: str

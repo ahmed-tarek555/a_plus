@@ -182,6 +182,61 @@
 			align-items: center
 		}
 
+		.package-panel {
+			margin-top: 16px;
+			padding: 14px;
+			border-radius: 12px;
+			background: #f8fbff;
+			border: 1px solid rgba(44, 117, 169, 0.1)
+		}
+
+		.package-options {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 10px;
+			margin: 12px 0 14px
+		}
+
+		.package-option {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 10px 12px;
+			border-radius: 10px;
+			background: #fff;
+			border: 1px solid rgba(44, 117, 169, 0.08)
+		}
+
+		.package-option input {
+			margin: 0
+		}
+
+		.package-check {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			padding: 6px 10px;
+			border-radius: 999px;
+			background: #eff6ff;
+			color: #2563eb;
+			font-size: 0.78rem;
+			font-weight: 800;
+			border: 1px solid rgba(37, 99, 235, 0.18)
+		}
+
+		.package-check input {
+			margin: 0;
+			accent-color: #2563eb
+		}
+
+		.course-card-top {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 10px
+		}
+
 		.status {
 			margin-top: 10px;
 			padding: 12px;
@@ -258,67 +313,166 @@
 
 					<div id="addStatus" class="status">Fill the form and click Add course.</div>
 				</form>
-			</aside>
-		</div>
-	</main>
 
-	<script>
-		const coursesGrid = document.getElementById('coursesGrid');
-		const coursesStatus = document.getElementById('coursesStatus');
-		const addCourseForm = document.getElementById('addCourseForm');
-		const addCourseButton = document.getElementById('addCourseButton');
-		const addStatus = document.getElementById('addStatus');
+			<div class="submit-row" style="margin-top:18px;">
+				<button id="createPackageButton" class="btn view" type="button">Create a package</button>
+			</div>
 
-		function setStatus(el, text, isError = false) {
-			el.textContent = text;
-			el.classList.toggle('error', isError);
+			<div id="packagePanel" class="package-panel" hidden>
+				<h2 style="margin-bottom:10px;">Package details</h2>
+				<div class="field">
+					<label for="packageTitle">Title</label>
+					<input id="packageTitle" type="text" placeholder="Enter package title" />
+				</div>
+				<div class="field" style="margin-top:10px;">
+					<label for="packagePrice">Price (EGP)</label>
+					<input id="packagePrice" type="number" step="0.01" min="0" placeholder="Enter package price" />
+				</div>
+				<div class="field" style="margin-top:14px;">
+					<label>Selected courses</label>
+					<div id="selectedCourses" class="status" style="margin-top:8px; min-height: auto;">No courses selected yet.</div>
+				</div>
+				<div class="submit-row" style="margin-top:14px;">
+					<button id="savePackageButton" class="btn view" type="button">Save</button>
+					<button id="cancelPackageButton" class="btn delete" type="button">Cancel</button>
+				</div>
+				<div id="packageStatus" class="status">Choose a title, price, and at least one course.</div>
+			</div>
+		</aside>
+	</div>
+</main>
+
+<script>
+	const coursesGrid = document.getElementById('coursesGrid');
+	const coursesStatus = document.getElementById('coursesStatus');
+	const addCourseForm = document.getElementById('addCourseForm');
+	const addCourseButton = document.getElementById('addCourseButton');
+	const addStatus = document.getElementById('addStatus');
+	const createPackageButton = document.getElementById('createPackageButton');
+	const packagePanel = document.getElementById('packagePanel');
+	const packageTitle = document.getElementById('packageTitle');
+	const packagePrice = document.getElementById('packagePrice');
+	const packageCourseChoices = document.getElementById('packageCourseChoices');
+	const savePackageButton = document.getElementById('savePackageButton');
+	const cancelPackageButton = document.getElementById('cancelPackageButton');
+	const packageStatus = document.getElementById('packageStatus');
+	let currentCourses = [];
+	let isPackageMode = false;
+	let selectedPackageCourseIds = new Set();
+
+	function setStatus(el, text, isError = false) {
+		el.textContent = text;
+		el.classList.toggle('error', isError);
+	}
+
+	function renderCourses(courses) {
+		currentCourses = Array.isArray(courses) ? courses : [];
+		coursesGrid.replaceChildren();
+		if (!currentCourses.length) {
+			coursesGrid.innerHTML = '<div style="grid-column:1/-1; padding:18px; border-radius:12px; background:rgba(255,255,255,0.9); text-align:center; color:#5b7488">No courses yet.</div>';
+			setStatus(coursesStatus, 'No courses found.');
+			return;
 		}
 
-		function renderCourses(courses) {
-			coursesGrid.replaceChildren();
-			if (!Array.isArray(courses) || !courses.length) {
-				coursesGrid.innerHTML = '<div style="grid-column:1/-1; padding:18px; border-radius:12px; background:rgba(255,255,255,0.9); text-align:center; color:#5b7488">No courses yet.</div>';
-				setStatus(coursesStatus, 'No courses found.');
-				return;
+		currentCourses.forEach(course => {
+			const card = document.createElement('div');
+			card.className = 'course-card';
+
+			const topRow = document.createElement('div');
+			topRow.className = 'course-card-top';
+
+			const title = document.createElement('h3');
+			title.textContent = course.subject || 'Untitled';
+			topRow.appendChild(title);
+
+			const meta = document.createElement('div');
+			meta.className = 'course-meta';
+			meta.innerHTML = `<span>Stage: ${course.stage || 'N/A'}</span><span>${course.student_count || 0} students</span>`;
+
+			const actions = document.createElement('div');
+			actions.className = 'course-actions';
+
+			const viewBtn = document.createElement('a');
+			viewBtn.className = 'btn view';
+			viewBtn.href = `/manage_course/${course.id}`;
+			viewBtn.textContent = 'Manage';
+
+			const deleteBtn = document.createElement('button');
+			deleteBtn.className = 'btn delete';
+			deleteBtn.textContent = 'Delete';
+			deleteBtn.addEventListener('click', () => deleteCourse(course.id, card, deleteBtn));
+
+			actions.append(viewBtn, deleteBtn);
+
+			const price = document.createElement('div');
+			price.style.marginTop = '10px';
+			price.style.fontWeight = '800';
+			price.textContent = `EGP${Number(course.price || 0).toFixed(2)}`;
+
+			if (isPackageMode) {
+				const selectWrap = document.createElement('label');
+				selectWrap.className = 'package-check';
+
+				const checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.className = 'course-package-checkbox';
+				checkbox.checked = selectedPackageCourseIds.has(course.id);
+				checkbox.addEventListener('change', (event) => {
+					if (event.target.checked) {
+						selectedPackageCourseIds.add(course.id);
+					} else {
+						selectedPackageCourseIds.delete(course.id);
+					}
+					updateSelectedCoursesList();
+				});
+
+				const labelText = document.createElement('span');
+				labelText.textContent = 'Select';
+
+				selectWrap.append(checkbox, labelText);
+				topRow.appendChild(selectWrap);
 			}
 
-			courses.forEach(course => {
-				const card = document.createElement('div');
-				card.className = 'course-card';
+			card.append(topRow, meta, price);
+			card.append(actions);
+			coursesGrid.appendChild(card);
+		});
 
-				const title = document.createElement('h3');
-				title.textContent = course.subject || 'Untitled';
+		setStatus(coursesStatus, `${currentCourses.length} course(s)`);
+	}
 
-				const meta = document.createElement('div');
-				meta.className = 'course-meta';
-				meta.innerHTML = `<span>Stage: ${course.stage || 'N/A'}</span><span>${course.student_count || 0} students</span>`;
+	function updateSelectedCoursesList() {
+		const selectedTitles = currentCourses
+			.filter(course => selectedPackageCourseIds.has(course.id))
+			.map(course => course.subject || 'Untitled');
 
-				const actions = document.createElement('div');
-				actions.className = 'course-actions';
-
-				const viewBtn = document.createElement('a');
-				viewBtn.className = 'btn view';
-				viewBtn.href = `/manage_course/${course.id}`;
-				viewBtn.textContent = 'Manage';
-
-				const deleteBtn = document.createElement('button');
-				deleteBtn.className = 'btn delete';
-				deleteBtn.textContent = 'Delete';
-				deleteBtn.addEventListener('click', () => deleteCourse(course.id, card, deleteBtn));
-
-				actions.append(viewBtn, deleteBtn);
-
-				const price = document.createElement('div');
-				price.style.marginTop = '10px';
-				price.style.fontWeight = '800';
-				price.textContent = `EGP${Number(course.price || 0).toFixed(2)}`;
-
-				card.append(title, meta, price, actions);
-				coursesGrid.appendChild(card);
-			});
-
-			setStatus(coursesStatus, `${courses.length} course(s)`);
+		const selectedCoursesEl = document.getElementById('selectedCourses');
+		if (selectedCoursesEl) {
+			selectedCoursesEl.textContent = selectedTitles.length
+				? selectedTitles.join(', ')
+				: 'No courses selected yet.';
 		}
+	}
+
+	function openPackagePanel() {
+		isPackageMode = true;
+		selectedPackageCourseIds.clear();
+		renderCourses(currentCourses);
+		packagePanel.hidden = false;
+		packageTitle.focus();
+		updateSelectedCoursesList();
+		setStatus(packageStatus, 'Choose a title, price, and at least one course.');
+	}
+
+	function closePackagePanel() {
+		isPackageMode = false;
+		selectedPackageCourseIds.clear();
+		packagePanel.hidden = true;
+		packageTitle.value = '';
+		packagePrice.value = '';
+		renderCourses(currentCourses);
+		updateSelectedCoursesList();
+	}
 
 		async function loadCourses() {
 			setStatus(coursesStatus, 'Loading your courses…');
@@ -376,7 +530,6 @@
 				const data = await res.json();
 				if (data && data.success) {
 					setStatus(addStatus, 'Course added. Refreshing list…');
-					// reset form
 					addCourseForm.reset();
 					await loadCourses();
 					setStatus(addStatus, 'Course added successfully.');
@@ -390,7 +543,57 @@
 			}
 		});
 
-		// initial load
+		createPackageButton.addEventListener('click', openPackagePanel);
+		cancelPackageButton.addEventListener('click', closePackagePanel);
+
+		savePackageButton.addEventListener('click', async () => {
+			const title = packageTitle.value.trim();
+			const price = Number(packagePrice.value);
+			const selected = Array.from(document.querySelectorAll('.course-package-checkbox:checked')).map((checkbox) => ({
+				course_id: Number(checkbox.closest('.course-card')?.querySelector('a.btn.view')?.href?.split('/').pop() || 0)
+			}));
+
+			if (!title || !price || !selected.length) {
+				setStatus(packageStatus, 'Please enter a title, price, and select at least one course.', true);
+				return;
+			}
+
+			savePackageButton.disabled = true;
+			setStatus(packageStatus, 'Saving package…');
+
+			try {
+				const payload = {
+					title,
+					price,
+					courses_ids: selected
+				};
+
+				const res = await fetch('/teacher/create_package', {
+					method: 'POST',
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload)
+				});
+
+				if (!res.ok) {
+					const msg = res.status === 403 ? 'Not authorized to create packages.' : 'Unable to create package.';
+					throw new Error(msg);
+				}
+
+				const data = await res.json();
+				if (data && data.success) {
+					setStatus(packageStatus, 'Package created successfully.');
+					closePackagePanel();
+				} else {
+					throw new Error('Package creation failed.');
+				}
+			} catch (err) {
+				setStatus(packageStatus, err.message || 'Unable to create package.', true);
+			} finally {
+				savePackageButton.disabled = false;
+			}
+		});
+
 		loadCourses();
 	</script>
 </body>

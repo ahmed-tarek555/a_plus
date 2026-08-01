@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lecture Attendance | A+</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+            color: #19324a;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 0 20px 48px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(44, 117, 169, 0.12);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(43, 95, 130, 0.08);
+        }
+
+        .title {
+            margin: 0 0 22px;
+            font-size: 1.7rem;
+            color: #0f172a;
+        }
+
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            background: #f8fbff;
+            border: 1px solid rgba(44, 117, 169, 0.1);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .panel h2 {
+            margin: 0 0 14px;
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+
+        .student-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .student-card {
+            background: #ffffff;
+            border: 1px solid rgba(44, 117, 169, 0.08);
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+
+        .student-name {
+            margin: 0 0 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .student-meta {
+            margin: 0;
+            color: #4b6579;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .empty {
+            padding: 16px;
+            border-radius: 14px;
+            background: #f6f8fb;
+            color: #5b7488;
+        }
+
+        @media (max-width: 900px) {
+            .attendance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="card">
+            <h1 class="title">Lecture Attendance</h1>
+
+            <div class="attendance-grid">
+                <div class="panel">
+                    <h2>Attended</h2>
+                    {% if attended %}
+                    <div class="student-list">
+                        {% for student in attended %}
+                        <article class="student-card">
+                            <p class="student-name">{{ student.first_name or 'Student' }} {{ student.last_name or '' }}</p>
+                            <p class="student-meta">Parent: {{ student.parent_name or 'Not provided' }}</p>
+                            <p class="student-meta">Parent phone: {{ student.parent_phone or 'Not provided' }}</p>
+                        </article>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty">No students have attended this lecture yet.</div>
+                    {% endif %}
+                </div>
+
+                <div class="panel">
+                    <h2>Not Attended</h2>
+                    {% if not_attended %}
+                    <div class="student-list">
+                        {% for student in not_attended %}
+                        <article class="student-card">
+                            <p class="student-name">{{ student.first_name or 'Student' }} {{ student.last_name or '' }}</p>
+                            <p class="student-meta">Parent: {{ student.parent_name or 'Not provided' }}</p>
+                            <p class="student-meta">Parent phone: {{ student.parent_phone or 'Not provided' }}</p>
+                        </article>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty">All enrolled students have attended this lecture.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
