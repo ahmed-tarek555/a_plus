@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Private Lectures</title>
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+      color: #19324a;
+    }
+    nav {
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid rgba(44, 117, 169, 0.06);
+    }
+    .nav-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .nav-brand {
+      font-weight: 800;
+      color: #2f8dcc;
+      text-decoration: none;
+      font-size: 1.2rem;
+    }
+    .nav-btn {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-btn-secondary { color: #2563eb; background: transparent; }
+    .nav-btn-secondary:hover { background: #eef2ff; }
+    .nav-btn-profile {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+    .nav-btn-profile:hover { background: #dbeafe; }
+    .page {
+      max-width: 1100px;
+      margin: 28px auto;
+      padding: 0 20px 64px;
+    }
+    .panel {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(44, 117, 169, 0.12);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+      color: #19324a;
+    }
+    .lectures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .lecture-card {
+      padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fff, #fbfeff);
+      box-shadow: 0 8px 20px rgba(43, 95, 130, 0.06);
+      border: 1px solid rgba(44, 117, 169, 0.06);
+    }
+    .lecture-card h3 { margin: 0 0 8px; font-size: 1rem; }
+    .teacher-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .teacher-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #2563eb;
+      background: #eff6ff;
+    }
+    .meta {
+      font-size: 0.9rem;
+      color: #5b7488;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .link-box {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8fbff;
+      border: 1px solid rgba(44, 117, 169, 0.1);
+      word-break: break-all;
+      font-size: 0.9rem;
+    }
+    .link-box a {
+      color: #2563eb;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .status {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(44, 117, 169, 0.08);
+      color: #264765;
+      min-height: 44px;
+    }
+    .status.error { border-color: rgba(192, 57, 75, 0.15); background: #fff3f4; color: #a93748; }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand">A+</a>
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <a href="/profile" class="nav-btn nav-btn-profile">Profile</a>
+        <a href="/logout" class="nav-btn nav-btn-secondary">Log out</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section class="panel">
+      <h2>My private lectures</h2>
+      <div id="lecturesGrid" class="lectures-grid"></div>
+      <div id="lecturesStatus" class="status">Loading your private lectures…</div>
+    </section>
+  </main>
+
+  <script>
+    const lecturesGrid = document.getElementById('lecturesGrid');
+    const lecturesStatus = document.getElementById('lecturesStatus');
+
+    function setStatus(el, text, isError = false) {
+      el.textContent = text;
+      el.classList.toggle('error', isError);
+    }
+
+    function renderLectures(lectures) {
+      const items = Array.isArray(lectures) ? lectures : [];
+      lecturesGrid.replaceChildren();
+
+      if (!items.length) {
+        lecturesGrid.innerHTML = '<div style="grid-column:1/-1; padding:18px; border-radius:12px; background:rgba(255,255,255,0.9); text-align:center; color:#5b7488">No private lectures booked yet.</div>';
+        setStatus(lecturesStatus, 'No private lectures found.');
+        return;
+      }
+
+      items.forEach((lecture) => {
+        const card = document.createElement('div');
+        card.className = 'lecture-card';
+
+        const title = document.createElement('h3');
+        title.textContent = lecture.title || 'Untitled';
+
+        const teacherRow = document.createElement('div');
+        teacherRow.className = 'teacher-row';
+
+        const avatar = document.createElement('img');
+        avatar.className = 'teacher-avatar';
+        const teacherName = [lecture.teacher_first_name, lecture.teacher_last_name].filter(Boolean).join(' ') || 'Teacher';
+        avatar.src = lecture.teacher_pfp_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(teacherName) + '&background=DBEAFE&color=2563EB';
+        avatar.alt = teacherName;
+
+        const teacherText = document.createElement('div');
+        teacherText.innerHTML = `<strong>${teacherName}</strong><br /><span style="color:#5b7488; font-size:0.9rem;">${lecture.teacher_phone_number || 'No phone provided'}</span>`;
+
+        teacherRow.append(avatar, teacherText);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.innerHTML = `<span>${lecture.subject || 'N/A'}</span><span>${lecture.start_date ? new Date(lecture.start_date).toLocaleString() : 'N/A'}</span>`;
+
+        const linkBox = document.createElement('div');
+        linkBox.className = 'link-box';
+        if (lecture.link) {
+          linkBox.innerHTML = `<a href="${lecture.link}" target="_blank" rel="noopener noreferrer">Open meeting link</a>`;
+        } else {
+          linkBox.textContent = 'No meeting link yet.';
+        }
+
+        card.append(title, teacherRow, meta, linkBox);
+        lecturesGrid.appendChild(card);
+      });
+
+      setStatus(lecturesStatus, `${items.length} private lecture(s)`);
+    }
+
+    async function loadPrivateLectures() {
+      setStatus(lecturesStatus, 'Loading your private lectures…');
+      try {
+        const res = await fetch('/student/get_private_lectures', { credentials: 'include' });
+        if (!res.ok) throw new Error('Unable to load private lectures');
+        const data = await res.json();
+        renderLectures(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setStatus(lecturesStatus, err.message || 'Error loading private lectures', true);
+      }
+    }
+
+    loadPrivateLectures();
+  </script>
+</body>
+
+</html>

@@ -3,6 +3,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from app.models.private_lectures import PrivateLecture
 from app.models.users_model import User
 from app.models.teachers_model import Teacher
 from app.models.courses_model import Course
@@ -13,6 +14,8 @@ from app.core.auth import validate_user
 from app.database import get_db
 from app.schemas.courses import AddCourse
 from app.schemas.package import PackageCreate
+from app.schemas.private import CreatePrivate
+from app.schemas.private import PrivateLink
 from app.config import BASE_DIR
 
 router = APIRouter(prefix="/teacher")
@@ -150,6 +153,86 @@ def create_package(request: Request, payload: PackageCreate, db: Session = Depen
             )
             db.add(package_item)
 
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+@router.get("/get_private_lectures")
+def get_private_lectures(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "teacher":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user , teacher = result
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+
+    lectures = db.query(PrivateLecture).filter(PrivateLecture.teacher_id == teacher.id).all()
+    return [
+        {
+            "id": lec.id,
+            "student_id": lec.student_id,
+            "title": lec.title,
+            "subject": lec.subject,
+            "start_date": lec.start_date,
+            "price": float(lec.price),
+            "link": lec.link
+        }
+        for lec in lectures
+    ]
+
+@router.post("/add_private")
+def add_private(request: Request, payload: CreatePrivate, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "teacher":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user , teacher = result
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+
+    try:
+        new_private = PrivateLecture(
+            teacher_id=teacher.id,
+            title=payload.title,
+            subject=payload.subject,
+            start_date=payload.start_date,
+            price=payload.price,
+        )
+        db.add(new_private)
+        db.commit()
+        db.refresh(new_private)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+@router.patch("/add_private_link/{id}")
+def add_private_link(request: Request, id: int, payload: PrivateLink, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "teacher":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user , teacher = result
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+
+    private_lecture = db.query(PrivateLecture).filter(PrivateLecture.id == id, PrivateLecture.teacher_id == teacher.id).first()
+    if not private_lecture:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    try:
+        private_lecture.link = payload.link
         db.commit()
     except SQLAlchemyError:
         db.rollback()

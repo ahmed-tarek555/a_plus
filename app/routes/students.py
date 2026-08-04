@@ -14,6 +14,7 @@ from app.models.students_model import Student
 from app.models.courses_model import Course
 from app.models.enrollments_model import Enrollment
 from app.models.attendance_model import Attendance
+from app.models.private_lectures import PrivateLecture
 from app.models.exams_model import Exam
 from app.core.auth import validate_user
 from app.database import get_db
@@ -302,11 +303,82 @@ def attend(request: Request, lecture_id: int, db: Session = Depends(get_db)):
         student_id=student.id,
         lecture_id=lecture_id
     )
-    db.add(attendance)
     try:
+        db.add(attendance)
         db.commit()
         db.refresh(attendance)
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return {"success": True}
+
+@router.patch("/book_private/{id}")
+def book_private(request: Request, id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "student":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Student).join(Student, Student.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user, student = result
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    private_lecture = db.query(PrivateLecture).filter(PrivateLecture.id == id).first()
+    if not private_lecture:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    try:
+        private_lecture.student_id = student.id
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+@router.get("/private")
+def book_private(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "student":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Student).join(Student, Student.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    return templates.TemplateResponse("my_private_lectures.html", {"request": request})
+
+
+@router.get("/get_private_lectures")
+def book_private(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "student":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Student).join(Student, Student.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user, student = result
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    lec_teacher = (db.query(PrivateLecture, User)
+                   .join(Teacher, Teacher.id == PrivateLecture.teacher_id)
+                   .join(User, User.id == Teacher.user_id)
+                   .filter(PrivateLecture.student_id == student.id)
+                   .all())
+
+    return [
+        {
+            "id": lec.id,
+            "title": lec.title,
+            "subject": lec.subject,
+            "start_date": lec.start_date.strftime("%b %-d, %Y, %I:%M %p"),
+            "link": lec.link,
+            "teacher_first_name": teacher.first_name,
+            "teacher_last_name": teacher.last_name,
+            "teacher_phone_number": teacher.phone_number,
+            "teacher_pfp_url": generate_url(teacher.pfp_public_id)
+        }
+        for lec, teacher in lec_teacher
+    ]

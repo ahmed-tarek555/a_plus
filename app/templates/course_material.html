@@ -293,7 +293,6 @@
                     event.preventDefault();
                     const lectureId = link.getAttribute('data-lecture-id');
                     const lectureUrl = link.getAttribute('data-lecture-url');
-                    const popup = window.open('', '_blank', 'noopener,noreferrer');
 
                     try {
                         const response = await fetch(`/student/attend/${lectureId}`, {
@@ -306,16 +305,9 @@
                             throw new Error(errorText || 'Unable to attend the lecture.');
                         }
 
-                        if (popup) {
-                            popup.location.href = lectureUrl;
-                        } else {
-                            window.location.href = lectureUrl;
-                        }
+                        window.open(lectureUrl, '_blank', 'noopener,noreferrer');
                     } catch (error) {
-                        if (popup) {
-                            popup.close();
-                        }
-                        window.location.href = lectureUrl;
+                        window.open(lectureUrl, '_blank', 'noopener,noreferrer');
                     }
                 });
             });

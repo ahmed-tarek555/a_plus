@@ -369,6 +369,72 @@
       font-weight: 700;
     }
 
+    .private-lectures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .private-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+      border: 1px solid #dbe7ff;
+      border-radius: 18px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .private-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .private-card:hover {
+      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
+      transform: translateY(-4px);
+      border-color: #93c5fd;
+    }
+
+    .private-teacher {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .private-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #2563eb;
+      background: #eff6ff;
+      flex-shrink: 0;
+    }
+
+    .private-book-btn {
+      margin-top: auto;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .private-book-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
     .empty-state {
       padding: 40px 20px;
       border-radius: 18px;
@@ -418,6 +484,7 @@
         <a href="/profile" class="nav-btn nav-btn-profile"><span>Profile</span></a>
         {% if role == "student" %}
         <a href="/student/my_courses" class="nav-btn nav-btn-profile"><span>My courses</span></a>
+        <a href="/student/private" class="nav-btn nav-btn-profile"><span>Private lectures</span></a>
         {% endif %}
         {% if role == "teacher" %}
         <a href="/teacher" class="nav-btn nav-btn-profile"><span>Dashboard</span></a>
@@ -430,6 +497,7 @@
       </div>
     </div>
   </nav>
+  <div id="homeData" data-logged="{{ 'true' if is_logged else 'false' }}" hidden></div>
   <div class="page-shell">
     <section class="hero">
       <h1>Learn from Top Educators</h1>
@@ -445,6 +513,12 @@
     </section>
     <section class="section">
       <div class="section-header">
+        <h2>Available private lectures</h2><small>Book a one-on-one session</small>
+      </div>
+      <div class="private-lectures-grid" id="privateLecturesGrid"></div>
+    </section>
+    <section class="section">
+      <div class="section-header">
         <h2>Courses</h2><small>Enroll today and start learning</small>
       </div>
       <div class="courses-grid" id="coursesGrid"></div>
@@ -452,7 +526,10 @@
   </div>
   <script>const teachersRow = document.getElementById('teachersRow');
     const coursesGrid = document.getElementById('coursesGrid');
+    const privateLecturesGrid = document.getElementById('privateLecturesGrid');
     const searchForm = document.getElementById('searchForm');
+    const homeData = document.getElementById('homeData');
+    const isLogged = homeData?.dataset.logged === 'true';
 
     searchForm.addEventListener('submit', function (event) {
       event.preventDefault();
@@ -470,6 +547,76 @@
 
         return ` <a href="/teacher_profile/${teacher.id}" class="teacher-card" > <img class="teacher-avatar" src="${imageSrc}" alt="${fullName}" /> <h3>${fullName}</h3> </a> `;
       }).join('');
+    }
+
+    function renderPrivateLectures(lectures) {
+      if (!Array.isArray(lectures) || !lectures.length) {
+        privateLecturesGrid.innerHTML = '<div class="empty-state">No private lectures available right now.</div>';
+        return;
+      }
+
+      privateLecturesGrid.innerHTML = lectures.map((lecture) => {
+        const teacherName = [lecture.teacher_first_name, lecture.teacher_last_name].filter(Boolean).join(' ') || 'Teacher';
+        const imageSrc = lecture.teacher_pfp_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(teacherName) + '&background=DBEAFE&color=2563EB';
+        const bookingDisabled = !isLogged ? 'disabled' : '';
+        const bookingLabel = isLogged ? 'Book' : 'Login to book';
+
+        return `
+          <div class="private-card">
+            <div class="private-teacher">
+              <img class="private-avatar" src="${imageSrc}" alt="${teacherName}" />
+              <div>
+                <strong>${teacherName}</strong><br />
+                <small>${lecture.teacher_phone_number || 'No phone provided'}</small>
+              </div>
+            </div>
+            <div class="course-top">
+              <span class="course-tag">${lecture.subject || 'General'}</span>
+              <span class="course-price">EGP${Number(lecture.price || 0).toFixed(2)}</span>
+            </div>
+            <h3>${lecture.title || 'Private lecture'}</h3>
+            <p>${new Date(lecture.start_date).toLocaleString()}</p>
+            <button class="private-book-btn" data-private-id="${lecture.id}" ${bookingDisabled}>${bookingLabel}</button>
+          </div>
+        `;
+      }).join('');
+
+      privateLecturesGrid.querySelectorAll('[data-private-id]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const lectureId = Number(button.dataset.privateId);
+          if (!isLogged) {
+            window.location.href = '/login';
+            return;
+          }
+
+          button.disabled = true;
+          button.textContent = 'Booking…';
+          try {
+            const response = await fetch(`/student/book_private/${lectureId}`, {
+              method: 'PATCH',
+              credentials: 'include'
+            });
+
+            if (!response.ok) {
+              const msg = response.status === 403 ? 'Only students can book private lectures.'
+                : response.status === 404 ? 'Private lecture not found.'
+                : 'Unable to book this lecture.';
+              throw new Error(msg);
+            }
+
+            const data = await response.json();
+            if (data && data.success) {
+              button.textContent = 'Booked';
+            } else {
+              throw new Error('Booking failed.');
+            }
+          } catch (error) {
+            button.disabled = false;
+            button.textContent = 'Book';
+            alert(error.message || 'Unable to book this lecture.');
+          }
+        });
+      });
     }
 
     function renderCourses(courses) {
@@ -496,6 +643,10 @@
     fetch('/home/teachers', {
       credentials: 'include'
     }).then((response) => response.ok ? response.json() : []).then((teachers) => renderTeachers(teachers)).catch(() => renderTeachers([]));
+
+    fetch('/home/private_lectures', {
+      credentials: 'include'
+    }).then((response) => response.ok ? response.json() : []).then((lectures) => renderPrivateLectures(lectures)).catch(() => renderPrivateLectures([]));
 
     fetch('/home/courses', {
       credentials: 'include'

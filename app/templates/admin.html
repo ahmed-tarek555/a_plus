@@ -57,6 +57,267 @@
 			line-height: 1.5;
 		}
 
+		.dashboard-nav {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-bottom: 20px;
+			padding: 6px;
+			border: 1px solid rgba(44, 117, 169, 0.2);
+			border-radius: 14px;
+			background: rgba(255, 255, 255, 0.75);
+			box-shadow: 0 8px 22px rgba(43, 95, 130, 0.06);
+		}
+
+		.nav-button {
+			border: 0;
+			border-radius: 10px;
+			padding: 11px 16px;
+			background: transparent;
+			color: #4c687e;
+			cursor: pointer;
+			font-size: 0.9rem;
+			font-weight: 800;
+			transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+		}
+
+		.nav-button:hover {
+			transform: translateY(-1px);
+		}
+
+		.nav-button.active {
+			background: #2f8dcc;
+			color: #fff;
+			box-shadow: 0 4px 12px rgba(47, 141, 204, 0.22);
+		}
+
+		.view-panel {
+			display: none;
+		}
+
+		.view-panel.active {
+			display: block;
+		}
+
+		.panel-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 16px;
+		}
+
+		.filter-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			margin-bottom: 16px;
+		}
+
+		.modal {
+			position: fixed;
+			inset: 0;
+			display: none;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+			background: rgba(10, 26, 43, 0.45);
+			z-index: 999;
+		}
+
+		.modal.active {
+			display: flex;
+		}
+
+		.modal-card {
+			width: min(520px, 100%);
+			padding: 22px;
+			border-radius: 16px;
+			background: #fff;
+			box-shadow: 0 18px 45px rgba(10, 26, 43, 0.22);
+		}
+
+		.modal-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 16px;
+			margin-bottom: 18px;
+		}
+
+		.modal-header h3 {
+			margin: 0;
+			color: #19324a;
+		}
+
+		.modal-close {
+			border: 0;
+			border-radius: 8px;
+			padding: 8px 10px;
+			background: #eff6fb;
+			color: #2f8dcc;
+			cursor: pointer;
+			font-weight: 800;
+		}
+
+		.modal-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 14px;
+		}
+
+		.modal-grid label {
+			display: grid;
+			gap: 8px;
+			color: #4c687e;
+			font-size: 0.88rem;
+			font-weight: 700;
+		}
+
+		.modal-grid select {
+			padding: 11px 12px;
+			border: 1px solid rgba(44, 117, 169, 0.22);
+			border-radius: 10px;
+			background: rgba(255, 255, 255, 0.92);
+			color: #19324a;
+		}
+
+		.modal-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 10px;
+			margin-top: 18px;
+		}
+
+		.modal-actions .button {
+			min-width: 100px;
+		}
+
+		.filter-select,
+		.search-input {
+			flex: 1 1 220px;
+			padding: 12px 14px;
+			border: 1px solid rgba(44, 117, 169, 0.22);
+			border-radius: 10px;
+			background: rgba(255, 255, 255, 0.88);
+			color: #19324a;
+			font-size: 0.94rem;
+		}
+
+		.search-row {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 12px;
+			margin-bottom: 16px;
+		}
+
+		.search-input {
+			flex: 1 1 260px;
+			padding: 12px 14px;
+			border: 1px solid rgba(44, 117, 169, 0.22);
+			border-radius: 10px;
+			background: rgba(255, 255, 255, 0.88);
+			color: #19324a;
+			font-size: 0.94rem;
+		}
+
+		.teacher-list {
+			display: grid;
+			gap: 14px;
+		}
+
+		.teacher-card,
+		.student-card {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr) auto;
+			align-items: center;
+			gap: 16px;
+			padding: 18px 20px;
+			border: 1px solid rgba(44, 117, 169, 0.18);
+			border-radius: 14px;
+			background: rgba(255, 255, 255, 0.84);
+			box-shadow: 0 8px 24px rgba(43, 95, 130, 0.08);
+		}
+
+		.teacher-avatar {
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 2px solid rgba(44, 117, 169, 0.18);
+			background: #e5f1fb;
+		}
+
+		.teacher-meta,
+		.student-meta {
+			display: grid;
+			gap: 4px;
+		}
+
+		.teacher-name,
+		.student-name {
+			color: #19324a;
+			font-size: 1.08rem;
+			font-weight: 800;
+		}
+
+		.teacher-phone,
+		.student-detail {
+			color: #5b7488;
+			font-size: 0.92rem;
+		}
+
+		.panel-card,
+		.placeholder-panel {
+			padding: 22px;
+			border: 1px solid rgba(44, 117, 169, 0.18);
+			border-radius: 14px;
+			background: rgba(255, 255, 255, 0.82);
+			box-shadow: 0 8px 24px rgba(43, 95, 130, 0.08);
+		}
+
+		.panel-label {
+			margin-bottom: 8px;
+			color: #2479b8;
+			font-size: 0.78rem;
+			font-weight: 800;
+			letter-spacing: 1.4px;
+			text-transform: uppercase;
+		}
+
+		.panel-value {
+			margin-bottom: 8px;
+			color: #19324a;
+			font-size: 1.35rem;
+			font-weight: 800;
+		}
+
+		.panel-copy,
+		.placeholder-panel p {
+			margin: 0;
+			color: #5b7488;
+			line-height: 1.6;
+		}
+
+		.section-header {
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 24px;
+			margin-bottom: 16px;
+		}
+
+		.section-header h2 {
+			margin: 0 0 6px;
+			color: #19324a;
+			font-size: 1.8rem;
+		}
+
+		.section-header p {
+			margin: 0;
+			color: #5b7488;
+			line-height: 1.5;
+		}
+
 		.mode-switcher {
 			display: flex;
 			gap: 8px;
@@ -207,6 +468,10 @@
 		@media (max-width: 720px) {
 			.page { padding: 28px 16px 48px; }
 			.header { align-items: flex-start; flex-direction: column; }
+			.panel-grid { grid-template-columns: 1fr; }
+			.section-header { align-items: flex-start; flex-direction: column; }
+			.dashboard-nav { width: 100%; }
+			.nav-button { flex: 1 1 calc(50% - 10px); text-align: center; }
 			.mode-switcher { width: 100%; }
 			.mode-button { flex: 1; }
 			.user-card { grid-template-columns: 1fr; gap: 16px; }
@@ -226,20 +491,185 @@
 			<header class="header">
 				<div>
 					<p class="eyebrow">Administration</p>
-					<h1 id="pageTitle">Pending students</h1>
-					<p id="pageDescription">Review student accounts before they join the platform.</p>
+					<h1>Admin dashboard</h1>
+					<p>Manage platform activity from a single control center.</p>
 				</div>
-
-				<nav class="mode-switcher" aria-label="Pending account type">
-					<button id="studentsMode" class="mode-button active" type="button" aria-pressed="true">Students</button>
-					<button id="teachersMode" class="mode-button" type="button" aria-pressed="false">Teachers</button>
-				</nav>
 			</header>
 
-			<div id="statusMessage" class="status" role="status" aria-live="polite">Loading pending students...</div>
-			<section id="usersList" class="users-list" aria-live="polite"></section>
+			<nav class="dashboard-nav" aria-label="Admin dashboard sections">
+				<button class="nav-button active" type="button" data-view="overview" aria-pressed="true">Overview</button>
+				<button class="nav-button" type="button" data-view="pending" aria-pressed="false">Pending approvals</button>
+				<button class="nav-button" type="button" data-view="teachers" aria-pressed="false">Teachers</button>
+				<button class="nav-button" type="button" data-view="students" aria-pressed="false">Students</button>
+				<button class="nav-button" type="button" data-view="courses" aria-pressed="false">Courses</button>
+				<button class="nav-button" type="button" data-view="settings" aria-pressed="false">Settings</button>
+			</nav>
+
+			<section id="overviewPanel" class="view-panel active">
+				<div class="panel-grid">
+					<div class="panel-card">
+						<div class="panel-label">Pending students</div>
+						<div class="panel-value">Review requests</div>
+						<p class="panel-copy">Approve or remove new student applications before enrollment is allowed.</p>
+					</div>
+					<div class="panel-card">
+						<div class="panel-label">Pending teachers</div>
+						<div class="panel-value">Review requests</div>
+						<p class="panel-copy">Verify instructor profiles and grant access to teaching tools.</p>
+					</div>
+					<div class="panel-card">
+						<div class="panel-label">Platform activity</div>
+						<div class="panel-value">Live administration</div>
+						<p class="panel-copy">Use the dashboard tabs to move between approvals, course management, and admin settings.</p>
+					</div>
+				</div>
+			</section>
+
+			<section id="pendingPanel" class="view-panel">
+				<div class="section-header">
+					<div>
+						<p class="eyebrow">Approvals</p>
+						<h2 id="pageTitle">Pending students</h2>
+						<p id="pageDescription">Review student accounts before they join the platform.</p>
+					</div>
+
+					<nav class="mode-switcher" aria-label="Pending account type">
+						<button id="studentsMode" class="mode-button active" type="button" aria-pressed="true">Students</button>
+						<button id="teachersMode" class="mode-button" type="button" aria-pressed="false">Teachers</button>
+					</nav>
+				</div>
+
+				<div id="statusMessage" class="status" role="status" aria-live="polite">Loading pending students...</div>
+				<section id="usersList" class="users-list" aria-live="polite"></section>
+			</section>
+
+			<section id="teachersPanel" class="view-panel">
+				<div class="section-header">
+					<div>
+						<p class="eyebrow">Teachers</p>
+						<h2>Active teachers</h2>
+						<p>Search current active teachers by phone number.</p>
+					</div>
+				</div>
+
+				<div class="search-row">
+					<input id="teacherSearch" class="search-input" type="search" placeholder="Search by phone number" aria-label="Search teachers by phone number" />
+				</div>
+				<div id="teacherStatus" class="status" role="status" aria-live="polite">Loading active teachers...</div>
+				<section id="teacherList" class="teacher-list" aria-live="polite"></section>
+			</section>
+
+			<section id="studentsPanel" class="view-panel">
+				<div class="section-header">
+					<div>
+						<p class="eyebrow">Students</p>
+						<h2>Active students</h2>
+						<p>Filter the current students by stage and level.</p>
+					</div>
+				</div>
+
+				<div class="filter-row">
+					<select id="stageFilter" class="filter-select" aria-label="Filter students by stage">
+						<option value="">All stages</option>
+						<option value="الابتدائية">الابتدائية</option>
+						<option value="الاعدادية">الاعدادية</option>
+						<option value="الثانوية">الثانوية</option>
+					</select>
+
+					<select id="levelFilter" class="filter-select" aria-label="Filter students by level">
+						<option value="">All levels</option>
+						<option value="1">Level 1</option>
+						<option value="2">Level 2</option>
+						<option value="3">Level 3</option>
+						<option value="4">Level 4</option>
+						<option value="5">Level 5</option>
+						<option value="6">Level 6</option>
+					</select>
+
+					<button id="openEditStudentModalButton" class="button approve-button" type="button">Change level/stage</button>
+				</div>
+
+				<div id="studentStatus" class="status" role="status" aria-live="polite">Loading active students...</div>
+				<section id="studentList" class="teacher-list" aria-live="polite"></section>
+			</section>
+
+			<section id="coursesPanel" class="view-panel">
+				<div class="placeholder-panel">
+					<h2>Courses</h2>
+					<p>Course administration tools can be placed here as the next dashboard section.</p>
+				</div>
+			</section>
+
+			<section id="settingsPanel" class="view-panel">
+				<div class="placeholder-panel">
+					<h2>Settings</h2>
+					<p>Admin preferences and system configuration controls can be placed here.</p>
+				</div>
+			</section>
 		</div>
 	</main>
+
+	<div id="editStudentModal" class="modal" aria-hidden="true">
+		<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="editStudentModalTitle">
+			<div class="modal-header">
+				<h3 id="editStudentModalTitle">Change level/stage</h3>
+				<button id="closeModalButton" class="modal-close" type="button" aria-label="Close modal">×</button>
+			</div>
+
+			<div class="modal-grid">
+				<label>
+					Old stage
+					<select id="oldStageSelect">
+						<option value="">Select old stage</option>
+						<option value="الابتدائية">الابتدائية</option>
+						<option value="الاعدادية">الاعدادية</option>
+						<option value="الثانوية">الثانوية</option>
+					</select>
+				</label>
+
+				<label>
+					Old level
+					<select id="oldLevelSelect">
+						<option value="">Select old level</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+					</select>
+				</label>
+
+				<label>
+					New stage
+					<select id="newStageSelect">
+						<option value="">Select new stage</option>
+						<option value="الابتدائية">الابتدائية</option>
+						<option value="الاعدادية">الاعدادية</option>
+						<option value="الثانوية">الثانوية</option>
+					</select>
+				</label>
+
+				<label>
+					New level
+					<select id="newLevelSelect">
+						<option value="">Select new level</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+					</select>
+				</label>
+			</div>
+
+			<div class="modal-actions">
+				<button id="cancelModalButton" class="button delete-button" type="button">Cancel</button>
+				<button id="saveLevelChangeButton" class="button approve-button" type="button">Save</button>
+			</div>
+		</div>
+	</div>
 
 	<script>
 		const pageTitle = document.getElementById("pageTitle");
@@ -248,8 +678,29 @@
 		const usersList = document.getElementById("usersList");
 		const studentsMode = document.getElementById("studentsMode");
 		const teachersMode = document.getElementById("teachersMode");
+		const teacherSearch = document.getElementById("teacherSearch");
+		const teacherStatus = document.getElementById("teacherStatus");
+		const teacherList = document.getElementById("teacherList");
+		const stageFilter = document.getElementById("stageFilter");
+		const levelFilter = document.getElementById("levelFilter");
+		const studentStatus = document.getElementById("studentStatus");
+		const studentList = document.getElementById("studentList");
+		const openEditStudentModalButton = document.getElementById("openEditStudentModalButton");
+		const editStudentModal = document.getElementById("editStudentModal");
+		const oldStageSelect = document.getElementById("oldStageSelect");
+		const oldLevelSelect = document.getElementById("oldLevelSelect");
+		const newStageSelect = document.getElementById("newStageSelect");
+		const newLevelSelect = document.getElementById("newLevelSelect");
+		const closeModalButton = document.getElementById("closeModalButton");
+		const cancelModalButton = document.getElementById("cancelModalButton");
+		const saveLevelChangeButton = document.getElementById("saveLevelChangeButton");
+		const navButtons = document.querySelectorAll(".nav-button");
+		const viewPanels = document.querySelectorAll(".view-panel");
 
 		let currentMode = "students";
+		let currentView = "overview";
+		let allTeachers = [];
+		let allStudents = [];
 
 		const modeConfig = {
 			students: {
@@ -269,6 +720,41 @@
 		function setStatus(text, isError = false) {
 			statusMessage.textContent = text;
 			statusMessage.classList.toggle("error", isError);
+		}
+
+		function setTeacherStatus(text, isError = false) {
+			teacherStatus.textContent = text;
+			teacherStatus.classList.toggle("error", isError);
+		}
+
+		function setStudentStatus(text, isError = false) {
+			studentStatus.textContent = text;
+			studentStatus.classList.toggle("error", isError);
+		}
+
+		function setView(view) {
+			currentView = view;
+			navButtons.forEach((button) => {
+				const isActive = button.dataset.view === view;
+				button.classList.toggle("active", isActive);
+				button.setAttribute("aria-pressed", String(isActive));
+			});
+
+			viewPanels.forEach((panel) => {
+				panel.classList.toggle("active", panel.id === `${view}Panel`);
+			});
+
+			if (view === "pending") {
+				loadUsers();
+			}
+
+			if (view === "teachers") {
+				loadTeachers();
+			}
+
+			if (view === "students") {
+				loadStudents();
+			}
 		}
 
 		function setMode(mode) {
@@ -315,9 +801,7 @@
 
 			const details = document.createElement("div");
 			details.className = "details";
-			details.append(
-				createDetail("Phone", user.phone_number)
-			);
+			details.append(createDetail("Phone", user.phone_number));
 
 			if (currentMode === "students") {
 				details.append(
@@ -366,6 +850,109 @@
 			setStatus(`${users.length} pending ${modeConfig[currentMode].label} found.`);
 		}
 
+		function createTeacherCard(teacher) {
+			const card = document.createElement("article");
+			card.className = "teacher-card";
+
+			const avatar = document.createElement("img");
+			avatar.className = "teacher-avatar";
+			avatar.alt = `${teacher.first_name || "Teacher"} ${teacher.last_name || ""}`.trim();
+			avatar.src = teacher.pfp_url || "";
+
+			const meta = document.createElement("div");
+			meta.className = "teacher-meta";
+
+			const name = document.createElement("div");
+			name.className = "teacher-name";
+			name.textContent = `${teacher.first_name || ""} ${teacher.last_name || ""}`.trim() || "Unnamed teacher";
+
+			const phone = document.createElement("div");
+			phone.className = "teacher-phone";
+			phone.textContent = `Phone: ${teacher.phone_number || "Not provided"}`;
+
+			const joined = document.createElement("div");
+			joined.className = "teacher-phone";
+			joined.textContent = `Joined: ${teacher.date_joined || "Unknown date"}`;
+
+			meta.append(name, phone, joined);
+			card.append(avatar, meta);
+			return card;
+		}
+
+		function renderTeachers(teachers) {
+			teacherList.replaceChildren();
+
+			if (!teachers.length) {
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = "No active teachers match this phone number.";
+				teacherList.appendChild(emptyState);
+				setTeacherStatus("No active teachers found.");
+				return;
+			}
+
+			teachers.forEach((teacher) => teacherList.appendChild(createTeacherCard(teacher)));
+			setTeacherStatus(`${teachers.length} active teacher${teachers.length === 1 ? "" : "s"} found.`);
+		}
+
+		function createStudentCard(student) {
+			const card = document.createElement("article");
+			card.className = "student-card";
+
+			const meta = document.createElement("div");
+			meta.className = "student-meta";
+
+			const name = document.createElement("div");
+			name.className = "student-name";
+			name.textContent = `${student.first_name || ""} ${student.last_name || ""}`.trim() || "Unnamed student";
+
+			const phone = document.createElement("div");
+			phone.className = "student-detail";
+			phone.textContent = `Phone: ${student.phone_number || "Not provided"}`;
+
+			const parent = document.createElement("div");
+			parent.className = "student-detail";
+			parent.textContent = `Parent: ${student.parent_name || "Not provided"} • ${student.parent_phone_number || "Not provided"}`;
+
+			const stage = document.createElement("div");
+			stage.className = "student-detail";
+			stage.textContent = `Stage: ${student.stage || "Not provided"} • Level: ${student.level ?? "Not provided"}`;
+
+			meta.append(name, phone, parent, stage);
+			card.append(meta);
+			return card;
+		}
+
+		function renderStudents(students) {
+			studentList.replaceChildren();
+
+			if (!students.length) {
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = "No active students match the current filter.";
+				studentList.appendChild(emptyState);
+				setStudentStatus("No active students found.");
+				return;
+			}
+
+			students.forEach((student) => studentList.appendChild(createStudentCard(student)));
+			setStudentStatus(`${students.length} active student${students.length === 1 ? "" : "s"} found.`);
+		}
+
+		function openEditStudentModal() {
+			oldStageSelect.value = stageFilter.value || "";
+			oldLevelSelect.value = levelFilter.value || "";
+			newStageSelect.value = stageFilter.value || "";
+			newLevelSelect.value = levelFilter.value || "";
+			editStudentModal.classList.add("active");
+			editStudentModal.setAttribute("aria-hidden", "false");
+		}
+
+		function closeEditStudentModal() {
+			editStudentModal.classList.remove("active");
+			editStudentModal.setAttribute("aria-hidden", "true");
+		}
+
 		async function loadUsers() {
 			const config = modeConfig[currentMode];
 			setStatus(`Loading pending ${config.label}...`);
@@ -381,6 +968,100 @@
 				renderUsers(Array.isArray(users) ? users : []);
 			} catch (error) {
 				setStatus(error.message, true);
+			}
+		}
+
+		async function loadTeachers() {
+			setTeacherStatus("Loading active teachers...");
+			teacherList.replaceChildren();
+
+			try {
+				const response = await fetch("/admin/get_teachers", { credentials: "include" });
+				if (!response.ok) {
+					throw new Error(response.status === 403 ? "You are not authorized to view active teachers." : "Unable to load active teachers.");
+				}
+
+				const teachers = await response.json();
+				allTeachers = Array.isArray(teachers) ? teachers : [];
+				renderTeachers(allTeachers);
+			} catch (error) {
+				setTeacherStatus(error.message, true);
+			}
+		}
+
+		async function loadStudents() {
+			setStudentStatus("Loading active students...");
+			studentList.replaceChildren();
+
+			try {
+				const payload = {
+					stage: stageFilter.value? stageFilter.value : null,
+					level: levelFilter.value? levelFilter.value : null 
+				};
+				const endpoint = "/admin/get_students";
+
+				const response = await fetch(endpoint, { 
+					credentials: "include" , 
+					body: JSON.stringify(payload), 
+					method: "POST", 
+					headers: { "Content-Type": "application/json" } });
+
+				if (!response.ok) {
+					throw new Error(response.status === 403 ? "You are not authorized to view active students." : "Unable to load active students.");
+				}
+
+				const students = await response.json();
+				allStudents = Array.isArray(students) ? students : [];
+				renderStudents(allStudents);
+			} catch (error) {
+				setStudentStatus(error.message, true);
+			}
+		}
+
+		function applyTeacherFilter() {
+			const query = teacherSearch.value.trim().toLowerCase();
+			const filteredTeachers = allTeachers.filter((teacher) => {
+				const phone = (teacher.phone_number || "").toLowerCase();
+				const fullName = `${teacher.first_name || ""} ${teacher.last_name || ""}`.trim().toLowerCase();
+				return phone.includes(query) || fullName.includes(query);
+			});
+
+			renderTeachers(filteredTeachers);
+		}
+
+		async function saveStudentLevelChange() {
+			const payload = {
+				old_stage: oldStageSelect.value,
+				old_level: Number(oldLevelSelect.value),
+				new_stage: newStageSelect.value,
+				new_level: Number(newLevelSelect.value)
+			};
+
+			if (!payload.old_stage || !payload.old_level || !payload.new_stage || !payload.new_level) {
+				setStudentStatus("Please choose the old and new stage/level before saving.", true);
+				return;
+			}
+
+			setStudentStatus("Updating student stage/level...");
+
+			try {
+				const response = await fetch("/admin/edit_level", {
+					method: "PATCH",
+					credentials: "include",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(payload)
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json().catch(() => ({}));
+					throw new Error(errorData.detail || "Unable to update stage/level.");
+				}
+
+				closeEditStudentModal();
+				setStudentStatus(`Student stage/level updated successfully.`);
+				loadStudents();
+			} catch (error) {
+				setStudentStatus(error.message, true);
 			}
 		}
 
@@ -413,9 +1094,26 @@
 			}
 		}
 
+		navButtons.forEach((button) => {
+			button.addEventListener("click", () => setView(button.dataset.view));
+		});
+
 		studentsMode.addEventListener("click", () => setMode("students"));
 		teachersMode.addEventListener("click", () => setMode("teachers"));
-		loadUsers();
+		teacherSearch.addEventListener("input", applyTeacherFilter);
+		stageFilter.addEventListener("change", loadStudents);
+		levelFilter.addEventListener("change", loadStudents);
+		openEditStudentModalButton.addEventListener("click", openEditStudentModal);
+		closeModalButton.addEventListener("click", closeEditStudentModal);
+		cancelModalButton.addEventListener("click", closeEditStudentModal);
+		saveLevelChangeButton.addEventListener("click", saveStudentLevelChange);
+		editStudentModal.addEventListener("click", (event) => {
+			if (event.target === editStudentModal) {
+				closeEditStudentModal();
+			}
+		});
+		setView("overview");
+		setMode("students");
 	</script>
 </body>
 </html>

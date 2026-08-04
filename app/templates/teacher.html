@@ -132,6 +132,61 @@
 			justify-content: flex-end
 		}
 
+		.private-lectures-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+			gap: 14px;
+			margin-top: 12px
+		}
+
+		.private-lecture-card {
+			padding: 14px;
+			border-radius: 12px;
+			background: linear-gradient(180deg, #fff, #fbfeff);
+			box-shadow: 0 8px 20px rgba(43, 95, 130, 0.06);
+			border: 1px solid rgba(44, 117, 169, 0.06)
+		}
+
+		.private-lecture-card h3 {
+			margin: 0 0 8px;
+			font-size: 1rem
+		}
+
+		.private-meta,
+		.private-dates {
+			font-size: 0.9rem;
+			color: #5b7488;
+			display: flex;
+			justify-content: space-between;
+			gap: 8px;
+			margin-bottom: 8px
+		}
+
+		.private-link-form {
+			display: flex;
+			gap: 8px;
+			margin-top: 12px
+		}
+
+		.private-link-input {
+			flex: 1;
+			min-width: 0;
+			padding: 9px 10px;
+			border-radius: 8px;
+			border: 1px solid rgba(44, 117, 169, 0.12)
+		}
+
+		.private-badge {
+			display: inline-flex;
+			align-items: center;
+			padding: 4px 8px;
+			border-radius: 999px;
+			font-size: 0.78rem;
+			font-weight: 800;
+			background: #eff6ff;
+			color: #2563eb
+		}
+
 		.btn {
 			padding: 8px 12px;
 			border-radius: 10px;
@@ -180,6 +235,11 @@
 			display: flex;
 			gap: 10px;
 			align-items: center
+		}
+
+		.private-panel {
+			margin-top: 18px;
+			padding-top: 8px;
 		}
 
 		.package-panel {
@@ -280,6 +340,12 @@
 					<!-- course cards inserted here -->
 				</div>
 				<div id="coursesStatus" class="status">Loading your courses…</div>
+
+				<div style="margin-top: 24px;">
+					<h2>Your private lectures</h2>
+					<div id="privateLecturesGrid" class="private-lectures-grid"></div>
+					<div id="privateLecturesStatus" class="status">Loading your private lectures…</div>
+				</div>
 			</section>
 
 			<aside class="panel">
@@ -314,6 +380,32 @@
 					<div id="addStatus" class="status">Fill the form and click Add course.</div>
 				</form>
 
+			<div class="private-panel">
+				<h2 style="margin-bottom:10px;">Add a private lecture</h2>
+				<form id="addPrivateForm" class="add-course" onsubmit="return false;">
+					<div class="field">
+						<label for="privateTitle">Title</label>
+						<input id="privateTitle" name="privateTitle" type="text" required />
+					</div>
+					<div class="field">
+						<label for="privateSubject">Subject</label>
+						<input id="privateSubject" name="privateSubject" type="text" required />
+					</div>
+					<div class="field">
+						<label for="privateStartDate">Start date</label>
+						<input id="privateStartDate" name="privateStartDate" type="datetime-local" required />
+					</div>
+					<div class="field">
+						<label for="privatePrice">Price (EGP)</label>
+						<input id="privatePrice" name="privatePrice" type="number" step="0.01" min="0" required />
+					</div>
+					<div class="submit-row">
+						<button id="addPrivateButton" class="btn view" type="button">Add private lecture</button>
+					</div>
+					<div id="addPrivateStatus" class="status">Fill the private lecture fields and click Add private lecture.</div>
+				</form>
+			</div>
+
 			<div class="submit-row" style="margin-top:18px;">
 				<button id="createPackageButton" class="btn view" type="button">Create a package</button>
 			</div>
@@ -345,9 +437,14 @@
 <script>
 	const coursesGrid = document.getElementById('coursesGrid');
 	const coursesStatus = document.getElementById('coursesStatus');
+	const privateLecturesGrid = document.getElementById('privateLecturesGrid');
+	const privateLecturesStatus = document.getElementById('privateLecturesStatus');
 	const addCourseForm = document.getElementById('addCourseForm');
 	const addCourseButton = document.getElementById('addCourseButton');
 	const addStatus = document.getElementById('addStatus');
+	const addPrivateForm = document.getElementById('addPrivateForm');
+	const addPrivateButton = document.getElementById('addPrivateButton');
+	const addPrivateStatus = document.getElementById('addPrivateStatus');
 	const createPackageButton = document.getElementById('createPackageButton');
 	const packagePanel = document.getElementById('packagePanel');
 	const packageTitle = document.getElementById('packageTitle');
@@ -441,6 +538,54 @@
 		setStatus(coursesStatus, `${currentCourses.length} course(s)`);
 	}
 
+	function renderPrivateLectures(lectures) {
+		const items = Array.isArray(lectures) ? lectures : [];
+		privateLecturesGrid.replaceChildren();
+		if (!items.length) {
+			privateLecturesGrid.innerHTML = '<div style="grid-column:1/-1; padding:18px; border-radius:12px; background:rgba(255,255,255,0.9); text-align:center; color:#5b7488">No private lectures yet.</div>';
+			setStatus(privateLecturesStatus, 'No private lectures found.');
+			return;
+		}
+
+		items.forEach(lecture => {
+			const card = document.createElement('div');
+			card.className = 'private-lecture-card';
+
+			const title = document.createElement('h3');
+			title.textContent = lecture.title || 'Untitled';
+
+			const meta = document.createElement('div');
+			meta.className = 'private-meta';
+			meta.innerHTML = `<span>${lecture.subject || 'N/A'}</span><span class="private-badge">${lecture.student_id != null ? 'Booked' : 'Open'}</span>`;
+
+			const dates = document.createElement('div');
+			dates.className = 'private-dates';
+			const startDate = lecture.start_date ? new Date(lecture.start_date).toLocaleString() : 'N/A';
+			dates.innerHTML = `<span>${startDate}</span><span>EGP${Number(lecture.price || 0).toFixed(2)}</span>`;
+
+			const linkForm = document.createElement('div');
+			linkForm.className = 'private-link-form';
+
+			const linkInput = document.createElement('input');
+			linkInput.className = 'private-link-input';
+			linkInput.type = 'url';
+			linkInput.placeholder = 'Enter meeting link';
+			linkInput.value = lecture.link || '';
+
+			const saveLinkBtn = document.createElement('button');
+			saveLinkBtn.className = 'btn view';
+			saveLinkBtn.type = 'button';
+			saveLinkBtn.textContent = 'Save';
+			saveLinkBtn.addEventListener('click', () => savePrivateLectureLink(lecture.id, linkInput, saveLinkBtn));
+
+			linkForm.append(linkInput, saveLinkBtn);
+			card.append(title, meta, dates, linkForm);
+			privateLecturesGrid.appendChild(card);
+		});
+
+		setStatus(privateLecturesStatus, `${items.length} private lecture(s)`);
+	}
+
 	function updateSelectedCoursesList() {
 		const selectedTitles = currentCourses
 			.filter(course => selectedPackageCourseIds.has(course.id))
@@ -483,6 +628,52 @@
 				renderCourses(Array.isArray(data) ? data : []);
 			} catch (err) {
 				setStatus(coursesStatus, err.message || 'Error loading courses', true);
+			}
+		}
+
+		async function loadPrivateLectures() {
+			setStatus(privateLecturesStatus, 'Loading your private lectures…');
+			try {
+				const res = await fetch('/teacher/get_private_lectures', { credentials: 'include' });
+				if (!res.ok) throw new Error('Unable to load private lectures');
+				const data = await res.json();
+				renderPrivateLectures(Array.isArray(data) ? data : []);
+			} catch (err) {
+				setStatus(privateLecturesStatus, err.message || 'Error loading private lectures', true);
+			}
+		}
+
+		async function savePrivateLectureLink(id, inputEl, buttonEl) {
+			const link = inputEl.value.trim();
+			if (!link) {
+				setStatus(privateLecturesStatus, 'Please enter a link to save.', true);
+				return;
+			}
+
+			buttonEl.disabled = true;
+			setStatus(privateLecturesStatus, 'Saving link…');
+			try {
+				const res = await fetch(`/teacher/add_private_link/${id}`, {
+					method: 'PATCH',
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ link })
+				});
+				if (!res.ok) {
+					const msg = res.status === 403 ? 'Not authorized to update private lecture links.'
+						: (res.status === 404 ? 'Private lecture not found.' : 'Unable to save link.');
+					throw new Error(msg);
+				}
+				const data = await res.json();
+				if (data && data.success) {
+					setStatus(privateLecturesStatus, 'Private lecture link saved successfully.');
+				} else {
+					throw new Error('Unable to save link.');
+				}
+			} catch (err) {
+				setStatus(privateLecturesStatus, err.message || 'Unable to save link.', true);
+			} finally {
+				buttonEl.disabled = false;
 			}
 		}
 
@@ -543,6 +734,56 @@
 			}
 		});
 
+		addPrivateButton.addEventListener('click', async () => {
+			const title = document.getElementById('privateTitle').value.trim();
+			const subject = document.getElementById('privateSubject').value.trim();
+			const startDate = document.getElementById('privateStartDate').value;
+			const price = document.getElementById('privatePrice').value;
+
+			if (!title || !subject || !startDate || !price) {
+				setStatus(addPrivateStatus, 'Please complete all private lecture fields.', true);
+				return;
+			}
+
+			addPrivateButton.disabled = true;
+			setStatus(addPrivateStatus, 'Adding private lecture…');
+
+			try {
+				const payload = {
+					title,
+					subject,
+					start_date: new Date(startDate).toISOString(),
+					price: Number(price)
+				};
+
+				const res = await fetch('/teacher/add_private', {
+					method: 'POST',
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload)
+				});
+
+				if (!res.ok) {
+					const msg = res.status === 403 ? 'Not authorized to add private lectures.'
+						: (res.status === 400 ? 'Invalid private lecture data.' : 'Unable to add private lecture.');
+					throw new Error(msg);
+				}
+
+				const data = await res.json();
+				if (data && data.success) {
+					setStatus(addPrivateStatus, 'Private lecture added successfully.');
+					addPrivateForm.reset();
+					await loadPrivateLectures();
+				} else {
+					throw new Error('Private lecture creation failed.');
+				}
+			} catch (err) {
+				setStatus(addPrivateStatus, err.message || 'Unable to add private lecture.', true);
+			} finally {
+				addPrivateButton.disabled = false;
+			}
+		});
+
 		createPackageButton.addEventListener('click', openPackagePanel);
 		cancelPackageButton.addEventListener('click', closePackagePanel);
 
@@ -595,6 +836,7 @@
 		});
 
 		loadCourses();
+		loadPrivateLectures();
 	</script>
 </body>
 

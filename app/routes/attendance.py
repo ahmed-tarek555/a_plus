@@ -21,7 +21,7 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 def course_data(request: Request, lecture_id: int, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
     user_id, user_role = validate_user(token)
-    if user_role != "teacher":
+    if user_role not in  ("teacher", "admin", "moderator"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.id == user_id).first()
     if not result:
