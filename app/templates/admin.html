@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -33,6 +34,38 @@
 			justify-content: space-between;
 			gap: 24px;
 			margin-bottom: 28px;
+		}
+
+		.header .logout-button {
+			min-width: auto;
+			padding: 11px 16px;
+			border: 1px solid rgba(192, 57, 75, 0.25);
+			background: #fff3f4;
+			color: #a93748;
+			text-decoration: none;
+			font-weight: 800;
+			border-radius: 10px;
+			transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+		}
+
+		.header .logout-button:hover {
+			background: #ffe4e7;
+		}
+
+		.header .logout-button {
+			min-width: auto;
+			padding: 11px 16px;
+			border: 1px solid rgba(192, 57, 75, 0.25);
+			background: #fff3f4;
+			color: #a93748;
+			text-decoration: none;
+			font-weight: 800;
+			border-radius: 10px;
+			transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+		}
+
+		.header .logout-button:hover {
+			background: #ffe4e7;
 		}
 
 		.eyebrow {
@@ -112,6 +145,289 @@
 			margin-bottom: 16px;
 		}
 
+		.course-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 18px;
+		}
+
+		.course-card {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-start;
+			min-height: 220px;
+			padding: 20px 20px 18px;
+			border: 1px solid rgba(44, 117, 169, 0.18);
+			border-radius: 18px;
+			background: linear-gradient(145deg, #ffffff 0%, #f7fbff 58%, #eef6fc 100%);
+			box-shadow: 0 10px 28px rgba(43, 95, 130, 0.08);
+			overflow: hidden;
+			transition: transform 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		.course-card:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 14px 34px rgba(43, 95, 130, 0.12);
+		}
+
+		.course-card-top {
+			padding-bottom: 14px;
+			border-bottom: 1px solid rgba(44, 117, 169, 0.12);
+		}
+
+		.course-card-package .course-card-top {
+			padding-top: 40px;
+		}
+
+		.course-card-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 12px;
+			margin-bottom: 10px;
+		}
+
+		.course-card h3 {
+			margin: 0;
+			color: #19324a;
+			font-size: 1.08rem;
+			line-height: 1.35;
+		}
+
+		.course-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 12px;
+			margin-top: 10px;
+			color: #5b7488;
+			font-size: 0.95rem;
+		}
+
+		.course-price {
+			margin-top: 10px;
+			color: #19324a;
+			font-weight: 800;
+			font-size: 1rem;
+		}
+
+		.course-card-bottom {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			margin-top: 14px;
+			padding-top: 10px;
+		}
+
+		.course-teacher-avatar {
+			width: 52px;
+			height: 52px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 2px solid rgba(44, 117, 169, 0.16);
+			background: #e8f2fb;
+		}
+
+		.course-teacher-meta {
+			display: grid;
+			gap: 2px;
+		}
+
+		.course-teacher-name {
+			color: #19324a;
+			font-size: 0.97rem;
+			font-weight: 800;
+		}
+
+		.course-teacher-phone {
+			color: #5b7488;
+			font-size: 0.88rem;
+		}
+
+		.courses-layout {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) 340px;
+			gap: 24px;
+			align-items: start;
+		}
+
+		.package-panel {
+			padding: 18px;
+			border: 1px solid rgba(44, 117, 169, 0.18);
+			border-radius: 18px;
+			background: linear-gradient(145deg, #f9fcff 0%, #f1f7fd 100%);
+			box-shadow: 0 12px 32px rgba(43, 95, 130, 0.08);
+			position: sticky;
+			top: 20px;
+		}
+
+		.moderator-card {
+			position: relative;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 16px;
+			padding: 16px 18px;
+			border: 1px solid rgba(44, 117, 169, 0.16);
+			border-radius: 14px;
+			background: rgba(255, 255, 255, 0.86);
+			box-shadow: 0 8px 22px rgba(43, 95, 130, 0.06);
+		}
+
+		.moderator-menu-button {
+			position: absolute;
+			top: 16px;
+			right: 16px;
+			width: 36px;
+			height: 36px;
+			border: none;
+			border-radius: 50%;
+			background: transparent;
+			color: #4c687e;
+			cursor: pointer;
+			display: grid;
+			place-items: center;
+			font-size: 1.25rem;
+		}
+
+		.moderator-menu-button:hover,
+		.moderator-menu-button:focus {
+			background: rgba(47, 141, 204, 0.1);
+			outline: none;
+		}
+
+		.permission-modal .modal-card {
+			width: min(620px, 100%);
+		}
+
+		.permission-form {
+			display: grid;
+			gap: 12px;
+			margin-top: 14px;
+		}
+
+		.permission-form .form-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.permission-form select,
+		.permission-form input {
+			width: 100%;
+			padding: 12px 14px;
+			border: 1px solid rgba(44, 117, 169, 0.22);
+			border-radius: 10px;
+			background: #fff;
+			color: #19324a;
+		}
+
+		.permission-list {
+			display: grid;
+			gap: 10px;
+			margin-top: 14px;
+		}
+
+		.permission-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			padding: 12px 14px;
+			border: 1px solid rgba(44, 117, 169, 0.18);
+			border-radius: 12px;
+			background: #fbfeff;
+		}
+
+		.permission-item span {
+			color: #19324a;
+			font-weight: 700;
+		}
+
+		.permission-item .remove-permission {
+			min-width: auto;
+			padding: 8px 10px;
+			font-size: 0.85rem;
+		}
+
+		.permission-form-status {
+			margin-top: 10px;
+		}
+
+		.moderator-form-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+			margin-top: 12px;
+		}
+
+		.moderator-form-grid label {
+			display: grid;
+			gap: 6px;
+			color: #4c687e;
+			font-size: 0.88rem;
+			font-weight: 700;
+		}
+
+		.moderator-form-grid .package-input {
+			margin-top: 0;
+		}
+
+		.package-panel h3 {
+			margin: 0 0 10px;
+			color: #19324a;
+			font-size: 1.08rem;
+		}
+
+		.package-option {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 7px 10px;
+			border: 1px solid rgba(44, 117, 169, 0.16);
+			border-radius: 999px;
+			background: rgba(255, 255, 255, 0.96);
+			box-shadow: 0 6px 14px rgba(43, 95, 130, 0.08);
+			font-size: 0.8rem;
+			color: #4c687e;
+			z-index: 2;
+		}
+
+		.package-option input {
+			margin: 0;
+		}
+
+		.package-input {
+			width: 100%;
+			padding: 10px 12px;
+			border: 1px solid rgba(44, 117, 169, 0.2);
+			border-radius: 10px;
+			margin-top: 8px;
+			background: #fff;
+			color: #19324a;
+		}
+
+		.package-input:focus {
+			outline: none;
+			border-color: #2f8dcc;
+			box-shadow: 0 0 0 3px rgba(47, 141, 204, 0.14);
+		}
+
+		.package-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-top: 12px;
+		}
+
+		#packageStatus,
+		#moderatorStatus {
+			margin-top: 14px;
+		}
+
 		.modal {
 			position: fixed;
 			inset: 0;
@@ -128,10 +444,11 @@
 		}
 
 		.modal-card {
-			width: min(520px, 100%);
-			padding: 22px;
-			border-radius: 16px;
-			background: #fff;
+			width: min(560px, 100%);
+			padding: 24px;
+			border: 1px solid rgba(44, 117, 169, 0.16);
+			border-radius: 18px;
+			background: linear-gradient(145deg, #ffffff 0%, #f7fbff 100%);
 			box-shadow: 0 18px 45px rgba(10, 26, 43, 0.22);
 		}
 
@@ -150,7 +467,7 @@
 
 		.modal-close {
 			border: 0;
-			border-radius: 8px;
+			border-radius: 10px;
 			padding: 8px 10px;
 			background: #eff6fb;
 			color: #2f8dcc;
@@ -178,6 +495,12 @@
 			border-radius: 10px;
 			background: rgba(255, 255, 255, 0.92);
 			color: #19324a;
+		}
+
+		.modal-grid select:focus {
+			outline: none;
+			border-color: #2f8dcc;
+			box-shadow: 0 0 0 3px rgba(47, 141, 204, 0.14);
 		}
 
 		.modal-actions {
@@ -339,7 +662,9 @@
 			transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 		}
 
-		.mode-button:hover { transform: translateY(-1px); }
+		.mode-button:hover {
+			transform: translateY(-1px);
+		}
 
 		.mode-button.active {
 			background: #2f8dcc;
@@ -383,8 +708,15 @@
 		}
 
 		@keyframes reveal {
-			from { opacity: 0; transform: translateY(5px); }
-			to { opacity: 1; transform: translateY(0); }
+			from {
+				opacity: 0;
+				transform: translateY(5px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
 		}
 
 		.user-heading {
@@ -438,15 +770,24 @@
 			transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
 		}
 
-		.button:hover { transform: translateY(-1px); }
-		.button:disabled { cursor: wait; opacity: 0.55; transform: none; }
+		.button:hover {
+			transform: translateY(-1px);
+		}
+
+		.button:disabled {
+			cursor: wait;
+			opacity: 0.55;
+			transform: none;
+		}
 
 		.approve-button {
 			background: #2f8dcc;
 			color: #fff;
 		}
 
-		.approve-button:hover { background: #2479b8; }
+		.approve-button:hover {
+			background: #2479b8;
+		}
 
 		.delete-button {
 			border: 1px solid rgba(192, 57, 75, 0.25);
@@ -454,7 +795,9 @@
 			color: #a93748;
 		}
 
-		.delete-button:hover { background: #ffe4e7; }
+		.delete-button:hover {
+			background: #ffe4e7;
+		}
 
 		.empty-state {
 			padding: 52px 24px;
@@ -465,42 +808,113 @@
 			text-align: center;
 		}
 
+		@media (max-width: 1200px) {
+			.course-grid {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+		}
+
+		@media (max-width: 920px) {
+			.course-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.courses-layout {
+				grid-template-columns: 1fr;
+			}
+
+			.package-panel {
+				position: static;
+			}
+		}
+
 		@media (max-width: 720px) {
-			.page { padding: 28px 16px 48px; }
-			.header { align-items: flex-start; flex-direction: column; }
-			.panel-grid { grid-template-columns: 1fr; }
-			.section-header { align-items: flex-start; flex-direction: column; }
-			.dashboard-nav { width: 100%; }
-			.nav-button { flex: 1 1 calc(50% - 10px); text-align: center; }
-			.mode-switcher { width: 100%; }
-			.mode-button { flex: 1; }
-			.user-card { grid-template-columns: 1fr; gap: 16px; }
-			.actions { justify-content: stretch; }
-			.button { flex: 1; }
+			.page {
+				padding: 28px 16px 48px;
+			}
+
+			.header {
+				align-items: flex-start;
+				flex-direction: column;
+			}
+
+			.panel-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.course-grid {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+
+			.section-header {
+				align-items: flex-start;
+				flex-direction: column;
+			}
+
+			.dashboard-nav {
+				width: 100%;
+			}
+
+			.nav-button {
+				flex: 1 1 calc(50% - 10px);
+				text-align: center;
+			}
+
+			.mode-switcher {
+				width: 100%;
+			}
+
+			.mode-button {
+				flex: 1;
+			}
+
+			.user-card {
+				grid-template-columns: 1fr;
+				gap: 16px;
+			}
+
+			.actions {
+				justify-content: stretch;
+			}
+
+			.button {
+				flex: 1;
+			}
 		}
 
 		@media (max-width: 420px) {
-			.user-card { padding: 17px; }
-			.details { display: grid; gap: 5px; }
+			.user-card {
+				padding: 17px;
+			}
+
+			.details {
+				display: grid;
+				gap: 5px;
+			}
 		}
 	</style>
 </head>
+
 <body>
 	<main class="page">
 		<div class="container">
 			<header class="header">
 				<div>
 					<p class="eyebrow">Administration</p>
-					<h1>Admin dashboard</h1>
+					<h1>{{ role }} dashboard</h1>
 					<p>Manage platform activity from a single control center.</p>
 				</div>
+				<a class="logout-button" href="/logout">Logout</a>
 			</header>
 
 			<nav class="dashboard-nav" aria-label="Admin dashboard sections">
-				<button class="nav-button active" type="button" data-view="overview" aria-pressed="true">Overview</button>
-				<button class="nav-button" type="button" data-view="pending" aria-pressed="false">Pending approvals</button>
+				<button class="nav-button active" type="button" data-view="overview"
+					aria-pressed="true">Overview</button>
+				<button class="nav-button" type="button" data-view="pending" aria-pressed="false">Pending
+					approvals</button>
 				<button class="nav-button" type="button" data-view="teachers" aria-pressed="false">Teachers</button>
 				<button class="nav-button" type="button" data-view="students" aria-pressed="false">Students</button>
+				<button class="nav-button" type="button" data-view="moderators" aria-pressed="false">Moderators</button>
 				<button class="nav-button" type="button" data-view="courses" aria-pressed="false">Courses</button>
 				<button class="nav-button" type="button" data-view="settings" aria-pressed="false">Settings</button>
 			</nav>
@@ -510,7 +924,8 @@
 					<div class="panel-card">
 						<div class="panel-label">Pending students</div>
 						<div class="panel-value">Review requests</div>
-						<p class="panel-copy">Approve or remove new student applications before enrollment is allowed.</p>
+						<p class="panel-copy">Approve or remove new student applications before enrollment is allowed.
+						</p>
 					</div>
 					<div class="panel-card">
 						<div class="panel-label">Pending teachers</div>
@@ -520,7 +935,8 @@
 					<div class="panel-card">
 						<div class="panel-label">Platform activity</div>
 						<div class="panel-value">Live administration</div>
-						<p class="panel-copy">Use the dashboard tabs to move between approvals, course management, and admin settings.</p>
+						<p class="panel-copy">Use the dashboard tabs to move between approvals, course management, and
+							admin settings.</p>
 					</div>
 				</div>
 			</section>
@@ -534,12 +950,15 @@
 					</div>
 
 					<nav class="mode-switcher" aria-label="Pending account type">
-						<button id="studentsMode" class="mode-button active" type="button" aria-pressed="true">Students</button>
-						<button id="teachersMode" class="mode-button" type="button" aria-pressed="false">Teachers</button>
+						<button id="studentsMode" class="mode-button active" type="button"
+							aria-pressed="true">Students</button>
+						<button id="teachersMode" class="mode-button" type="button"
+							aria-pressed="false">Teachers</button>
 					</nav>
 				</div>
 
-				<div id="statusMessage" class="status" role="status" aria-live="polite">Loading pending students...</div>
+				<div id="statusMessage" class="status" role="status" aria-live="polite">Loading pending students...
+				</div>
 				<section id="usersList" class="users-list" aria-live="polite"></section>
 			</section>
 
@@ -553,7 +972,8 @@
 				</div>
 
 				<div class="search-row">
-					<input id="teacherSearch" class="search-input" type="search" placeholder="Search by phone number" aria-label="Search teachers by phone number" />
+					<input id="teacherSearch" class="search-input" type="search" placeholder="Search by phone number"
+						aria-label="Search teachers by phone number" />
 				</div>
 				<div id="teacherStatus" class="status" role="status" aria-live="polite">Loading active teachers...</div>
 				<section id="teacherList" class="teacher-list" aria-live="polite"></section>
@@ -586,7 +1006,8 @@
 						<option value="6">Level 6</option>
 					</select>
 
-					<button id="openEditStudentModalButton" class="button approve-button" type="button">Change level/stage</button>
+					<button id="openEditStudentModalButton" class="button approve-button" type="button">Change
+						level/stage</button>
 				</div>
 
 				<div id="studentStatus" class="status" role="status" aria-live="polite">Loading active students...</div>
@@ -594,10 +1015,93 @@
 			</section>
 
 			<section id="coursesPanel" class="view-panel">
-				<div class="placeholder-panel">
-					<h2>Courses</h2>
-					<p>Course administration tools can be placed here as the next dashboard section.</p>
+				<div class="section-header">
+					<div>
+						<p class="eyebrow">Courses</p>
+						<h2>Available courses</h2>
+						<p>Review the courses and create admin packages from selected courses.</p>
+					</div>
 				</div>
+
+				<div class="filter-row">
+					<button id="createPackageButton" class="button approve-button" type="button">Create a
+						package</button>
+				</div>
+
+				<div class="courses-layout">
+					<div>
+						<div id="coursesStatus" class="status" role="status" aria-live="polite">Loading courses...</div>
+						<section id="coursesList" class="course-grid" aria-live="polite"></section>
+					</div>
+
+					<div id="packagePanel" class="package-panel" hidden>
+						<h3 style="margin: 0 0 10px; color: #19324a;">Package details</h3>
+						<label style="display:block; color:#4c687e; font-weight:700; margin-bottom:6px;"
+							for="packageTitle">Title</label>
+						<input id="packageTitle" class="package-input" type="text" placeholder="Enter package title" />
+						<label
+							style="display:block; color:#4c687e; font-weight:700; margin-top:10px; margin-bottom:6px;"
+							for="packagePrice">Price (EGP)</label>
+						<input id="packagePrice" class="package-input" type="number" step="0.01" min="0"
+							placeholder="Enter package price" />
+						<div style="margin-top:12px; color:#4c687e; font-weight:700;">Selected courses</div>
+						<div id="selectedCourses" class="status" style="margin-top:8px; min-height:auto;">No courses
+							selected yet.</div>
+						<div class="package-actions">
+							<button id="savePackageButton" class="button approve-button" type="button">Save</button>
+							<button id="cancelPackageButton" class="button delete-button" type="button">Cancel</button>
+						</div>
+						<div id="packageStatus" class="status">Choose a title, price, and at least one course.</div>
+					</div>
+				</div>
+			</section>
+
+			<section id="moderatorsPanel" class="view-panel">
+				<div class="section-header">
+					<div>
+						<p class="eyebrow">Moderators</p>
+						<h2>Moderators</h2>
+						<p>Create and review moderator accounts for the platform.</p>
+					</div>
+				</div>
+
+				<div class="filter-row">
+					<button id="createModeratorButton" class="button approve-button" type="button">Create a moderator</button>
+				</div>
+
+				<div id="moderatorFormPanel" class="package-panel" hidden>
+					<h3>New moderator</h3>
+					<div class="moderator-form-grid">
+						<label>
+							First name
+							<input id="moderatorFirstName" class="package-input" type="text" placeholder="Enter first name" />
+						</label>
+						<label>
+							Last name
+							<input id="moderatorLastName" class="package-input" type="text" placeholder="Enter last name" />
+						</label>
+						<label>
+							Username
+							<input id="moderatorUsername" class="package-input" type="text" placeholder="Enter username" />
+						</label>
+						<label>
+							Phone number
+							<input id="moderatorPhone" class="package-input" type="text" placeholder="Enter phone number" />
+						</label>
+						<label style="grid-column: 1 / -1;">
+							Password
+							<input id="moderatorPassword" class="package-input" type="password" placeholder="Enter password" />
+						</label>
+					</div>
+					<div class="package-actions">
+						<button id="saveModeratorButton" class="button approve-button" type="button">Save</button>
+						<button id="cancelModeratorButton" class="button delete-button" type="button">Cancel</button>
+					</div>
+					<div id="moderatorStatus" class="status">Fill in the moderator details to create a new account.</div>
+				</div>
+
+				<div id="moderatorsStatus" class="status" role="status" aria-live="polite">Loading moderators...</div>
+				<section id="moderatorsList" class="teacher-list" aria-live="polite"></section>
 			</section>
 
 			<section id="settingsPanel" class="view-panel">
@@ -609,6 +1113,42 @@
 		</div>
 	</main>
 
+	<div id="permissionModal" class="modal permission-modal" aria-hidden="true">
+		<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="permissionModalTitle">
+			<div class="modal-header">
+				<div>
+					<h3 id="permissionModalTitle">Moderator permissions</h3>
+					<p id="permissionModalDescription" style="margin:0;color:#5b7488;font-size:0.95rem;">Review and manage moderator permissions.</p>
+				</div>
+				<button id="closePermissionModalButton" class="modal-close" type="button" aria-label="Close permissions modal">×</button>
+			</div>
+			<div class="permission-form">
+				<div class="form-row">
+					<label style="flex:1 1 220px; display:grid; gap:8px; color:#4c687e; font-size:0.88rem; font-weight:700;">
+						Permission type
+						<select id="permissionTypeSelect">
+							<option value="manage_approval">Manage Approval</option>
+							<option value="manage_teachers">Manage teachers</option>
+							<option value="manage_students">Manage students</option>
+							<option value="manage_courses">Manage courses</option>
+							<option value="manage_levels">Manage Levels</option>
+							<option value="manage_packages">Manage packages</option>
+							<option value="user_deletion">User Deletion</option>
+							<option value="custom">Custom</option>
+						</select>
+					</label>
+					<label id="customPermissionLabel" style="flex:1 1 220px; display:none; gap:8px; color:#4c687e; font-size:0.88rem; font-weight:700;">
+						Custom permission
+						<input id="permissionTypeCustom" type="text" placeholder="Enter permission type" />
+					</label>
+				</div>
+				<button id="addPermissionButton" class="button approve-button" type="button">Add permission</button>
+				<div id="permissionFormStatus" class="status permission-form-status" role="status" aria-live="polite">Choose a permission type to add for this moderator.</div>
+			</div>
+			<div id="permissionList" class="permission-list" aria-live="polite"></div>
+		</div>
+	</div>
+
 	<div id="editStudentModal" class="modal" aria-hidden="true">
 		<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="editStudentModalTitle">
 			<div class="modal-header">
@@ -618,7 +1158,7 @@
 
 			<div class="modal-grid">
 				<label>
-					Old stage
+					Affected stage
 					<select id="oldStageSelect">
 						<option value="">Select old stage</option>
 						<option value="الابتدائية">الابتدائية</option>
@@ -628,7 +1168,7 @@
 				</label>
 
 				<label>
-					Old level
+					Affected level
 					<select id="oldLevelSelect">
 						<option value="">Select old level</option>
 						<option value="1">1</option>
@@ -685,6 +1225,28 @@
 		const levelFilter = document.getElementById("levelFilter");
 		const studentStatus = document.getElementById("studentStatus");
 		const studentList = document.getElementById("studentList");
+		const coursesStatus = document.getElementById("coursesStatus");
+		const coursesList = document.getElementById("coursesList");
+		const moderatorsStatus = document.getElementById("moderatorsStatus");
+		const moderatorsList = document.getElementById("moderatorsList");
+		const createPackageButton = document.getElementById("createPackageButton");
+		const createModeratorButton = document.getElementById("createModeratorButton");
+		const moderatorFormPanel = document.getElementById("moderatorFormPanel");
+		const moderatorFirstName = document.getElementById("moderatorFirstName");
+		const moderatorLastName = document.getElementById("moderatorLastName");
+		const moderatorUsername = document.getElementById("moderatorUsername");
+		const moderatorPhone = document.getElementById("moderatorPhone");
+		const moderatorPassword = document.getElementById("moderatorPassword");
+		const saveModeratorButton = document.getElementById("saveModeratorButton");
+		const cancelModeratorButton = document.getElementById("cancelModeratorButton");
+		const moderatorStatus = document.getElementById("moderatorStatus");
+		const packagePanel = document.getElementById("packagePanel");
+		const packageTitle = document.getElementById("packageTitle");
+		const packagePrice = document.getElementById("packagePrice");
+		const selectedCourses = document.getElementById("selectedCourses");
+		const savePackageButton = document.getElementById("savePackageButton");
+		const cancelPackageButton = document.getElementById("cancelPackageButton");
+		const packageStatus = document.getElementById("packageStatus");
 		const openEditStudentModalButton = document.getElementById("openEditStudentModalButton");
 		const editStudentModal = document.getElementById("editStudentModal");
 		const oldStageSelect = document.getElementById("oldStageSelect");
@@ -694,23 +1256,40 @@
 		const closeModalButton = document.getElementById("closeModalButton");
 		const cancelModalButton = document.getElementById("cancelModalButton");
 		const saveLevelChangeButton = document.getElementById("saveLevelChangeButton");
+		const permissionModal = document.getElementById("permissionModal");
+		const permissionModalTitle = document.getElementById("permissionModalTitle");
+		const permissionModalDescription = document.getElementById("permissionModalDescription");
+		const closePermissionModalButton = document.getElementById("closePermissionModalButton");
+		const permissionList = document.getElementById("permissionList");
+		const addPermissionButton = document.getElementById("addPermissionButton");
+		const permissionTypeSelect = document.getElementById("permissionTypeSelect");
+		const permissionTypeCustom = document.getElementById("permissionTypeCustom");
+		const customPermissionLabel = document.getElementById("customPermissionLabel");
+		const permissionFormStatus = document.getElementById("permissionFormStatus");
 		const navButtons = document.querySelectorAll(".nav-button");
 		const viewPanels = document.querySelectorAll(".view-panel");
-
+		const currentRole = "{{ role | default('admin') }}";
+		const basePath = currentRole === "admin" ? "/admin" : "/mod";
 		let currentMode = "students";
 		let currentView = "overview";
 		let allTeachers = [];
 		let allStudents = [];
+		let currentCourses = [];
+		let allModerators = [];
+		let isPackageMode = false;
+		let selectedPackageCourseIds = new Set();
+		let currentModeratorId = null;
+		let currentModeratorName = null;
 
 		const modeConfig = {
 			students: {
-				endpoint: "/admin/pending_students",
+				endpoint: `${basePath}/pending_students`,
 				label: "students",
 				title: "Pending students",
 				description: "Review student accounts before they join the platform."
 			},
 			teachers: {
-				endpoint: "/admin/pending_teachers",
+				endpoint: `${basePath}/pending_teachers`,
 				label: "teachers",
 				title: "Pending teachers",
 				description: "Review teacher accounts before they join the platform."
@@ -754,6 +1333,14 @@
 
 			if (view === "students") {
 				loadStudents();
+			}
+
+			if (view === "courses") {
+				loadCourses();
+			}
+
+			if (view === "moderators") {
+				loadModerators();
 			}
 		}
 
@@ -857,7 +1444,8 @@
 			const avatar = document.createElement("img");
 			avatar.className = "teacher-avatar";
 			avatar.alt = `${teacher.first_name || "Teacher"} ${teacher.last_name || ""}`.trim();
-			avatar.src = teacher.pfp_url || "";
+			const fullName = [teacher.first_name, teacher.last_name].filter(Boolean).join(' ');
+			avatar.src = teacher.pfp_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(fullName || 'Teacher') + '&background=DBEAFE&color=2563EB';
 
 			const meta = document.createElement("div");
 			meta.className = "teacher-meta";
@@ -939,6 +1527,358 @@
 			setStudentStatus(`${students.length} active student${students.length === 1 ? "" : "s"} found.`);
 		}
 
+		function createModeratorCard(mod) {
+			const card = document.createElement("article");
+			card.className = "moderator-card";
+
+			const menuButton = document.createElement("button");
+			menuButton.type = "button";
+			menuButton.className = "moderator-menu-button";
+			menuButton.setAttribute("aria-label", "View moderator permissions");
+			menuButton.innerHTML = "<span aria-hidden=\"true\">⋮</span>";
+			menuButton.addEventListener("click", () => openModeratorPermissions(mod));
+
+			const info = document.createElement("div");
+			const name = document.createElement("div");
+			name.className = "teacher-name";
+			name.textContent = `${mod.first_name || ""} ${mod.last_name || ""}`.trim() || "Unnamed moderator";
+
+			const phone = document.createElement("div");
+			phone.className = "teacher-phone";
+			phone.textContent = `Phone: ${mod.phone_number || "Not provided"}`;
+
+			info.append(name, phone);
+			card.append(menuButton, info);
+			return card;
+		}
+
+		function renderModeratorPermissions(permissions) {
+			permissionList.replaceChildren();
+
+			if (!permissions.length) {
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = "This moderator has no permissions yet.";
+				permissionList.appendChild(emptyState);
+				return;
+			}
+
+			permissions.forEach((permission) => {
+				const item = document.createElement("div");
+				item.className = "permission-item";
+
+				const label = document.createElement("span");
+				label.textContent = permission.type || "Unknown permission";
+
+				const removeButton = document.createElement("button");
+				removeButton.type = "button";
+				removeButton.className = "button delete-button remove-permission";
+				removeButton.textContent = "Remove";
+				removeButton.addEventListener("click", () => deletePermission(permission.id));
+
+				item.append(label, removeButton);
+				permissionList.appendChild(item);
+			});
+		}
+
+		async function loadModeratorPermissions(modId) {
+			permissionList.replaceChildren();
+			permissionFormStatus.textContent = "Loading permissions...";
+			permissionFormStatus.classList.remove("error");
+
+			try {
+				const response = await fetch(`${basePath}/permissions/${modId}`, { credentials: "include" });
+				if (!response.ok) {
+					throw new Error("Unable to load moderator permissions.");
+				}
+
+				const permissions = await response.json();
+				renderModeratorPermissions(Array.isArray(permissions) ? permissions : []);
+				permissionFormStatus.textContent = `${permissions.length} permission${permissions.length === 1 ? "" : "s"} loaded.`;
+			} catch (error) {
+				permissionFormStatus.textContent = error.message;
+				permissionFormStatus.classList.add("error");
+			}
+		}
+
+		function openModeratorPermissions(mod) {
+			currentModeratorId = mod.id;
+			currentModeratorName = `${mod.first_name || ""} ${mod.last_name || ""}`.trim() || "Moderator";
+			permissionModalTitle.textContent = `Permissions for ${currentModeratorName}`;
+			permissionModalDescription.textContent = `Review and manage permissions assigned to ${currentModeratorName}.`;
+			permissionModal.classList.add("active");
+			permissionModal.setAttribute("aria-hidden", "false");
+			permissionTypeSelect.value = "manage_students";
+			permissionTypeCustom.value = "";
+			customPermissionLabel.style.display = "none";
+			loadModeratorPermissions(currentModeratorId);
+		}
+
+		function closePermissionModal() {
+			permissionModal.classList.remove("active");
+			permissionModal.setAttribute("aria-hidden", "true");
+			permissionList.replaceChildren();
+			permissionFormStatus.textContent = "Choose a permission type to add for this moderator.";
+			permissionFormStatus.classList.remove("error");
+			currentModeratorId = null;
+			currentModeratorName = null;
+		}
+
+		function updatePermissionTypeVisibility() {
+			if (permissionTypeSelect.value === "custom") {
+				customPermissionLabel.style.display = "grid";
+				permissionTypeCustom.focus();
+			} else {
+				customPermissionLabel.style.display = "none";
+			}
+		}
+
+		async function addPermission() {
+			if (!currentModeratorId) {
+				return;
+			}
+
+			let type = permissionTypeSelect.value;
+			if (type === "custom") {
+				type = permissionTypeCustom.value.trim();
+			}
+
+			if (!type) {
+				permissionFormStatus.textContent = "Please choose or enter a permission type.";
+				permissionFormStatus.classList.add("error");
+				return;
+			}
+
+			permissionFormStatus.textContent = "Saving permission...";
+			permissionFormStatus.classList.remove("error");
+
+			try {
+				const response = await fetch(`${basePath}/add_permission/${currentModeratorId}`, {
+					method: "POST",
+					credentials: "include",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ type })
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json().catch(() => ({}));
+					throw new Error(errorData.detail || "Unable to add permission.");
+				}
+
+				permissionTypeSelect.value = "manage_students";
+				permissionTypeCustom.value = "";
+				customPermissionLabel.style.display = "none";
+				await loadModeratorPermissions(currentModeratorId);
+				permissionFormStatus.textContent = "Permission added successfully.";
+			} catch (error) {
+				permissionFormStatus.textContent = error.message;
+				permissionFormStatus.classList.add("error");
+			}
+		}
+
+		async function deletePermission(permissionId) {
+			permissionFormStatus.textContent = "Deleting permission...";
+			permissionFormStatus.classList.remove("error");
+
+			try {
+				const response = await fetch(`${basePath}/delete_permission/${permissionId}`, {
+					method: "DELETE",
+					credentials: "include"
+				});
+
+				if (!response.ok) {
+					throw new Error("Unable to delete permission.");
+				}
+
+				if (currentModeratorId) {
+					await loadModeratorPermissions(currentModeratorId);
+				}
+				permissionFormStatus.textContent = "Permission removed successfully.";
+			} catch (error) {
+				permissionFormStatus.textContent = error.message;
+				permissionFormStatus.classList.add("error");
+			}
+		}
+
+		function renderModerators(mods) {
+			moderatorsList.replaceChildren();
+
+			if (!mods.length) {
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = "No moderators found.";
+				moderatorsList.appendChild(emptyState);
+				setModeratorsStatus("No moderators found.");
+				return;
+			}
+
+			mods.forEach((mod) => moderatorsList.appendChild(createModeratorCard(mod)));
+			setModeratorsStatus(`${mods.length} moderator${mods.length === 1 ? "" : "s"} found.`);
+		}
+
+		function createCourseCard(course) {
+			const card = document.createElement("article");
+			card.className = "course-card";
+			if (isPackageMode) {
+				card.classList.add("course-card-package");
+			}
+
+			const cardTop = document.createElement("div");
+			cardTop.className = "course-card-top";
+
+			const header = document.createElement("div");
+			header.className = "course-card-header";
+
+			const title = document.createElement("h3");
+			title.textContent = course.subject || "Untitled course";
+
+			const price = document.createElement("div");
+			price.className = "course-price";
+			price.textContent = `EGP${Number(course.price || 0).toFixed(2)}`;
+
+			header.append(title, price);
+
+			const meta = document.createElement("div");
+			meta.className = "course-meta";
+			meta.innerHTML = `<span>Stage: ${course.stage || "N/A"}</span><span>Level: ${course.level ?? "N/A"}</span>`;
+
+			cardTop.append(header, meta);
+
+			const cardBottom = document.createElement("div");
+			cardBottom.className = "course-card-bottom";
+
+			const avatar = document.createElement("img");
+			avatar.className = "course-teacher-avatar";
+			avatar.alt = `${course.first_name || "Teacher"} ${course.last_name || ""}`.trim();
+			const fullName = [course.first_name, course.last_name].filter(Boolean).join(' ');
+			avatar.src = course.pfp_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(fullName || 'Teacher') + '&background=DBEAFE&color=2563EB';
+
+			const teacherMeta = document.createElement("div");
+			teacherMeta.className = "course-teacher-meta";
+
+			const teacherName = document.createElement("div");
+			teacherName.className = "course-teacher-name";
+			teacherName.textContent = `${course.first_name || ""} ${course.last_name || ""}`.trim() || "Unknown teacher";
+
+			const teacherPhone = document.createElement("div");
+			teacherPhone.className = "course-teacher-phone";
+			teacherPhone.textContent = course.phone_number || "Phone not provided";
+
+			teacherMeta.append(teacherName, teacherPhone);
+			cardBottom.append(avatar, teacherMeta);
+
+			if (isPackageMode) {
+				const option = document.createElement("label");
+				option.className = "package-option";
+				const checkbox = document.createElement("input");
+				checkbox.type = "checkbox";
+				checkbox.className = "course-package-checkbox";
+				checkbox.dataset.courseId = course.id;
+				checkbox.checked = selectedPackageCourseIds.has(course.id);
+				checkbox.addEventListener("change", (event) => {
+					if (event.target.checked) {
+						selectedPackageCourseIds.add(course.id);
+					} else {
+						selectedPackageCourseIds.delete(course.id);
+					}
+					updateSelectedCoursesList();
+				});
+				const labelText = document.createElement("span");
+				labelText.textContent = "Select for package";
+				option.append(checkbox, labelText);
+				card.append(cardTop, cardBottom, option);
+				return card;
+			}
+
+			card.append(cardTop, cardBottom);
+			return card;
+		}
+
+		function renderCourses(courses) {
+			currentCourses = Array.isArray(courses) ? courses : [];
+			coursesList.replaceChildren();
+
+			if (!currentCourses.length) {
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = "No courses found.";
+				coursesList.appendChild(emptyState);
+				setCoursesStatus("No courses found.");
+				return;
+			}
+
+			currentCourses.forEach((course) => coursesList.appendChild(createCourseCard(course)));
+			setCoursesStatus(`${currentCourses.length} course${currentCourses.length === 1 ? "" : "s"} found.`);
+		}
+
+		function updateSelectedCoursesList() {
+			const selectedTitles = currentCourses
+				.filter((course) => selectedPackageCourseIds.has(course.id))
+				.map((course) => course.subject || "Untitled course");
+
+			selectedCourses.textContent = selectedTitles.length
+				? selectedTitles.join(", ")
+				: "No courses selected yet.";
+		}
+
+		function setCoursesStatus(text, isError = false) {
+			coursesStatus.textContent = text;
+			coursesStatus.classList.toggle("error", isError);
+		}
+
+		function setModeratorsStatus(text, isError = false) {
+			moderatorsStatus.textContent = text;
+			moderatorsStatus.classList.toggle("error", isError);
+		}
+
+		function setPackageStatus(text, isError = false) {
+			packageStatus.textContent = text;
+			packageStatus.classList.toggle("error", isError);
+		}
+
+		function openPackagePanel() {
+			isPackageMode = true;
+			selectedPackageCourseIds.clear();
+			packagePanel.hidden = false;
+			packageTitle.value = "";
+			packagePrice.value = "";
+			updateSelectedCoursesList();
+			renderCourses(currentCourses);
+			setPackageStatus("Choose a title, price, and at least one course.");
+			packageTitle.focus();
+		}
+
+		function closePackagePanel() {
+			isPackageMode = false;
+			selectedPackageCourseIds.clear();
+			packagePanel.hidden = true;
+			packageTitle.value = "";
+			packagePrice.value = "";
+			updateSelectedCoursesList();
+			renderCourses(currentCourses);
+			setPackageStatus("Choose a title, price, and at least one course.");
+		}
+
+		function openModeratorForm() {
+			moderatorFormPanel.hidden = false;
+			moderatorFirstName.value = "";
+			moderatorLastName.value = "";
+			moderatorUsername.value = "";
+			moderatorPhone.value = "";
+			moderatorPassword.value = "";
+			setModeratorStatus("Create a moderator from the form below.");
+			moderatorFirstName.focus();
+		}
+
+		function closeModeratorForm() {
+			moderatorFormPanel.hidden = true;
+			moderatorFirstName.value = "";
+			moderatorLastName.value = "";
+			moderatorUsername.value = "";
+			moderatorPhone.value = "";
+			moderatorPassword.value = "";
+		}
+
 		function openEditStudentModal() {
 			oldStageSelect.value = stageFilter.value || "";
 			oldLevelSelect.value = levelFilter.value || "";
@@ -976,7 +1916,7 @@
 			teacherList.replaceChildren();
 
 			try {
-				const response = await fetch("/admin/get_teachers", { credentials: "include" });
+				const response = await fetch(`${basePath}/get_teachers`, { credentials: "include" });
 				if (!response.ok) {
 					throw new Error(response.status === 403 ? "You are not authorized to view active teachers." : "Unable to load active teachers.");
 				}
@@ -989,22 +1929,59 @@
 			}
 		}
 
+		async function loadCourses() {
+			setCoursesStatus("Loading courses...");
+			coursesList.replaceChildren();
+
+			try {
+				const response = await fetch(`${basePath}/get_courses`, { credentials: "include" });
+				if (!response.ok) {
+					throw new Error(response.status === 403 ? "You are not authorized to view courses." : "Unable to load courses.");
+				}
+
+				const courses = await response.json();
+				currentCourses = Array.isArray(courses) ? courses : [];
+				renderCourses(currentCourses);
+			} catch (error) {
+				setCoursesStatus(error.message, true);
+			}
+		}
+
+		async function loadModerators() {
+			setModeratorsStatus("Loading moderators...");
+			moderatorsList.replaceChildren();
+
+			try {
+				const response = await fetch(`${basePath}/mods`, { credentials: "include" });
+				if (!response.ok) {
+					throw new Error(response.status === 403 ? "You are not authorized to view moderators." : "Unable to load moderators.");
+				}
+
+				const mods = await response.json();
+				allModerators = Array.isArray(mods) ? mods : [];
+				renderModerators(allModerators);
+			} catch (error) {
+				setModeratorsStatus(error.message, true);
+			}
+		}
+
 		async function loadStudents() {
 			setStudentStatus("Loading active students...");
 			studentList.replaceChildren();
 
 			try {
 				const payload = {
-					stage: stageFilter.value? stageFilter.value : null,
-					level: levelFilter.value? levelFilter.value : null 
+					stage: stageFilter.value ? stageFilter.value : null,
+					level: levelFilter.value ? levelFilter.value : null
 				};
-				const endpoint = "/admin/get_students";
+				const endpoint = `${basePath}/get_students`;
 
-				const response = await fetch(endpoint, { 
-					credentials: "include" , 
-					body: JSON.stringify(payload), 
-					method: "POST", 
-					headers: { "Content-Type": "application/json" } });
+				const response = await fetch(endpoint, {
+					credentials: "include",
+					body: JSON.stringify(payload),
+					method: "POST",
+					headers: { "Content-Type": "application/json" }
+				});
 
 				if (!response.ok) {
 					throw new Error(response.status === 403 ? "You are not authorized to view active students." : "Unable to load active students.");
@@ -1029,6 +2006,82 @@
 			renderTeachers(filteredTeachers);
 		}
 
+		async function savePackage() {
+			const title = packageTitle.value.trim();
+			const price = Number(packagePrice.value);
+			const selected = Array.from(document.querySelectorAll('.course-package-checkbox:checked')).map((checkbox) => ({
+				course_id: Number(checkbox.dataset.courseId || 0)
+			}));
+
+			if (!title || !price || !selected.length) {
+				setPackageStatus("Please enter a title, price, and select at least one course.", true);
+				return;
+			}
+
+			setCoursesStatus("Saving package...");
+			setPackageStatus("Saving package...");
+
+			try {
+				const response = await fetch(`${basePath}/create_package`, {
+					method: "POST",
+					credentials: "include",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ title, price, courses_ids: selected })
+				});
+
+				if (!response.ok) {
+					throw new Error("Unable to create package.");
+				}
+
+				setPackageStatus("Package created successfully.");
+				closePackagePanel();
+			} catch (error) {
+				setPackageStatus(error.message || "Unable to create package.", true);
+			}
+		}
+
+		async function saveModerator() {
+			const payload = {
+				first_name: moderatorFirstName.value.trim(),
+				last_name: moderatorLastName.value.trim(),
+				username: moderatorUsername.value.trim(),
+				phone_number: moderatorPhone.value.trim(),
+				password: moderatorPassword.value
+			};
+
+			if (!payload.first_name || !payload.last_name || !payload.username || !payload.phone_number || !payload.password) {
+				setModeratorStatus("Please fill in all moderator fields before saving.", true);
+				return;
+			}
+
+			setModeratorStatus("Creating moderator...");
+
+			try {
+				const response = await fetch(`${basePath}/add_mod`, {
+					method: "POST",
+					credentials: "include",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(payload)
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json().catch(() => ({}));
+					throw new Error(errorData.detail || "Unable to create moderator.");
+				}
+
+				closeModeratorForm();
+				setModeratorStatus("Moderator created successfully.");
+				loadModerators();
+			} catch (error) {
+				setModeratorStatus(error.message, true);
+			}
+		}
+
+		function setModeratorStatus(text, isError = false) {
+			moderatorStatus.textContent = text;
+			moderatorStatus.classList.toggle("error", isError);
+		}
+
 		async function saveStudentLevelChange() {
 			const payload = {
 				old_stage: oldStageSelect.value,
@@ -1045,7 +2098,7 @@
 			setStudentStatus("Updating student stage/level...");
 
 			try {
-				const response = await fetch("/admin/edit_level", {
+				const response = await fetch(`${basePath}/edit_level`, {
 					method: "PATCH",
 					credentials: "include",
 					headers: { "Content-Type": "application/json" },
@@ -1066,7 +2119,7 @@
 		}
 
 		async function updateUser(id, action, card) {
-			const endpoint = action === "approve" ? `/admin/approve/${id}` : `/admin/delete_user/${id}`;
+			const endpoint = action === "approve" ? `${basePath}/approve/${id}` : `${basePath}/delete_user/${id}`;
 			const buttons = card.querySelectorAll("button");
 			buttons.forEach((button) => { button.disabled = true; });
 			setStatus(`${action === "approve" ? "Approving" : "Deleting"} account...`);
@@ -1103,10 +2156,24 @@
 		teacherSearch.addEventListener("input", applyTeacherFilter);
 		stageFilter.addEventListener("change", loadStudents);
 		levelFilter.addEventListener("change", loadStudents);
+		createPackageButton.addEventListener("click", openPackagePanel);
+		cancelPackageButton.addEventListener("click", closePackagePanel);
+		savePackageButton.addEventListener("click", savePackage);
+		createModeratorButton.addEventListener("click", openModeratorForm);
+		cancelModeratorButton.addEventListener("click", closeModeratorForm);
+		saveModeratorButton.addEventListener("click", saveModerator);
 		openEditStudentModalButton.addEventListener("click", openEditStudentModal);
 		closeModalButton.addEventListener("click", closeEditStudentModal);
 		cancelModalButton.addEventListener("click", closeEditStudentModal);
 		saveLevelChangeButton.addEventListener("click", saveStudentLevelChange);
+		closePermissionModalButton.addEventListener("click", closePermissionModal);
+		addPermissionButton.addEventListener("click", addPermission);
+		permissionTypeSelect.addEventListener("change", updatePermissionTypeVisibility);
+		permissionModal.addEventListener("click", (event) => {
+			if (event.target === permissionModal) {
+				closePermissionModal();
+			}
+		});
 		editStudentModal.addEventListener("click", (event) => {
 			if (event.target === editStudentModal) {
 				closeEditStudentModal();
@@ -1116,4 +2183,5 @@
 		setMode("students");
 	</script>
 </body>
+
 </html>

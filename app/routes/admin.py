@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import update, or_
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import Session
 from app.core.security import hash_password
 from app.models.users_model import User
@@ -9,10 +9,12 @@ from app.models.students_model import Student
 from app.models.courses_model import Course
 from app.models.teachers_model import Teacher
 from app.models.packages_model import Package
+from app.models.permissions_model import Permission
 from app.models.package_items import PackageItem
 from app.schemas.package import PackageCreate
 from app.schemas.students import SearchStudents, EditLevel
-from app.schemas.user import UserCreate
+from app.schemas.user import ModeratorCreate
+from app.schemas.permissions import AddPerm
 from app.core.auth import validate_user
 from app.database import get_db
 from app.config import BASE_DIR
@@ -37,7 +39,7 @@ def login_page(request: Request, db: Session = Depends(get_db)):
     if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    return templates.TemplateResponse("admin.html", {"request": request})
+    return templates.TemplateResponse("admin.html", {"request": request, "role": user_role})
 
 @router.get("/pending_students")
 def get_pending_students(request: Request, db: Session = Depends(get_db)):
@@ -286,7 +288,7 @@ def get_mods(request: Request, db: Session = Depends(get_db)):
     if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    mods = db.query(User).filter(User.rol=="mod").all()
+    mods = db.query(User).filter(User.role == "mod").all()
 
     return [
         {
@@ -299,7 +301,7 @@ def get_mods(request: Request, db: Session = Depends(get_db)):
     ]
 
 @router.post("/add_mod")
-def add_mod(request: Request, payload: UserCreate, db: Session = Depends(get_db)):
+def add_mod(request: Request, payload: ModeratorCreate, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
     user_id, user_role = validate_user(token)
     if user_role != "admin":
@@ -328,6 +330,83 @@ def add_mod(request: Request, payload: UserCreate, db: Session = Depends(get_db)
         db.add(new_mod)
         db.commit()
         db.refresh(new_mod)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+@router.get("/permissions/{mod_id}")
+def get_perms(request: Request, mod_id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    permissions = db.query(Permission).filter(Permission.user_id == mod_id).all()
+    return [
+        {
+            "id": perm.id,
+            "type": perm.type
+        }
+        for perm in permissions
+    ]
+
+@router.post("/add_permission/{mod_id}")
+def add_perm(request: Request, mod_id: int, payload: AddPerm,db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    mod = db.query(User).filter(User.id == mod_id).first()
+    if not mod:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    try:
+        new_perm = Permission(
+            user_id=mod_id,
+            type=payload.type
+        )
+        db.add(new_perm)
+        db.commit()
+        db.refresh(new_perm)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+@router.delete("/delete_permission/{perm_id}")
+def del_perm(request: Request, perm_id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    permission = db.query(Permission).filter(Permission.id == perm_id).first()
+    if not permission:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    try:
+        db.delete(permission)
+        db.commit()
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

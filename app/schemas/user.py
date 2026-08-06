@@ -12,6 +12,13 @@ class UserCreate(BaseModel):
     level: int = None
     stage: str = None
 
+class ModeratorCreate(BaseModel):
+    first_name: str
+    last_name: str
+    username: str
+    phone_number: str
+    password: str
+
 class UserLogin(BaseModel):
     username: str
     password: str

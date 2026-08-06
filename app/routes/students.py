@@ -215,8 +215,13 @@ def submit_exam(request: Request, id: int, payload: ExamSubmit, db: Session = De
                 total_mark += question.mark
                 answers_data.append({"question_id": question.id, "mark": question.mark})
         else:
-            mark = int(round(question.mark * cosine_similarity(get_embedding(answers[question.id]), question.answer_embedding)))
-            total_mark += mark
+            similarity = cosine_similarity(get_embedding(answers[question.id]), question.answer_embedding)
+            if similarity > 0.8:
+                mark = question.mark
+                total_mark += mark
+            else:
+                mark = int(round(question.mark * similarity))
+                total_mark += mark
             answers_data.append({"question_id": question.id, "mark": mark})
 
     new_submitted_exam = SubmittedExam(
@@ -325,9 +330,11 @@ def book_private(request: Request, id: int, db: Session = Depends(get_db)):
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    private_lecture = db.query(PrivateLecture).filter(PrivateLecture.id == id).first()
+    private_lecture = db.query(PrivateLecture).filter(PrivateLecture.id == id).with_for_update().first()
     if not private_lecture:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if private_lecture.student_id is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     try:
         private_lecture.student_id = student.id
         db.commit()
