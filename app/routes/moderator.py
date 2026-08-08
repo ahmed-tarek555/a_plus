@@ -12,7 +12,9 @@ from app.models.permissions_model import Permission
 from app.models.package_items import PackageItem
 from app.schemas.package import PackageCreate
 from app.schemas.students import SearchStudents, EditLevel
+from app.schemas.user import EditUser
 from app.core.auth import validate_user
+from app.core.security import hash_password
 from app.database import get_db
 from app.config import BASE_DIR
 from zoneinfo import ZoneInfo
@@ -231,6 +233,64 @@ def edit_level(request: Request, payload: EditLevel, db: Session = Depends(get_d
     try:
         db.execute(update(Student).where(Student.stage==payload.old_stage, Student.level==payload.old_level).values(stage=payload.new_stage, level=payload.new_level))
         db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+@router.patch("/edit_user/{id}")
+def edit_user(request: Request, id: int, payload: EditUser, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "mod":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "mod":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    permission = db.query(Permission).filter(Permission.user_id == user_id, Permission.type == "user_editing").first()
+    if not permission:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    to_be_edited = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    if to_be_edited.role == "student":
+        student = db.query(Student).filter(Student.user_id == to_be_edited.id).first()
+        if payload.level is not None:
+            student.level = payload.level
+        if payload.stage is not None:
+            if payload.stage not in ("الثانوية", "الاعدادية", "الابتدائية"):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            else:
+                student.stage = payload.stage
+
+    if to_be_edited.role != "student" and payload.parent_name is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    if to_be_edited.role != "student" and payload.parent_phone_number is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+    if payload.first_name is not None:
+        to_be_edited.first_name = payload.first_name
+    if payload.last_name is not None:
+        to_be_edited.last_name = payload.last_name
+    if payload.phone_number is not None:
+        to_be_edited.phone_number = payload.phone_number
+    if payload.username is not None:
+        to_be_edited.username = payload.username
+    if payload.password is not None:
+        to_be_edited.password = hash_password(payload.password)
+    if payload.parent_name is not None:
+        to_be_edited.parent_name = payload.parent_name
+    if payload.parent_phone_number is not None:
+        to_be_edited.parent_phone_number = payload.parent_phone_number
+
+    try:
+        db.commit()
+        db.refresh(to_be_edited)
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

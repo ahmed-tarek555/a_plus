@@ -296,6 +296,10 @@
 			outline: none;
 		}
 
+		.moderator-card .actions {
+			margin-right: 56px;
+		}
+
 		.permission-modal .modal-card {
 			width: min(620px, 100%);
 		}
@@ -916,7 +920,6 @@
 				<button class="nav-button" type="button" data-view="students" aria-pressed="false">Students</button>
 				<button class="nav-button" type="button" data-view="moderators" aria-pressed="false">Moderators</button>
 				<button class="nav-button" type="button" data-view="courses" aria-pressed="false">Courses</button>
-				<button class="nav-button" type="button" data-view="settings" aria-pressed="false">Settings</button>
 			</nav>
 
 			<section id="overviewPanel" class="view-panel active">
@@ -1104,12 +1107,6 @@
 				<section id="moderatorsList" class="teacher-list" aria-live="polite"></section>
 			</section>
 
-			<section id="settingsPanel" class="view-panel">
-				<div class="placeholder-panel">
-					<h2>Settings</h2>
-					<p>Admin preferences and system configuration controls can be placed here.</p>
-				</div>
-			</section>
 		</div>
 	</main>
 
@@ -1134,6 +1131,7 @@
 							<option value="manage_levels">Manage Levels</option>
 							<option value="manage_packages">Manage packages</option>
 							<option value="user_deletion">User Deletion</option>
+							<option value="user_editing">User Editing</option>
 							<option value="custom">Custom</option>
 						</select>
 					</label>
@@ -1204,6 +1202,7 @@
 				</label>
 			</div>
 
+			<div id="editStudentModalStatus" class="status" role="status" aria-live="polite">Choose the stage and level to update.</div>
 			<div class="modal-actions">
 				<button id="cancelModalButton" class="button delete-button" type="button">Cancel</button>
 				<button id="saveLevelChangeButton" class="button approve-button" type="button">Save</button>
@@ -1256,6 +1255,7 @@
 		const closeModalButton = document.getElementById("closeModalButton");
 		const cancelModalButton = document.getElementById("cancelModalButton");
 		const saveLevelChangeButton = document.getElementById("saveLevelChangeButton");
+		const editStudentModalStatus = document.getElementById("editStudentModalStatus");
 		const permissionModal = document.getElementById("permissionModal");
 		const permissionModalTitle = document.getElementById("permissionModalTitle");
 		const permissionModalDescription = document.getElementById("permissionModalDescription");
@@ -1309,6 +1309,12 @@
 		function setStudentStatus(text, isError = false) {
 			studentStatus.textContent = text;
 			studentStatus.classList.toggle("error", isError);
+		}
+
+		function setEditStudentModalStatus(text, isError = false) {
+			if (!editStudentModalStatus) return;
+			editStudentModalStatus.textContent = text;
+			editStudentModalStatus.classList.toggle("error", isError);
 		}
 
 		function setView(view) {
@@ -1416,7 +1422,13 @@
 			deleteButton.textContent = "Delete";
 			deleteButton.addEventListener("click", () => updateUser(user.id, "delete", card));
 
-			actions.append(approveButton, deleteButton);
+			const editButton = document.createElement("button");
+			editButton.className = "button";
+			editButton.type = "button";
+			editButton.textContent = "Edit";
+			editButton.addEventListener("click", () => enterEditMode(card, user, 'user'));
+
+			actions.append(approveButton, editButton, deleteButton);
 			card.append(information, actions);
 			return card;
 		}
@@ -1463,7 +1475,24 @@
 			joined.textContent = `Joined: ${teacher.date_joined || "Unknown date"}`;
 
 			meta.append(name, phone, joined);
-			card.append(avatar, meta);
+
+			const actions = document.createElement("div");
+			actions.className = "actions";
+
+			const deleteButton = document.createElement("button");
+			deleteButton.className = "button delete-button";
+			deleteButton.type = "button";
+			deleteButton.textContent = "Delete";
+			deleteButton.addEventListener("click", () => updateUser(teacher.id, "delete", card));
+
+			const editButton = document.createElement("button");
+			editButton.className = "button";
+			editButton.type = "button";
+			editButton.textContent = "Edit";
+			editButton.addEventListener("click", () => enterEditMode(card, teacher, 'teacher'));
+
+			actions.append(editButton, deleteButton);
+			card.append(avatar, meta, actions);
 			return card;
 		}
 
@@ -1507,7 +1536,24 @@
 			stage.textContent = `Stage: ${student.stage || "Not provided"} • Level: ${student.level ?? "Not provided"}`;
 
 			meta.append(name, phone, parent, stage);
-			card.append(meta);
+
+			const actions = document.createElement("div");
+			actions.className = "actions";
+
+			const deleteButton = document.createElement("button");
+			deleteButton.className = "button delete-button";
+			deleteButton.type = "button";
+			deleteButton.textContent = "Delete";
+			deleteButton.addEventListener("click", () => updateUser(student.id, "delete", card));
+
+			const editButton = document.createElement("button");
+			editButton.className = "button";
+			editButton.type = "button";
+			editButton.textContent = "Edit";
+			editButton.addEventListener("click", () => enterEditMode(card, student, 'student'));
+
+			actions.append(editButton, deleteButton);
+			card.append(meta, actions);
 			return card;
 		}
 
@@ -1547,8 +1593,24 @@
 			phone.className = "teacher-phone";
 			phone.textContent = `Phone: ${mod.phone_number || "Not provided"}`;
 
+			const actions = document.createElement("div");
+			actions.className = "actions";
+
+			const deleteButton = document.createElement("button");
+			deleteButton.className = "button delete-button";
+			deleteButton.type = "button";
+			deleteButton.textContent = "Delete";
+			deleteButton.addEventListener("click", () => updateUser(mod.id, "delete", card));
+
+			const editButton = document.createElement("button");
+			editButton.className = "button";
+			editButton.type = "button";
+			editButton.textContent = "Edit";
+			editButton.addEventListener("click", () => enterEditMode(card, mod, 'moderator'));
+
 			info.append(name, phone);
-			card.append(menuButton, info);
+			actions.append(editButton, deleteButton);
+			card.append(menuButton, info, actions);
 			return card;
 		}
 
@@ -2092,10 +2154,12 @@
 
 			if (!payload.old_stage || !payload.old_level || !payload.new_stage || !payload.new_level) {
 				setStudentStatus("Please choose the old and new stage/level before saving.", true);
+				setEditStudentModalStatus("Please choose the old and new stage/level before saving.", true);
 				return;
 			}
 
 			setStudentStatus("Updating student stage/level...");
+			setEditStudentModalStatus("Updating student stage/level...");
 
 			try {
 				const response = await fetch(`${basePath}/edit_level`, {
@@ -2107,14 +2171,18 @@
 
 				if (!response.ok) {
 					const errorData = await response.json().catch(() => ({}));
-					throw new Error(errorData.detail || "Unable to update stage/level.");
+					const detail = errorData.detail || errorData.message || response.statusText || "Unable to update stage/level.";
+					const message = response.status ? `${response.status} ${response.statusText || "Error"}: ${detail}` : detail;
+					throw new Error(message);
 				}
 
-				closeEditStudentModal();
-				setStudentStatus(`Student stage/level updated successfully.`);
+				setStudentStatus("Student stage/level updated successfully.");
+				setEditStudentModalStatus("Student stage/level updated successfully.");
 				loadStudents();
 			} catch (error) {
-				setStudentStatus(error.message, true);
+				const message = error && error.message ? error.message : "Unable to update stage/level.";
+				setStudentStatus(message, true);
+				setEditStudentModalStatus(message, true);
 			}
 		}
 
@@ -2147,7 +2215,187 @@
 			}
 		}
 
-		navButtons.forEach((button) => {
+
+		function createLabeledInput(name, labelText, value, placeholder, type = 'text') {
+			const wrapper = document.createElement('label');
+			wrapper.style.display = 'grid';
+			wrapper.style.gap = '6px';
+			wrapper.style.fontSize = '0.88rem';
+			wrapper.style.color = '#294e6b';
+
+			const label = document.createElement('div');
+			label.textContent = labelText;
+			label.style.fontWeight = '700';
+
+			const input = document.createElement('input');
+			input.className = 'package-input';
+			input.type = type;
+			input.name = name;
+			input.value = value ?? '';
+			input.placeholder = placeholder ?? '';
+
+			wrapper.append(label, input);
+			return wrapper;
+		}
+
+		function createLabeledSelect(name, labelText, value, options) {
+			const wrapper = document.createElement('label');
+			wrapper.style.display = 'grid';
+			wrapper.style.gap = '6px';
+			wrapper.style.fontSize = '0.88rem';
+			wrapper.style.color = '#294e6b';
+
+			const label = document.createElement('div');
+			label.textContent = labelText;
+			label.style.fontWeight = '700';
+
+			const select = document.createElement('select');
+			select.className = 'package-input';
+			select.name = name;
+			select.style.minHeight = '38px';
+
+			const emptyOption = document.createElement('option');
+			emptyOption.value = '';
+			emptyOption.textContent = '—';
+			select.appendChild(emptyOption);
+
+			options.forEach((optionValue) => {
+				const option = document.createElement('option');
+				option.value = optionValue;
+				option.textContent = optionValue;
+				if (optionValue === value) option.selected = true;
+				select.appendChild(option);
+			});
+
+			if (!options.includes(value)) {
+				select.value = '';
+			}
+
+			wrapper.append(label, select);
+			return wrapper;
+		}
+
+		function enterEditMode(card, userObj, role) {
+			if (!card || !userObj) return;
+			// store original
+			card._original = Object.assign({}, userObj);
+			// build edit form
+			card.replaceChildren();
+			const form = document.createElement('div');
+			form.style.display = 'grid';
+			form.style.gap = '8px';
+
+			const first = createLabeledInput('first_name', 'First name', userObj.first_name, 'First name');
+			const last = createLabeledInput('last_name', 'Last name', userObj.last_name, 'Last name');
+			const phone = createLabeledInput('phone_number', 'Phone number', userObj.phone_number, 'Phone number');
+			form.append(first, last, phone);
+
+			if (role === 'student') {
+				const parent = createLabeledInput('parent_name', 'Parent name', userObj.parent_name, 'Parent name');
+				const parentPhone = createLabeledInput('parent_phone_number', 'Parent phone', userObj.parent_phone_number, 'Parent phone');
+				const stage = createLabeledSelect('stage', 'Stage', userObj.stage, ['الثانوية', 'الاعدادية', 'الابتدائية']);
+				const level = createLabeledInput('level', 'Level', userObj.level ?? '', 'Level', 'number');
+				form.append(parent, parentPhone, stage, level);
+			}
+
+			const username = createLabeledInput('username', 'Username', userObj.username, 'Username');
+			const password = createLabeledInput('password', 'Password', '', 'Password (leave blank to keep)', 'password');
+			form.append(username, password);
+
+			const editStatus = document.createElement('div');
+			editStatus.className = 'status';
+			editStatus.textContent = 'Review the values and save when ready.';
+			card._editStatus = editStatus;
+			form.appendChild(editStatus);
+
+			const actions = document.createElement('div');
+			actions.className = 'actions';
+
+			const saveBtn = document.createElement('button');
+			saveBtn.className = 'button approve-button';
+			saveBtn.type = 'button';
+			saveBtn.textContent = 'Save';
+			saveBtn.addEventListener('click', async () => {
+			console.debug('save button clicked', { id: userObj.id, role });
+			await saveEdit(card, userObj.id, role);
+		});
+
+		const cancelBtn = document.createElement('button');
+		cancelBtn.className = 'button delete-button';
+		cancelBtn.type = 'button';
+		cancelBtn.textContent = 'Cancel';
+		cancelBtn.addEventListener('click', () => {
+			if (role === 'teacher') loadTeachers();
+			else if (role === 'student') loadStudents();
+			else if (role === 'moderator') loadModerators();
+			else loadUsers();
+		});
+
+		actions.append(saveBtn, cancelBtn);
+		card.append(form, actions);
+	}
+
+	async function saveEdit(card, id, role) {
+		console.debug('saveEdit entered', { id, role, card });
+		if (!card || !card._original) return;
+		const fields = card.querySelectorAll('input[name], select[name]');
+		const payload = {};
+		const statusNode = card._editStatus;
+
+		const setCardStatus = (text, isError = false) => {
+			setStatus(text, isError);
+			if (statusNode) {
+				statusNode.textContent = text;
+				statusNode.classList.toggle('error', isError);
+			}
+		};
+
+		fields.forEach((field) => {
+			const name = field.name;
+			if (!name) return;
+
+			const value = field.value;
+			if (value === '') {
+				payload[name] = null;
+				return;
+			}
+
+			payload[name] = name === 'level' ? (Number.isFinite(Number(value)) ? Number(value) : value) : value;
+		});
+
+		setCardStatus('Saving changes...');
+		try {
+			console.debug('edit_user payload:', payload, 'endpoint:', `${basePath}/edit_user/${id}`);
+			const response = await fetch(`${basePath}/edit_user/${id}`, {
+				method: 'PATCH',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
+			});
+			if (!response.ok) {
+				let errText = '';
+				try {
+					const errorData = await response.json();
+					errText = errorData.detail || errorData.message || JSON.stringify(errorData);
+				} catch (e) {
+					errText = await response.text().catch(() => response.statusText || 'Unknown error');
+				}
+				const message = response.status ? `${response.status} ${response.statusText || 'Error'}: ${errText || 'Unable to save changes.'}` : (errText || 'Unable to save changes.');
+				console.error('edit_user error', response.status, errText);
+				throw new Error(message);
+			}
+			setCardStatus('Changes saved.');
+			if (role === 'teacher') loadTeachers();
+			else if (role === 'student') loadStudents();
+			else if (role === 'moderator') loadModerators();
+			else loadUsers();
+		} catch (error) {
+			const message = error && error.message ? error.message : 'Failed to save changes.';
+			setCardStatus(message, true);
+		}
+	}
+
+	navButtons.forEach((button) => {
 			button.addEventListener("click", () => setView(button.dataset.view));
 		});
 

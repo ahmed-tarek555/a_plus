@@ -25,3 +25,14 @@ class UserLogin(BaseModel):
 
 class EditProfile(BaseModel):
     password: str = None
+
+class EditUser(BaseModel):
+    first_name: str = None
+    last_name: str = None
+    phone_number: str = None
+    username: str = None
+    password: str = None
+    parent_name: str = None
+    parent_phone_number: str = None
+    level: int = None
+    stage: str = None

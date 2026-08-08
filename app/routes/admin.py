@@ -13,7 +13,7 @@ from app.models.permissions_model import Permission
 from app.models.package_items import PackageItem
 from app.schemas.package import PackageCreate
 from app.schemas.students import SearchStudents, EditLevel
-from app.schemas.user import ModeratorCreate
+from app.schemas.user import ModeratorCreate, EditUser
 from app.schemas.permissions import AddPerm
 from app.core.auth import validate_user
 from app.database import get_db
@@ -143,7 +143,7 @@ def get_teachers(request: Request, db: Session = Depends(get_db)):
             "last_name": t.last_name,
             "phone_number": t.phone_number,
             "date_joined": t.date_joined.strftime("%b %-d, %Y, %I:%M %p"),
-            "pfp_url": generate_url(t.pfp_public_id)
+            "pfp_url": generate_url(t.pfp_public_id),
         }
         for t in teachers
     ]
@@ -174,15 +174,14 @@ def search_students(request: Request, payload: SearchStudents, db: Session = Dep
 
     return [
         {
-            "student_id": s.id,
+            "id": u.id,
             "stage": s.stage,
             "level": s.level,
-            "user_id": u.id,
             "first_name": u.first_name,
             "last_name": u.last_name,
             "phone_number": u.phone_number,
             "parent_name": u.parent_name,
-            "parent_phone_number": u.parent_phone_number
+            "parent_phone_number": u.parent_phone_number,
         }
         for u, s in results
     ]
@@ -295,7 +294,7 @@ def get_mods(request: Request, db: Session = Depends(get_db)):
             "id": mod.id,
             "first_name": mod.first_name,
             "last_name": mod.last_name,
-            "phone_number": mod.phone_number
+            "phone_number": mod.phone_number,
         }
         for mod in mods
     ]
@@ -407,6 +406,60 @@ def del_perm(request: Request, perm_id: int, db: Session = Depends(get_db)):
     try:
         db.delete(permission)
         db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+@router.patch("/edit_user/{id}")
+def edit_user(request: Request, id: int, payload: EditUser, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    to_be_edited = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    if to_be_edited.role == "student":
+        student = db.query(Student).filter(Student.user_id == to_be_edited.id).first()
+        if payload.level is not None:
+            student.level = payload.level
+        if payload.stage is not None:
+            if payload.stage not in ("الثانوية", "الاعدادية", "الابتدائية"):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            else:
+                student.stage = payload.stage
+
+    if to_be_edited.role != "student" and payload.parent_name is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    if to_be_edited.role != "student" and payload.parent_phone_number is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+    if payload.first_name is not None:
+        to_be_edited.first_name = payload.first_name
+    if payload.last_name is not None:
+        to_be_edited.last_name = payload.last_name
+    if payload.phone_number is not None:
+        to_be_edited.phone_number = payload.phone_number
+    if payload.username is not None:
+        to_be_edited.username = payload.username
+    if payload.password is not None:
+        to_be_edited.password = hash_password(payload.password)
+    if payload.parent_name is not None:
+        to_be_edited.parent_name = payload.parent_name
+    if payload.parent_phone_number is not None:
+        to_be_edited.parent_phone_number = payload.parent_phone_number
+
+    try:
+        db.commit()
+        db.refresh(to_be_edited)
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
