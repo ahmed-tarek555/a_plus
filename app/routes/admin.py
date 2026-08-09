@@ -11,10 +11,12 @@ from app.models.teachers_model import Teacher
 from app.models.packages_model import Package
 from app.models.permissions_model import Permission
 from app.models.package_items import PackageItem
+from app.models.private_lectures import PrivateLecture
 from app.schemas.package import PackageCreate
 from app.schemas.students import SearchStudents, EditLevel
 from app.schemas.user import ModeratorCreate, EditUser
 from app.schemas.permissions import AddPerm
+from app.schemas.private import ManualBook
 from app.core.auth import validate_user
 from app.database import get_db
 from app.config import BASE_DIR
@@ -134,18 +136,19 @@ def get_teachers(request: Request, db: Session = Depends(get_db)):
     if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    teachers = db.query(User).filter(User.role == "teacher", User.is_active == True).all()
+    result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.role == "teacher", User.is_active == True).all()
 
     return [
         {
-            "id": t.id,
-            "first_name": t.first_name,
-            "last_name": t.last_name,
-            "phone_number": t.phone_number,
-            "date_joined": t.date_joined.strftime("%b %-d, %Y, %I:%M %p"),
-            "pfp_url": generate_url(t.pfp_public_id),
+            "id": u.id,
+            "teacher_id": t.id,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "phone_number": u.phone_number,
+            "date_joined": u.date_joined.strftime("%b %-d, %Y, %I:%M %p"),
+            "pfp_url": generate_url(u.pfp_public_id),
         }
-        for t in teachers
+        for u, t in result
     ]
 
 
@@ -489,3 +492,83 @@ def delete_user(request: Request, id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return {"success": True}
 
+@router.get("/get_packages")
+def get_packages(request: Request, db: Session = Depends(get_db)):
+
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    packages = db.query(Package).all()
+    return [
+        {
+            "id": p.id,
+            "title": p.title,
+            "price": p.price
+        }
+        for p in packages
+    ]
+
+@router.delete("/delete_package/{id}")
+def delete_package(request: Request, id: int, db: Session = Depends(get_db)):
+
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    package = db.query(Package).filter(Package.id == id).first()
+    if not package:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    try:
+        db.delete(package)
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+@router.post("/create_booking/{teacher_id}")
+def create_booking(request: Request, teacher_id: int, payload: ManualBook, db: Session = Depends(get_db)):
+
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    student = db.query(Student).join(User, User.id == Student.user_id).filter(User.phone_number == payload.phone_number).first()
+    if not student:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    try:
+        private_lecture = PrivateLecture(
+            teacher_id=teacher_id,
+            student_id=student.id,
+            title=payload.title,
+            subject=payload.subject,
+            start_date=payload.start_date,
+            price=0
+        )
+        db.add(private_lecture)
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}

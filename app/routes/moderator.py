@@ -392,3 +392,59 @@ def delete_user(request: Request, id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return {"success": True}
+
+@router.get("/get_packages")
+def get_packages(request: Request, db: Session = Depends(get_db)):
+
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "mod":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "mod":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    permission = db.query(Permission).filter(Permission.user_id == user_id, Permission.type == "manage_packages").first()
+    if not permission:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    packages = db.query(Package).all()
+    return [
+        {
+            "id": p.id,
+            "title": p.title,
+            "price": p.price
+        }
+        for p in packages
+    ]
+
+@router.delete("/delete_package/{id}")
+def delete_package(request: Request, id: int, db: Session = Depends(get_db)):
+
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "mod":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "mod":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    permission = db.query(Permission).filter(Permission.user_id == user_id, Permission.type == "manage_packages").first()
+    if not permission:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    package = db.query(Package).filter(Package.id == id).first()
+    if not package:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    try:
+        db.delete(package)
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}

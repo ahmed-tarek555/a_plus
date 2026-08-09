@@ -12,11 +12,8 @@ class CreatePrivate(BaseModel):
 class PrivateLink(BaseModel):
     link: str
 
-# example payload:
-#
-# {
-#     "title": "private lecture",
-#     "subject": "math",
-#     "start_date": "some date",
-#     "price": 200
-# }
+class ManualBook(BaseModel):
+    title: str
+    subject: str
+    start_date: datetime
+    phone_number: str

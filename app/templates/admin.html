@@ -151,6 +151,19 @@
 			gap: 18px;
 		}
 
+		.package-section {
+			display: grid;
+			gap: 12px;
+			margin-bottom: 24px;
+		}
+
+		.package-section-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+		}
+
 		.course-card {
 			position: relative;
 			display: flex;
@@ -169,6 +182,28 @@
 		.course-card:hover {
 			transform: translateY(-2px);
 			box-shadow: 0 14px 34px rgba(43, 95, 130, 0.12);
+		}
+
+		.package-link {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			color: inherit;
+			text-decoration: none;
+		}
+
+		.package-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 12px;
+			color: #5b7488;
+			font-size: 0.95rem;
+		}
+
+		.package-card-actions {
+			display: flex;
+			justify-content: flex-end;
+			margin-top: 6px;
 		}
 
 		.course-card-top {
@@ -493,6 +528,7 @@
 			font-weight: 700;
 		}
 
+		.modal-grid input,
 		.modal-grid select {
 			padding: 11px 12px;
 			border: 1px solid rgba(44, 117, 169, 0.22);
@@ -501,6 +537,7 @@
 			color: #19324a;
 		}
 
+		.modal-grid input:focus,
 		.modal-grid select:focus {
 			outline: none;
 			border-color: #2f8dcc;
@@ -1033,8 +1070,27 @@
 
 				<div class="courses-layout">
 					<div>
-						<div id="coursesStatus" class="status" role="status" aria-live="polite">Loading courses...</div>
-						<section id="coursesList" class="course-grid" aria-live="polite"></section>
+						<div class="package-section">
+							<div class="package-section-header">
+								<div>
+									<p class="eyebrow">Courses</p>
+									<h3 style="margin: 0; color: #19324a;">Available courses</h3>
+								</div>
+							</div>
+							<div id="coursesStatus" class="status" role="status" aria-live="polite">Loading courses...</div>
+							<section id="coursesList" class="course-grid" aria-live="polite"></section>
+						</div>
+
+						<div class="package-section">
+							<div class="package-section-header">
+								<div>
+									<p class="eyebrow">Packages</p>
+									<h3 style="margin: 0; color: #19324a;">Available packages</h3>
+								</div>
+							</div>
+							<div id="packagesStatus" class="status" role="status" aria-live="polite">Loading packages...</div>
+							<section id="packagesList" class="course-grid" aria-live="polite"></section>
+						</div>
 					</div>
 
 					<div id="packagePanel" class="package-panel" hidden>
@@ -1132,7 +1188,6 @@
 							<option value="manage_packages">Manage packages</option>
 							<option value="user_deletion">User Deletion</option>
 							<option value="user_editing">User Editing</option>
-							<option value="custom">Custom</option>
 						</select>
 					</label>
 					<label id="customPermissionLabel" style="flex:1 1 220px; display:none; gap:8px; color:#4c687e; font-size:0.88rem; font-weight:700;">
@@ -1144,6 +1199,42 @@
 				<div id="permissionFormStatus" class="status permission-form-status" role="status" aria-live="polite">Choose a permission type to add for this moderator.</div>
 			</div>
 			<div id="permissionList" class="permission-list" aria-live="polite"></div>
+		</div>
+	</div>
+
+	<div id="bookingModal" class="modal" aria-hidden="true">
+		<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle">
+			<div class="modal-header">
+				<div>
+					<h3 id="bookingModalTitle">Book private lecture</h3>
+				</div>
+				<button id="closeBookingModalButton" class="modal-close" type="button" aria-label="Close booking modal">×</button>
+			</div>
+
+			<div class="modal-grid">
+				<label style="grid-column: 1 / -1;">
+					Student phone number
+					<input id="bookingPhoneInput" type="text" placeholder="Enter student phone number" />
+				</label>
+				<label style="grid-column: 1 / -1;">
+					Title
+					<input id="bookingTitleInput" type="text" placeholder="Enter lecture title" />
+				</label>
+				<label style="grid-column: 1 / -1;">
+					Subject
+					<input id="bookingSubjectInput" type="text" placeholder="Enter lecture subject" />
+				</label>
+				<label style="grid-column: 1 / -1;">
+					Start date
+					<input id="bookingStartDateInput" type="datetime-local" />
+				</label>
+			</div>
+
+			<div id="bookingModalStatus" class="status" role="status" aria-live="polite">Fill the student phone number and lecture details before saving.</div>
+			<div class="modal-actions">
+				<button id="cancelBookingModalButton" class="button delete-button" type="button">Cancel</button>
+				<button id="saveBookingButton" class="button approve-button" type="button">Save</button>
+			</div>
 		</div>
 	</div>
 
@@ -1226,6 +1317,8 @@
 		const studentList = document.getElementById("studentList");
 		const coursesStatus = document.getElementById("coursesStatus");
 		const coursesList = document.getElementById("coursesList");
+		const packagesStatus = document.getElementById("packagesStatus");
+		const packagesList = document.getElementById("packagesList");
 		const moderatorsStatus = document.getElementById("moderatorsStatus");
 		const moderatorsList = document.getElementById("moderatorsList");
 		const createPackageButton = document.getElementById("createPackageButton");
@@ -1256,6 +1349,16 @@
 		const cancelModalButton = document.getElementById("cancelModalButton");
 		const saveLevelChangeButton = document.getElementById("saveLevelChangeButton");
 		const editStudentModalStatus = document.getElementById("editStudentModalStatus");
+		const bookingModal = document.getElementById("bookingModal");
+		const bookingModalTitle = document.getElementById("bookingModalTitle");
+		const bookingPhoneInput = document.getElementById("bookingPhoneInput");
+		const bookingTitleInput = document.getElementById("bookingTitleInput");
+		const bookingSubjectInput = document.getElementById("bookingSubjectInput");
+		const bookingStartDateInput = document.getElementById("bookingStartDateInput");
+		const bookingModalStatus = document.getElementById("bookingModalStatus");
+		const closeBookingModalButton = document.getElementById("closeBookingModalButton");
+		const cancelBookingModalButton = document.getElementById("cancelBookingModalButton");
+		const saveBookingButton = document.getElementById("saveBookingButton");
 		const permissionModal = document.getElementById("permissionModal");
 		const permissionModalTitle = document.getElementById("permissionModalTitle");
 		const permissionModalDescription = document.getElementById("permissionModalDescription");
@@ -1275,11 +1378,13 @@
 		let allTeachers = [];
 		let allStudents = [];
 		let currentCourses = [];
+		let allPackages = [];
 		let allModerators = [];
 		let isPackageMode = false;
 		let selectedPackageCourseIds = new Set();
 		let currentModeratorId = null;
 		let currentModeratorName = null;
+		let currentBookingTeacher = null;
 
 		const modeConfig = {
 			students: {
@@ -1315,6 +1420,12 @@
 			if (!editStudentModalStatus) return;
 			editStudentModalStatus.textContent = text;
 			editStudentModalStatus.classList.toggle("error", isError);
+		}
+
+		function setBookingModalStatus(text, isError = false) {
+			if (!bookingModalStatus) return;
+			bookingModalStatus.textContent = text;
+			bookingModalStatus.classList.toggle("error", isError);
 		}
 
 		function setView(view) {
@@ -1479,6 +1590,12 @@
 			const actions = document.createElement("div");
 			actions.className = "actions";
 
+			const bookButton = document.createElement("button");
+			bookButton.className = "button approve-button";
+			bookButton.type = "button";
+			bookButton.textContent = "Book";
+			bookButton.addEventListener("click", () => openBookingModal(teacher));
+
 			const deleteButton = document.createElement("button");
 			deleteButton.className = "button delete-button";
 			deleteButton.type = "button";
@@ -1491,7 +1608,7 @@
 			editButton.textContent = "Edit";
 			editButton.addEventListener("click", () => enterEditMode(card, teacher, 'teacher'));
 
-			actions.append(editButton, deleteButton);
+			actions.append(bookButton, editButton, deleteButton);
 			card.append(avatar, meta, actions);
 			return card;
 		}
@@ -1873,6 +1990,70 @@
 			setCoursesStatus(`${currentCourses.length} course${currentCourses.length === 1 ? "" : "s"} found.`);
 		}
 
+		function createPackageCard(pkg) {
+			const card = document.createElement("article");
+			card.className = "course-card";
+
+			const link = document.createElement("a");
+			link.className = "package-link";
+			link.href = `/package/${pkg.id}`;
+
+			const cardTop = document.createElement("div");
+			cardTop.className = "course-card-top";
+
+			const header = document.createElement("div");
+			header.className = "course-card-header";
+
+			const title = document.createElement("h3");
+			title.textContent = pkg.title || "Untitled package";
+
+			const price = document.createElement("div");
+			price.className = "course-price";
+			price.textContent = `EGP${Number(pkg.price || 0).toFixed(2)}`;
+
+			header.append(title, price);
+
+			const meta = document.createElement("div");
+			meta.className = "package-meta";
+
+			cardTop.append(header, meta);
+			link.appendChild(cardTop);
+
+			const actions = document.createElement("div");
+			actions.className = "package-card-actions";
+
+			const deleteButton = document.createElement("button");
+			deleteButton.className = "button delete-button";
+			deleteButton.type = "button";
+			deleteButton.textContent = "Delete";
+			deleteButton.addEventListener("click", (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				deletePackage(pkg.id);
+			});
+
+			actions.appendChild(deleteButton);
+			card.append(link, actions);
+			return card;
+		}
+
+		function renderPackages(packages) {
+			allPackages = Array.isArray(packages) ? packages : [];
+			packagesList.replaceChildren();
+
+			if (!allPackages.length) {
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = "No packages found.";
+				packagesList.appendChild(emptyState);
+				setPackagesStatus("No packages found.");
+				return;
+			}
+
+			allPackages.forEach((pkg) => packagesList.appendChild(createPackageCard(pkg)));
+			setPackagesStatus(`${allPackages.length} package${allPackages.length === 1 ? "" : "s"} found.`);
+		}
+
 		function updateSelectedCoursesList() {
 			const selectedTitles = currentCourses
 				.filter((course) => selectedPackageCourseIds.has(course.id))
@@ -1886,6 +2067,11 @@
 		function setCoursesStatus(text, isError = false) {
 			coursesStatus.textContent = text;
 			coursesStatus.classList.toggle("error", isError);
+		}
+
+		function setPackagesStatus(text, isError = false) {
+			packagesStatus.textContent = text;
+			packagesStatus.classList.toggle("error", isError);
 		}
 
 		function setModeratorsStatus(text, isError = false) {
@@ -1955,6 +2141,76 @@
 			editStudentModal.setAttribute("aria-hidden", "true");
 		}
 
+		function openBookingModal(teacher) {
+			currentBookingTeacher = teacher;
+			const teacherName = [teacher?.first_name, teacher?.last_name].filter(Boolean).join(" ") || "this teacher";
+			bookingModalTitle.textContent = `Book private lecture with ${teacherName}`;
+			bookingPhoneInput.value = "";
+			bookingTitleInput.value = "";
+			bookingSubjectInput.value = "";
+			bookingStartDateInput.value = "";
+			setBookingModalStatus("Fill the student phone number and lecture details before saving.");
+			bookingModal.classList.add("active");
+			bookingModal.setAttribute("aria-hidden", "false");
+			bookingPhoneInput.focus();
+		}
+
+		function closeBookingModal() {
+			bookingModal.classList.remove("active");
+			bookingModal.setAttribute("aria-hidden", "true");
+			currentBookingTeacher = null;
+		}
+
+		async function saveBooking() {
+			if (!currentBookingTeacher) {
+				return;
+			}
+
+			const phoneNumber = bookingPhoneInput.value.trim();
+			const title = bookingTitleInput.value.trim();
+			const subject = bookingSubjectInput.value.trim();
+			const startDate = bookingStartDateInput.value;
+
+			if (!phoneNumber || !title || !subject || !startDate) {
+				setBookingModalStatus("Please fill in the student phone number, title, subject, and start date.", true);
+				return;
+			}
+
+			setBookingModalStatus("Creating booking...");
+			saveBookingButton.disabled = true;
+			cancelBookingModalButton.disabled = true;
+			closeBookingModalButton.disabled = true;
+
+			try {
+				const response = await fetch(`${basePath}/create_booking/${currentBookingTeacher.teacher_id}`, {
+					method: "POST",
+					credentials: "include",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						phone_number: phoneNumber,
+						title,
+						subject,
+						start_date: startDate
+					})
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json().catch(() => ({}));
+					throw new Error(errorData.detail || errorData.message || "Unable to create private lecture booking.");
+				}
+
+				setBookingModalStatus("Booking created successfully.");
+				closeBookingModal();
+			} catch (error) {
+				const message = error && error.message ? error.message : "Unable to create private lecture booking.";
+				setBookingModalStatus(message, true);
+			} finally {
+				saveBookingButton.disabled = false;
+				cancelBookingModalButton.disabled = false;
+				closeBookingModalButton.disabled = false;
+			}
+		}
+
 		async function loadUsers() {
 			const config = modeConfig[currentMode];
 			setStatus(`Loading pending ${config.label}...`);
@@ -1993,7 +2249,9 @@
 
 		async function loadCourses() {
 			setCoursesStatus("Loading courses...");
+			setPackagesStatus("Loading packages...");
 			coursesList.replaceChildren();
+			packagesList.replaceChildren();
 
 			try {
 				const response = await fetch(`${basePath}/get_courses`, { credentials: "include" });
@@ -2006,6 +2264,43 @@
 				renderCourses(currentCourses);
 			} catch (error) {
 				setCoursesStatus(error.message, true);
+			}
+
+			try {
+				const response = await fetch(`${basePath}/get_packages`, { credentials: "include" });
+				if (!response.ok) {
+					throw new Error(response.status === 403 ? "You are not authorized to view packages." : "Unable to load packages.");
+				}
+
+				const packages = await response.json();
+				allPackages = Array.isArray(packages) ? packages : [];
+				renderPackages(allPackages);
+			} catch (error) {
+				allPackages = [];
+				renderPackages([]);
+				setPackagesStatus(error.message, true);
+			}
+		}
+
+		async function deletePackage(packageId) {
+			const endpoint = `${basePath}/delete_package/${packageId}`;
+			setPackagesStatus("Deleting package...");
+
+			try {
+				const response = await fetch(endpoint, {
+					method: "DELETE",
+					credentials: "include"
+				});
+
+				if (!response.ok) {
+					throw new Error("Unable to delete package.");
+				}
+
+				allPackages = allPackages.filter((pkg) => pkg.id !== packageId);
+				renderPackages(allPackages);
+				setPackagesStatus("Package deleted successfully.");
+			} catch (error) {
+				setPackagesStatus(error.message || "Unable to delete package.", true);
 			}
 		}
 
@@ -2097,6 +2392,7 @@
 
 				setPackageStatus("Package created successfully.");
 				closePackagePanel();
+				await loadCourses();
 			} catch (error) {
 				setPackageStatus(error.message || "Unable to create package.", true);
 			}
@@ -2417,6 +2713,9 @@
 		closePermissionModalButton.addEventListener("click", closePermissionModal);
 		addPermissionButton.addEventListener("click", addPermission);
 		permissionTypeSelect.addEventListener("change", updatePermissionTypeVisibility);
+		closeBookingModalButton.addEventListener("click", closeBookingModal);
+		cancelBookingModalButton.addEventListener("click", closeBookingModal);
+		saveBookingButton.addEventListener("click", saveBooking);
 		permissionModal.addEventListener("click", (event) => {
 			if (event.target === permissionModal) {
 				closePermissionModal();
@@ -2425,6 +2724,11 @@
 		editStudentModal.addEventListener("click", (event) => {
 			if (event.target === editStudentModal) {
 				closeEditStudentModal();
+			}
+		});
+		bookingModal.addEventListener("click", (event) => {
+			if (event.target === bookingModal) {
+				closeBookingModal();
 			}
 		});
 		setView("overview");

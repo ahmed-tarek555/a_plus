@@ -375,6 +375,56 @@
       gap: 24px;
     }
 
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
+    }
+
+    .package-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+      border: 1px solid #dbe7ff;
+      border-radius: 18px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .package-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .package-card:hover {
+      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
+      transform: translateY(-4px);
+      border-color: #93c5fd;
+    }
+
+    .package-card h3 {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+
+    .package-price {
+      font-weight: 800;
+      color: #1d4ed8;
+      font-size: 1.05rem;
+      margin-top: auto;
+    }
+
     .private-card {
       background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
       border: 1px solid #dbe7ff;
@@ -519,6 +569,12 @@
     </section>
     <section class="section">
       <div class="section-header">
+        <h2>Packages</h2><small>Choose a plan that fits your goals</small>
+      </div>
+      <div class="packages-grid" id="packagesGrid"></div>
+    </section>
+    <section class="section">
+      <div class="section-header">
         <h2>Courses</h2><small>Enroll today and start learning</small>
       </div>
       <div class="courses-grid" id="coursesGrid"></div>
@@ -527,6 +583,7 @@
   <script>const teachersRow = document.getElementById('teachersRow');
     const coursesGrid = document.getElementById('coursesGrid');
     const privateLecturesGrid = document.getElementById('privateLecturesGrid');
+    const packagesGrid = document.getElementById('packagesGrid');
     const searchForm = document.getElementById('searchForm');
     const homeData = document.getElementById('homeData');
     const isLogged = homeData?.dataset.logged === 'true';
@@ -619,6 +676,20 @@
       });
     }
 
+    function renderPackages(packages) {
+      if (!Array.isArray(packages) || !packages.length) {
+        packagesGrid.innerHTML = '<div class="empty-state">No packages available right now.</div>';
+        return;
+      }
+
+      packagesGrid.innerHTML = packages.map((pkg) => `
+        <a href="/package/${pkg.id}" class="package-card">
+          <h3>${pkg.title || 'Package'}</h3>
+          <div class="package-price">EGP${Number(pkg.price || 0).toFixed(2)}</div>
+        </a>
+      `).join('');
+    }
+
     function renderCourses(courses) {
       if (!Array.isArray(courses) || !courses.length) {
         coursesGrid.innerHTML = '<div class="empty-state">No courses available right now.</div>';
@@ -647,6 +718,10 @@
     fetch('/home/private_lectures', {
       credentials: 'include'
     }).then((response) => response.ok ? response.json() : []).then((lectures) => renderPrivateLectures(lectures)).catch(() => renderPrivateLectures([]));
+
+    fetch('/home/packages', {
+      credentials: 'include'
+    }).then((response) => response.ok ? response.json() : []).then((packages) => renderPackages(packages)).catch(() => renderPackages([]));
 
     fetch('/home/courses', {
       credentials: 'include'
