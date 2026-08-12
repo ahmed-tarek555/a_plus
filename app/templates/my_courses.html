@@ -380,7 +380,7 @@
           <p class="course-card__description">Level {{ course.level or 'N/A' }}</p>
           <div class="course-card__footer">
             <span class="course-footer-item">Course ID: {{ course.id }}</span>
-            <a href="/student/materials/{{ course.id }}" class="view-link">View material</a>
+            <a href="/my_course/{{ course.id }}" class="view-link">View material</a>
           </div>
         </article>
         {% endfor %}
@@ -391,29 +391,9 @@
         </div>
       {% endif %}
     </div>
-    <section class="data-section">
-      <h2>My Exams</h2>
-      <div id="examsContainer" class="data-list">
-        <div class="empty-state">Loading exams…</div>
-      </div>
-    </section>
   </main>
 
   <script>
-    function formatDate(value) {
-      if (!value) return 'N/A';
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return value;
-
-      return date.toLocaleString([], {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-
     function renderList(container, items, emptyText, renderer) {
       container.innerHTML = '';
       if (!Array.isArray(items) || items.length === 0) {
@@ -438,39 +418,6 @@
       }
       return response.json();
     }
-
-    async function loadExams() {
-      const container = document.getElementById('examsContainer');
-      try {
-        const exams = await fetchJson('/student/exams');
-        renderList(container, exams, 'No exams available.', exam => `
-          <div class="item-card__header">
-            <span class="item-chip">${exam.course || 'Unknown course'}</span>
-            <span class="status-chip ${exam.mark != null ? 'success' : 'pending'}">${exam.mark != null ? `Mark ${exam.mark}` : 'Not attempted'}</span>
-          </div>
-          <h3>${exam.title || 'Untitled exam'}</h3>
-          <div class="item-card__meta">
-            <div class="meta-row">
-              <span class="meta-label">Starts</span>
-              <span class="meta-value">${formatDate(exam.start_time)}</span>
-            </div>
-            <div class="meta-row">
-              <span class="meta-label">Ends</span>
-              <span class="meta-value">${formatDate(exam.end_time)}</span>
-            </div>
-          </div>
-          <div class="item-card__actions">
-            <a href="/exam/${exam.id}" class="link-button" target="_blank" rel="noreferrer">Open exam</a>
-          </div>
-        `);
-      } catch (error) {
-        renderList(container, [], error.message || 'Unable to load exams.');
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadExams();
-    });
   </script>
 </body>
 </html>

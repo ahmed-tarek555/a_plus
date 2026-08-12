@@ -4,6 +4,7 @@ import cloudinary
 import cloudinary.uploader
 from io import BytesIO
 import os
+from urllib.parse import urlparse, parse_qs
 
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
@@ -38,6 +39,15 @@ def upload_file(file: UploadFile):
     )
     return result["public_id"]
 
+def upload_material(file: UploadFile):
+    result = cloudinary.uploader.upload(
+        file.file,
+        folder="material",
+        transformation=[
+            {"quality": "auto"}
+        ]
+    )
+    return result["public_id"]
 
 def generate_url(public_id):
     url, _ = cloudinary.utils.cloudinary_url(
@@ -74,3 +84,15 @@ def is_valid_image(upload_file) -> bool:
         upload_file.file.seek(0)
 
 
+def extract_youtube_id(url: str) -> str:
+    parsed = urlparse(url)
+    if parsed.hostname in ("youtu.be",):
+        return parsed.path.lstrip("/")
+    if parsed.hostname in ("www.youtube.com", "youtube.com", "m.youtube.com"):
+        if parsed.path == "/watch":
+            query = parse_qs(parsed.query)
+            if "v" in query:
+                return query["v"][0]
+        if parsed.path.startswith("/embed/"):
+            return parsed.path.split("/embed/")[1]
+    raise ValueError("Could not extract YouTube video ID from URL")

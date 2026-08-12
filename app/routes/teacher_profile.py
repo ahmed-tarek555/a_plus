@@ -24,7 +24,6 @@ def login_page(request: Request, id: int, db: Session = Depends(get_db)):
         "id": user.id,
         "first_name": user.first_name,
         "last_name": user.last_name,
-        "phone_number": user.phone_number,
         "pfp_url": generate_url(user.pfp_public_id)
     }
 

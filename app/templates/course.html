@@ -156,6 +156,59 @@
             font-size: 0.98rem;
         }
 
+        .lectures-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(44, 117, 169, 0.14);
+        }
+
+        .lecture-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .lecture-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px;
+            border-radius: 14px;
+            background: #f8fbff;
+            border: 1px solid rgba(44, 117, 169, 0.1);
+        }
+
+        .lecture-card h3 {
+            margin: 0 0 4px;
+            font-size: 1rem;
+        }
+
+        .lecture-card p {
+            margin: 0;
+            color: #5b7488;
+            font-size: 0.92rem;
+        }
+
+        .buy-button {
+            padding: 10px 14px;
+            border: 0;
+            border-radius: 10px;
+            background: #2563eb;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .buy-button:hover {
+            background: #1d4ed8;
+        }
+
+        .buy-button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
         .course-price {
             display: inline-flex;
             align-items: baseline;
@@ -256,6 +309,25 @@
                         <span class="teacher-label">Course teacher</span>
                     </div>
                 </div>
+
+                <div class="lectures-section">
+                    <h2 class="section-title">Course lectures</h2>
+                    {% if lectures %}
+                    <div class="lecture-list">
+                        {% for lecture in lectures %}
+                        <div class="lecture-card">
+                            <div>
+                                <h3>{{ lecture.title }}</h3>
+                                <p>Price: EGP{{ "%.2f" | format(lecture.price or 0) }}</p>
+                            </div>
+                            <button class="buy-button" type="button" data-lecture-id="{{ lecture.id }}">Buy</button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="summary-detail">No lectures are available for this course yet.</p>
+                    {% endif %}
+                </div>
             </article>
 
             <aside class="course-summary">
@@ -325,6 +397,37 @@
                 }
             }
         }
+
+        document.querySelectorAll('.buy-button').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const lectureId = button.getAttribute('data-lecture-id');
+                button.disabled = true;
+                button.textContent = 'Buying...';
+
+                try {
+                    const response = await fetch(`/student/buy_lecture/${lectureId}`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 409){
+                            throw new Error('You have already purchased this lecture.');    
+                        }
+                        else{
+                            throw new Error('Unable to buy this lecture.');
+                        }
+                        
+                    }
+
+                    button.textContent = 'Purchased';
+                } catch (error) {
+                    button.disabled = false;
+                    button.textContent = 'Buy';
+                    setStatus(error.message, true);
+                }
+            });
+        });
 
         enrollButton.addEventListener('click', enrollCourse);
     </script>

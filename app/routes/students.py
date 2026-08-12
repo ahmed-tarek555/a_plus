@@ -4,6 +4,7 @@ from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import Session
 from app.models.homeworks_model import Homework
+from app.models.lecture_purchases import LecturePurchase
 from app.models.lectures_model import Lecture
 from app.models.questions_model import Question
 from app.models.submitted_homeworks import SubmittedHomework
@@ -60,6 +61,40 @@ def enroll_course(request: Request, id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return {"success": True}
 
+@router.post("/buy_lecture/{lecture_id}")
+def buy_lecture(request: Request, lecture_id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "student":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Student).join(Student, Student.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user, student = result
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    lecture = db.query(Lecture).filter(Lecture.id == lecture_id).first()
+    if not lecture:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    try:
+        new_purchase = LecturePurchase(
+            lecture_id=lecture_id,
+            student_id=student.id
+        )
+        db.add(new_purchase)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"success": True}
+
+
 @router.post("/unenroll/{id}")
 def unenroll_course(request: Request, id: int, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
@@ -108,8 +143,8 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
 
     return templates.TemplateResponse("my_courses.html", {"request": request, "courses": student_courses})
 
-@router.get("/exams")
-def get_exams(request: Request, db: Session = Depends(get_db)):
+@router.get("/my_lectures")
+def get_lectures(request: Request, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
     user_id, user_role = validate_user(token)
     if user_role != "student":
@@ -118,32 +153,17 @@ def get_exams(request: Request, db: Session = Depends(get_db)):
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user, student = result
-    exams = (
-        db.query(Exam, Course, SubmittedExam)
-              .join(Course, Course.id == Exam.course_id)
-              .outerjoin(
-                SubmittedExam,
-                and_(
-                    SubmittedExam.exam_id == Exam.id,
-                    SubmittedExam.student_id == student.id
-                    )
-              )
-              .join(Enrollment, Enrollment.course_id == Course.id)
-              .filter(Enrollment.student_id == student.id)
-              .all()
-              )
 
-    return [
+    lec_info = db.query(Lecture, Course).join(Course, Course.id == Lecture.course_id).join(LecturePurchase, LecturePurchase.lecture_id == Lecture.id).filter(LecturePurchase.student_id == student.id).all()
+    student_lectures = [
         {
-            "id": exam.id,
-            "title": exam.title,
-            "mark": submitted.mark if submitted is not None else None,
-            "course": course.subject,
-            "start_time": exam.start_time,
-            "end_time": exam.end_time
+            "id": lec.id,
+            "title": lec.title,
+            "subject": course.subject
         }
-        for exam, course, submitted in exams
+        for lec, course in lec_info
     ]
+    return templates.TemplateResponse("my_lectures.html", {"request": request, "lectures": student_lectures})
 
 @router.post("/submit_homework/{id}")
 def submit_homework(request: Request, id: int, hm: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -155,7 +175,7 @@ def submit_homework(request: Request, id: int, hm: UploadFile = File(...), db: S
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user, student = result
-    homework = db.query(Homework).join(Course, Course.id == Homework.course_id).join(Enrollment, Enrollment.course_id == Course.id).filter(Homework.id == id, Enrollment.student_id == student.id).first()
+    homework = db.query(Homework).filter(Homework.id == id).first()
     if not homework:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
@@ -240,52 +260,6 @@ def submit_exam(request: Request, id: int, payload: ExamSubmit, db: Session = De
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return answers_data
-
-@router.get("/materials/{id}")
-def get_materials(request: Request, id: int, db: Session = Depends(get_db)):
-    token = request.cookies.get("access_token")
-    user_id, user_role = validate_user(token)
-    if user_role != "student":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    result = db.query(User, Student).join(Student, Student.user_id == User.id).filter(User.id == user_id).first()
-    if not result:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    user, student = result
-    if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    teacher = db.query(User).join(Teacher, Teacher.user_id == User.id).join(Course, Course.teacher_id == Teacher.id).filter(Course.id == id).first()
-    lectures = db.query(Lecture).filter(Lecture.course_id == id).all()
-    homeworks = db.query(Homework).filter(Homework.course_id == id).all()
-
-    teacher_info = {
-        "id": teacher.id,
-        "first_name": teacher.first_name,
-        "last_name": teacher.last_name,
-        "phone_number": teacher.phone_number,
-        "pfp_url": generate_url(teacher.pfp_public_id)
-    }
-    course_lectures = [
-        {
-            "id": lec.id,
-            "title": lec.title,
-            "url": lec.url
-        }
-        for lec in lectures
-    ]
-    submitted_hms = db.query(SubmittedHomework).filter(SubmittedHomework.student_id == student.id).all()
-    submitted_hms_ids = [row.homework_id for row in submitted_hms]
-
-    course_homeworks = [
-        {
-            "id": hm.id,
-            "title": hm.title,
-            "due_date": hm.due_date.strftime("%b %-d, %Y, %I:%M %p"),
-            "url": generate_url(hm.public_id),
-            "submitted": True if hm.id in submitted_hms_ids else False
-        }
-        for hm in homeworks
-    ]
-    return templates.TemplateResponse("course_material.html", {"request": request, "teacher_info": teacher_info, "lectures": course_lectures, "homeworks": course_homeworks})
 
 @router.post("/attend/{lecture_id}")
 def attend(request: Request, lecture_id: int, db: Session = Depends(get_db)):

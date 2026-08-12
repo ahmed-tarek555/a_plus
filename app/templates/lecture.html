@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ material.title or 'Lecture' }} | A+</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+            color: #19324a;
+        }
+
+        .page {
+            max-width: 1080px;
+            margin: 32px auto;
+            padding: 0 20px 48px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(44, 117, 169, 0.12);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(43, 95, 130, 0.08);
+        }
+
+        .title {
+            margin: 0 0 12px;
+            font-size: 1.6rem;
+        }
+
+        .subtitle {
+            margin: 0 0 20px;
+            color: #4b6579;
+            line-height: 1.6;
+        }
+
+        .video-frame {
+            width: 100%;
+            min-height: 420px;
+            border: 0;
+            border-radius: 16px;
+            background: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(44, 117, 169, 0.12);
+        }
+
+        .section h2 {
+            margin: 0 0 12px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #294e6b;
+        }
+
+        .item-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .item-card {
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #f8fbff;
+            border: 1px solid rgba(44, 117, 169, 0.1);
+        }
+
+        .item-card h3 {
+            margin: 0 0 6px;
+            font-size: 1rem;
+        }
+
+        .item-card p {
+            margin: 0 0 8px;
+            color: #4b6579;
+            font-size: 0.92rem;
+        }
+
+        .action-link,
+        .submit-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            text-decoration: none;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+        }
+
+        .submit-button[disabled] {
+            background: #d1d5db;
+            color: #6b7280;
+            cursor: default;
+        }
+
+        .homework-actions,
+        .exam-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .exam-mark {
+            margin: 0;
+            color: #0f766e;
+            font-weight: 700;
+        }
+
+        .empty-state {
+            color: #5b7488;
+            background: #f8fbff;
+            border-style: dashed;
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="card">
+            <h1 class="title">{{ material.title or 'Lecture' }}</h1>
+            <p class="subtitle">Watch the lecture video below and review the attached materials, exams, and homework tasks.</p>
+
+            {% if material.video_id %}
+            <iframe class="video-frame"
+                src="https://www.youtube.com/embed/{{ material.video_id }}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            {% else %}
+            <div class="item-card empty-state">No video has been uploaded for this lecture yet.</div>
+            {% endif %}
+
+            {% if material.material_url %}
+            <div class="section">
+                <h2>Lecture material</h2>
+                <div class="item-card">
+                    <a class="action-link" href="{{ material.material_url }}" target="_blank" rel="noreferrer">Open material</a>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="section">
+                <h2>Homeworks</h2>
+                {% if material.homeworks %}
+                <div class="item-list">
+                    {% for homework in material.homeworks %}
+                    <div class="item-card">
+                        <h3>{{ homework.title }}</h3>
+                        <p>Due date: {{ homework.due_date or 'Not specified' }}</p>
+                        <div class="homework-actions">
+                            <a class="action-link" href="{{ homework.url }}" target="_blank" rel="noreferrer">Open homework file</a>
+                            <button
+                                class="submit-button"
+                                type="button"
+                                data-homework-id="{{ homework.id }}"
+                                {% if homework.submitted %}disabled{% endif %}
+                            >
+                                {{ 'Submitted' if homework.submitted else 'Submit' }}
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="item-card empty-state">No homework has been assigned for this lecture yet.</div>
+                {% endif %}
+            </div>
+
+            <div class="section">
+                <h2>Exams</h2>
+                {% if material.exams %}
+                <div class="item-list">
+                    {% for exam in material.exams %}
+                    <div class="item-card">
+                        <h3>{{ exam.tite or exam.title or 'Exam' }}</h3>
+                        <p>Start: {{ exam.start_time or 'Not specified' }} • End: {{ exam.end_time or 'Not specified' }}</p>
+                        <div class="exam-actions">
+                            <a class="action-link" href="/exam/{{ exam.id }}">Open exam</a>
+                            {% if exam.mark is not none %}
+                            <p class="exam-mark">Mark: {{ exam.mark }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="item-card empty-state">No exams are scheduled for this lecture yet.</div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+
+            let currentHomeworkId = null;
+            let currentButton = null;
+
+            fileInput.addEventListener('change', async function () {
+                if (!currentHomeworkId || !fileInput.files.length) {
+                    return;
+                }
+
+                const file = fileInput.files[0];
+                const formData = new FormData();
+                formData.append('hm', file);
+
+                currentButton.disabled = true;
+                currentButton.textContent = 'Submitting...';
+
+                try {
+                    const response = await fetch(`/student/submit_homework/${currentHomeworkId}`, {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include'
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.detail || 'Unable to submit homework.');
+                    }
+
+                    const result = await response.json();
+                    if (result.success) {
+                        currentButton.textContent = 'Submitted';
+                        currentButton.disabled = true;
+                    } else {
+                        throw new Error('Unable to submit homework.');
+                    }
+                } catch (error) {
+                    currentButton.disabled = false;
+                    currentButton.textContent = 'Submit';
+                    alert(error.message);
+                } finally {
+                    fileInput.value = '';
+                    currentHomeworkId = null;
+                    currentButton = null;
+                }
+            });
+
+            document.querySelectorAll('.submit-button').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    if (button.disabled) {
+                        return;
+                    }
+                    currentHomeworkId = button.getAttribute('data-homework-id');
+                    currentButton = button;
+                    fileInput.click();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

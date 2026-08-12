@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manage Lecture | A+</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
+            color: #19324a;
+        }
+
+        nav {
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(44, 117, 169, 0.08);
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            color: #2f8dcc;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 0 20px 64px;
+        }
+
+        .lecture-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 18px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .lecture-card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(44, 117, 169, 0.12);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 16px 40px rgba(43, 95, 130, 0.08);
+        }
+
+        .lecture-card h1 {
+            margin: 0 0 10px;
+            font-size: 1.8rem;
+        }
+
+        .lecture-meta {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .meta-item {
+            background: #f7fbff;
+            border: 1px solid rgba(44, 117, 169, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            color: #275272;
+            font-size: 0.95rem;
+        }
+
+        .video-container {
+            margin-top: 20px;
+            background: #f8fbff;
+            border: 1px solid rgba(44, 117, 169, 0.1);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .video-label {
+            margin-bottom: 10px;
+            color: #285e8d;
+            font-weight: 700;
+        }
+
+        .video-frame {
+            width: 100%;
+            min-height: 280px;
+            border: 0;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        .video-empty {
+            color: #5b7488;
+            background: #f8fbff;
+            border: 1px dashed rgba(44, 117, 169, 0.25);
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1.2fr 0.9fr;
+            gap: 22px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(44, 117, 169, 0.12);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .panel h2 {
+            margin: 0 0 14px;
+            font-size: 1.2rem;
+            color: #19324a;
+        }
+
+        .panel form {
+            display: grid;
+            gap: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .field label {
+            font-size: 0.9rem;
+            color: #4b6579;
+            font-weight: 600;
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(44, 117, 169, 0.14);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: #1d3145;
+        }
+
+        .field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform .12s ease, box-shadow .12s ease;
+        }
+
+        .btn.primary {
+            background: #2f8dcc;
+            color: #fff;
+        }
+
+        .btn.secondary {
+            background: #f5f9ff;
+            color: #2f6c9d;
+            border: 1px solid rgba(47, 140, 204, 0.12);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .status {
+            margin-top: 8px;
+            padding: 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(44, 117, 169, 0.1);
+            color: #27456b;
+            min-height: 48px;
+        }
+
+        .status.error {
+            background: #fff3f4;
+            border-color: rgba(192, 57, 75, 0.16);
+            color: #a72a40;
+        }
+
+        .list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .list-item {
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #f8fbff;
+            border: 1px solid rgba(44, 117, 169, 0.08);
+        }
+
+        .list-item h3 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+
+        .list-item p {
+            margin: 4px 0;
+            color: #4a6578;
+            font-size: 0.95rem;
+        }
+
+        .list-item a {
+            color: #2f8dcc;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .question-card {
+            background: #f7fbff;
+            border: 1px solid rgba(47, 140, 204, 0.16);
+            border-radius: 14px;
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .question-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .choice-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .choice-row input {
+            width: 100%;
+        }
+
+        .question-card h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #1e3e60;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .list-empty {
+            color: #5b7488;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #f6f8fb;
+        }
+
+        @media (max-width:980px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width:660px) {
+            .lecture-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="nav-brand">A+</a>
+            <a href="/teacher" style="text-decoration:none; color:#2f8dcc; font-weight:700">Back to dashboard</a>
+        </div>
+    </nav>
+
+    <main class="page">
+        <section class="lecture-card">
+            <div class="lecture-header">
+                <div>
+                    <h1>{{ lecture.title or 'Lecture' }}</h1>
+                    <p style="margin:0; color:#4f6e86; font-size:1rem;">Manage homework, exams, and lecture material for this class.</p>
+                </div>
+                <div>
+                    <span style="display:inline-flex; padding:10px 16px; border-radius:14px; background:#eef6ff; color:#276cb5; font-weight:700;">Lecture ID: {{ lecture.id }}</span>
+                </div>
+            </div>
+            <div class="video-container">
+                {% if lecture.video_id %}
+                <div class="video-label">Lecture video</div>
+                <iframe class="video-frame"
+                    src="https://www.youtube.com/embed/{{ lecture.video_id }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+                {% else %}
+                <div class="video-empty">No video has been uploaded for this lecture yet.</div>
+                {% endif %}
+            </div>
+
+            <div class="lecture-meta">
+                <div class="meta-item"><strong>Title</strong>
+                    <div>{{ lecture.title }}</div>
+                </div>
+                <div class="meta-item"><strong>Price</strong>
+                    <div>EGP{{ "%.2f"|format(lecture.price or 0) }}</div>
+                </div>
+                <div class="meta-item"><strong>Material</strong>
+                    <div>{% if lecture.material_url %}<a href="{{ lecture.material_url }}" target="_blank" rel="noreferrer">Open current material</a>{% else %}No material uploaded yet.{% endif %}</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="panels">
+            <section class="panel">
+                <h2>Add new homework</h2>
+                <form id="homeworkForm" enctype="multipart/form-data" onsubmit="return false;">
+                    <div class="field">
+                        <label for="hwTitle">Homework title</label>
+                        <input id="hwTitle" name="title" type="text" required />
+                    </div>
+                    <div class="field">
+                        <label for="hwDueDate">Due date</label>
+                        <input id="hwDueDate" name="due_date" type="datetime-local" required />
+                    </div>
+                    <div class="field">
+                        <label for="hwFile">Homework file (image)</label>
+                        <input id="hwFile" name="homework" type="file" accept="image/*" required />
+                    </div>
+                    <div class="actions">
+                        <button id="submitHomework" class="btn primary" type="button">Upload homework</button>
+                    </div>
+                    <div id="homeworkStatus" class="status">Upload an image file and submit.</div>
+                </form>
+
+                <h2 style="margin-top:32px;">Upload lecture material</h2>
+                <form id="materialForm" enctype="multipart/form-data" onsubmit="return false;">
+                    <div class="field">
+                        <label for="materialFile">Material file</label>
+                        <input id="materialFile" name="material" type="file" required />
+                    </div>
+                    <div class="actions">
+                        <button id="submitMaterial" class="btn primary" type="button">Upload material</button>
+                    </div>
+                    <div id="materialStatus" class="status">Upload a material file and submit.</div>
+                </form>
+
+                <h2 style="margin-top:32px;">Create new exam</h2>
+                <form id="examForm" onsubmit="return false;">
+                    <div class="field">
+                        <label for="examTitle">Exam title</label>
+                        <input id="examTitle" name="title" type="text" required />
+                    </div>
+                    <div class="field">
+                        <label for="examStartDate">Start date</label>
+                        <input id="examStartDate" name="start_time" type="datetime-local" required />
+                    </div>
+                    <div class="field">
+                        <label for="examTime">Duration (hours)</label>
+                        <input id="examTime" name="time" type="number" min="1" step="1" value="1" required />
+                    </div>
+                    <div class="actions">
+                        <button id="addQuestion" class="btn secondary" type="button">Add question</button>
+                    </div>
+                    <div id="questionsContainer" class="list"></div>
+                    <div class="actions">
+                        <button id="submitExam" class="btn primary" type="button">Create exam</button>
+                    </div>
+                    <div id="examStatus" class="status">Enter exam data and submit.</div>
+                </form>
+            </section>
+
+            <section class="panel">
+                <h2>Existing homeworks</h2>
+                <div id="homeworksList" class="list">
+                    <div class="list-empty">Loading homeworks…</div>
+                </div>
+                <h2 style="margin-top:28px;">Existing exams</h2>
+                <div id="examsList" class="list">
+                    <div class="list-empty">Loading exams…</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const lectureId = "{{ lecture.id }}";
+        const homeworkForm = document.getElementById('homeworkForm');
+        const materialForm = document.getElementById('materialForm');
+        const examForm = document.getElementById('examForm');
+        const submitHomework = document.getElementById('submitHomework');
+        const submitMaterial = document.getElementById('submitMaterial');
+        const submitExam = document.getElementById('submitExam');
+        const addQuestion = document.getElementById('addQuestion');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const homeworkStatus = document.getElementById('homeworkStatus');
+        const materialStatus = document.getElementById('materialStatus');
+        const examStatus = document.getElementById('examStatus');
+        const homeworksList = document.getElementById('homeworksList');
+        const examsList = document.getElementById('examsList');
+
+        function setStatus(element, message, isError = false) {
+            element.textContent = message;
+            element.classList.toggle('error', isError);
+        }
+
+        function createChoiceRow(questionIndex, choiceIndex, value = '') {
+            const row = document.createElement('div');
+            row.className = 'choice-row';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'choice-input';
+            input.placeholder = `Choice ${choiceIndex + 1}`;
+            input.value = value;
+            input.required = true;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn secondary';
+            removeButton.textContent = 'Remove';
+            removeButton.addEventListener('click', () => {
+                const questionCard = row.closest('.question-card');
+                row.remove();
+                if (questionCard) {
+                    updateCorrectChoiceOptions(questionCard);
+                }
+            });
+
+            row.append(input, removeButton);
+            return row;
+        }
+
+        function updateCorrectChoiceOptions(questionCard) {
+            const choices = Array.from(questionCard.querySelectorAll('.choice-input')).map(input => input.value.trim()).filter(Boolean);
+            const correctSelect = questionCard.querySelector('.question-correct-choice');
+            correctSelect.replaceChildren();
+
+            if (!choices.length) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Add choices first';
+                correctSelect.appendChild(option);
+                correctSelect.value = '';
+                return;
+            }
+
+            choices.forEach(choice => {
+                const option = document.createElement('option');
+                option.value = choice;
+                option.textContent = choice;
+                correctSelect.appendChild(option);
+            });
+        }
+
+        function setQuestionType(questionCard, isChoices) {
+            const choiceSection = questionCard.querySelector('.choices-section');
+            const correctBox = questionCard.querySelector('.correct-choice-field');
+            const modelAnswerBox = questionCard.querySelector('.model-answer-field');
+            if (isChoices) {
+                choiceSection.classList.remove('hidden');
+                correctBox.classList.remove('hidden');
+                modelAnswerBox.classList.add('hidden');
+                updateCorrectChoiceOptions(questionCard);
+            } else {
+                choiceSection.classList.add('hidden');
+                correctBox.classList.add('hidden');
+                modelAnswerBox.classList.remove('hidden');
+            }
+        }
+
+        function createQuestionCard() {
+            const index = questionsContainer.children.length;
+            const card = document.createElement('div');
+            card.className = 'question-card';
+
+            const header = document.createElement('div');
+            header.innerHTML = `<h3>Question ${index + 1}</h3>`;
+
+            const questionText = document.createElement('div');
+            questionText.className = 'field';
+            questionText.innerHTML = `
+                <label>Question text</label>
+                <input type="text" class="question-head" placeholder="Write the question text" required />
+            `;
+
+            const markField = document.createElement('div');
+            markField.className = 'field';
+            markField.innerHTML = `
+                <label>Mark</label>
+                <input type="number" class="question-mark" min="1" value="1" required />
+            `;
+
+            const typeField = document.createElement('div');
+            typeField.className = 'field';
+            typeField.innerHTML = `
+                <label>Question type</label>
+                <select class="question-type">
+                    <option value="true">Multiple choice</option>
+                    <option value="false" selected>Written answer</option>
+                </select>
+            `;
+
+            const choicesSection = document.createElement('div');
+            choicesSection.className = 'field choices-section';
+            choicesSection.innerHTML = `
+                <label>Choices</label>
+                <div class="choices-list"></div>
+                <button type="button" class="btn secondary add-choice">Add choice</button>
+            `;
+
+            const correctField = document.createElement('div');
+            correctField.className = 'field correct-choice-field';
+            correctField.innerHTML = `
+                <label>Correct choice</label>
+                <select class="question-correct-choice"></select>
+            `;
+
+            const modelAnswerField = document.createElement('div');
+            modelAnswerField.className = 'field model-answer-field';
+            modelAnswerField.innerHTML = `
+                <label>Model answer</label>
+                <textarea class="question-model-answer" placeholder="Enter the model answer for written questions" rows="3" required></textarea>
+            `;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn secondary';
+            removeButton.textContent = 'Remove question';
+            removeButton.addEventListener('click', () => {
+                card.remove();
+                Array.from(questionsContainer.children).forEach((child, idx) => {
+                    child.querySelector('h3').textContent = `Question ${idx + 1}`;
+                });
+            });
+
+            const questionRow = document.createElement('div');
+            questionRow.className = 'question-row';
+            questionRow.append(questionText, markField);
+
+            card.append(header, questionRow, typeField, choicesSection, correctField, modelAnswerField, removeButton);
+
+            typeField.querySelector('.question-type').addEventListener('change', (event) => {
+                setQuestionType(card, event.target.value === 'true');
+            });
+
+            choicesSection.querySelector('.add-choice').addEventListener('click', () => {
+                const choicesList = choicesSection.querySelector('.choices-list');
+                const choiceIndex = choicesList.children.length;
+                const row = createChoiceRow(index, choiceIndex);
+                choicesList.appendChild(row);
+                updateCorrectChoiceOptions(card);
+                row.querySelector('.choice-input').addEventListener('input', () => updateCorrectChoiceOptions(card));
+            });
+
+            questionsContainer.appendChild(card);
+            setQuestionType(card, false);
+            return card;
+        }
+
+        function collectExamQuestions() {
+            const cards = Array.from(questionsContainer.children);
+            if (!cards.length) {
+                throw new Error('Please add at least one question.');
+            }
+
+            return cards.map(card => {
+                const isChoices = card.querySelector('.question-type').value === 'true';
+                const head = card.querySelector('.question-head').value.trim();
+                const mark = Number(card.querySelector('.question-mark').value);
+                const question = {
+                    is_choices: isChoices,
+                    head,
+                    mark,
+                };
+
+                if (!head) {
+                    throw new Error('Each question must have text.');
+                }
+                if (!mark || mark < 1) {
+                    throw new Error('Each question must have a mark of at least 1.');
+                }
+
+                if (isChoices) {
+                    const choices = Array.from(card.querySelectorAll('.choice-input'))
+                        .map(input => input.value.trim())
+                        .filter(Boolean);
+                    if (choices.length < 2) {
+                        throw new Error('Multiple choice questions need at least 2 choices.');
+                    }
+                    const correctChoice = card.querySelector('.question-correct-choice').value;
+                    if (!correctChoice) {
+                        throw new Error('Select the correct choice for every multiple choice question.');
+                    }
+                    question.choices = choices.map(text => ({ text }));
+                    question.correct_choice = correctChoice;
+                } else {
+                    const modelAnswer = card.querySelector('.question-model-answer').value.trim();
+                    if (!modelAnswer) {
+                        throw new Error('Each written question must include a model answer.');
+                    }
+                    question.model_answer = modelAnswer;
+                }
+
+                return question;
+            });
+        }
+
+        function renderList(container, items, emptyText, itemRenderer) {
+            container.replaceChildren();
+            if (!items || !items.length) {
+                const empty = document.createElement('div');
+                empty.className = 'list-empty';
+                empty.textContent = emptyText;
+                container.appendChild(empty);
+                return;
+            }
+            items.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'list-item';
+                el.innerHTML = itemRenderer(item);
+                container.appendChild(el);
+            });
+        }
+
+        async function loadHomeworks() {
+            setStatus(homeworkStatus, 'Refreshing homework list…');
+            try {
+                const res = await fetch(`/manage_lecture/homeworks/${lectureId}`, { credentials: 'include' });
+                if (!res.ok) throw new Error('Unable to load homeworks');
+                const data = await res.json();
+                renderList(homeworksList, data, 'No homeworks uploaded yet.', hw => `
+                    <h3>${hw.title}</h3>
+                    <a href="/manage_lecture/submitted_homeworks/${hw.id}" style="text-decoration:none; color:#2f8dcc; font-weight:700">View submitted homeworks</a>
+                    <p><a href="${hw.url}" target="_blank" rel="noreferrer">View uploaded file</a></p>
+                `);
+                setStatus(homeworkStatus, 'Homework list updated.');
+            } catch (err) {
+                setStatus(homeworkStatus, err.message || 'Failed to load homeworks', true);
+                renderList(homeworksList, [], 'Unable to load homeworks.', () => '');
+            }
+        }
+
+        async function loadExams() {
+            setStatus(examStatus, 'Refreshing exam list…');
+            try {
+                const res = await fetch(`/manage_lecture/exams/${lectureId}`, { credentials: 'include' });
+                if (!res.ok) throw new Error('Unable to load exams');
+                const data = await res.json();
+                renderList(examsList, data, 'No exams created yet.', exam => `
+                    <h3>${exam.title}</h3>
+                    <a href="/manage_lecture/submitted_exams/${exam.id}" style="text-decoration:none; color:#2f8dcc; font-weight:700">View submitted exams</a>
+                    <p><strong>Start date:</strong> ${exam.start_time ? new Date(exam.start_time).toLocaleString() : 'Not set'}</p>
+                    <p><strong>End date:</strong> ${exam.end_time ? new Date(exam.end_time).toLocaleString() : 'Not set'}</p>
+                `);
+                setStatus(examStatus, 'Exam list updated.');
+            } catch (err) {
+                setStatus(examStatus, err.message || 'Failed to load exams', true);
+                renderList(examsList, [], 'Unable to load exams.', () => '');
+            }
+        }
+
+        addQuestion.addEventListener('click', () => {
+            createQuestionCard();
+        });
+
+        submitHomework.addEventListener('click', async () => {
+            const title = document.getElementById('hwTitle').value.trim();
+            const localValue = document.getElementById('hwDueDate').value;
+            const dueDate = new Date(localValue).toISOString();
+            const fileInput = document.getElementById('hwFile');
+            if (!title || !fileInput.files.length) {
+                setStatus(homeworkStatus, 'Please provide a title and select an image file.', true);
+                return;
+            }
+            submitHomework.disabled = true;
+            setStatus(homeworkStatus, 'Uploading homework…');
+            try {
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('due_date', dueDate);
+                formData.append('homework', fileInput.files[0]);
+                const res = await fetch(`/manage_lecture/add_homework/${lectureId}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                if (!res.ok) throw new Error('Unable to upload homework');
+                const data = await res.json();
+                if (data.success) {
+                    setStatus(homeworkStatus, 'Homework uploaded. Reloading list…');
+                    homeworkForm.reset();
+                    await loadHomeworks();
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (err) {
+                setStatus(homeworkStatus, err.message || 'Upload failed', true);
+            } finally {
+                submitHomework.disabled = false;
+            }
+        });
+
+        submitMaterial.addEventListener('click', async () => {
+            const fileInput = document.getElementById('materialFile');
+            if (!fileInput.files.length) {
+                setStatus(materialStatus, 'Please provide a material file.', true);
+                return;
+            }
+            submitMaterial.disabled = true;
+            setStatus(materialStatus, 'Uploading material…');
+            try {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                const res = await fetch(`/manage_lecture/upload_material/${lectureId}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                if (!res.ok) throw new Error('Unable to upload material');
+                const data = await res.json();
+                if (data.success) {
+                    setStatus(materialStatus, 'Material uploaded.');
+                    materialForm.reset();
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (err) {
+                setStatus(materialStatus, err.message || 'Upload failed', true);
+            } finally {
+                submitMaterial.disabled = false;
+            }
+        });
+
+        submitExam.addEventListener('click', async () => {
+            const title = document.getElementById('examTitle').value.trim();
+            const localValue = document.getElementById('examStartDate').value;
+            const start_time = new Date(localValue).toISOString();
+            const time = parseInt(document.getElementById('examTime').value, 10) || 1;
+
+            try {
+                if (!title) {
+                    throw new Error('Please enter an exam title.');
+                }
+                if (!Number.isInteger(time) || time < 1) {
+                    throw new Error('Please provide a valid duration in whole hours (>=1).');
+                }
+                const questions = collectExamQuestions();
+                const payload = { title, start_time, time, questions };
+                submitExam.disabled = true;
+                setStatus(examStatus, 'Creating exam…');
+                const res = await fetch(`/manage_lecture/add_exam/${lectureId}`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const body = await res.text();
+                    throw new Error(body || 'Unable to create exam');
+                }
+                const data = await res.json();
+                if (data.success) {
+                    setStatus(examStatus, 'Exam created. Reloading list…');
+                    examForm.reset();
+                    questionsContainer.replaceChildren();
+                    await loadExams();
+                } else {
+                    throw new Error('Create exam failed');
+                }
+            } catch (err) {
+                setStatus(examStatus, err.message || 'Create failed', true);
+            } finally {
+                submitExam.disabled = false;
+            }
+        });
+
+        loadHomeworks();
+        loadExams();
+    </script>
+</body>
+
+</html>

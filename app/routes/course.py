@@ -7,6 +7,7 @@ from app.models.users_model import User
 from app.models.teachers_model import Teacher
 from app.models.courses_model import Course
 from app.models.enrollments_model import Enrollment
+from app.models.lectures_model import Lecture
 from app.utils import generate_url
 from app.core.auth import validate_user
 from app.database import get_db
@@ -57,5 +58,15 @@ def course_data(request: Request, id: int, db: Session = Depends(get_db)):
         "enrolled": enrolled
     }
 
-    return templates.TemplateResponse("course.html", {"request": request, "course": course_info})
+    lectures = db.query(Lecture).filter(Lecture.course_id == course.id).all()
+    course_lectures = [
+        {
+            "id": lec.id,
+            "title": lec.title,
+            "price": lec.price
+        }
+        for lec in lectures
+    ]
+
+    return templates.TemplateResponse("course.html", {"request": request, "course": course_info, "lectures": course_lectures})
 
