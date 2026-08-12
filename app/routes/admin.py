@@ -553,7 +553,7 @@ def create_booking(request: Request, teacher_id: int, payload: ManualBook, db: S
     if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    student = db.query(Student).join(User, User.id == Student.user_id).filter(User.phone_number == payload.phone_number).first()
+    student = db.query(Student).join(User, User.id == Student.user_id).filter(User.id == payload.student_id).first()
     if not student:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 

@@ -411,7 +411,10 @@
                     });
 
                     if (!response.ok) {
-                        if (response.status === 409){
+                        if (response.status === 401){
+                            throw new Error('Only active students can buy lectures.');    
+                        }
+                        else if (response.status === 409){
                             throw new Error('You have already purchased this lecture.');    
                         }
                         else{

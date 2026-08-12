@@ -42,14 +42,100 @@
             line-height: 1.6;
         }
 
-        .video-frame {
+        /* ---- Custom video player ---- */
+        .player-wrap {
+            position: relative;
             width: 100%;
-            min-height: 420px;
-            border: 0;
+            aspect-ratio: 16 / 9;
             border-radius: 16px;
             background: #0f172a;
             margin-bottom: 20px;
+            overflow: hidden;
+            user-select: none;
         }
+
+        .player-wrap iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            pointer-events: none; /* all interaction goes through our overlay, not the raw iframe */
+        }
+
+        /* Transparent layer sitting on top of the iframe.
+           This is what actually receives clicks/right-clicks, so the
+           iframe's own right-click menu (which can show a YouTube link)
+           never gets a chance to appear. */
+        .player-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .player-controls {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.75), rgba(0,0,0,0));
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .player-wrap:hover .player-controls,
+        .player-wrap.controls-visible .player-controls {
+            opacity: 1;
+        }
+
+        .player-btn {
+            border: none;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 6px 8px;
+            border-radius: 8px;
+            line-height: 1;
+        }
+
+        .player-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .player-seek {
+            flex: 1;
+            height: 4px;
+            accent-color: #eff6ff;
+            cursor: pointer;
+        }
+
+        .player-time {
+            color: #fff;
+            font-size: 0.8rem;
+            min-width: 84px;
+            text-align: right;
+        }
+
+        .player-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            z-index: 1;
+        }
+        /* ---- end custom video player ---- */
 
         .section {
             margin-top: 16px;
@@ -137,10 +223,18 @@
             <p class="subtitle">Watch the lecture video below and review the attached materials, exams, and homework tasks.</p>
 
             {% if material.video_id %}
-            <iframe class="video-frame"
-                src="https://www.youtube.com/embed/{{ material.video_id }}"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+            <div class="player-wrap" id="player-wrap">
+                <div class="player-loading" id="player-loading">Loading video…</div>
+                <div id="yt-player"></div>
+                <div class="player-overlay" id="player-overlay"></div>
+                <div class="player-controls" id="player-controls">
+                    <button class="player-btn" id="btn-play-pause" type="button" aria-label="Play/Pause">▶</button>
+                    <input class="player-seek" id="seek-bar" type="range" min="0" max="100" value="0" step="0.1" />
+                    <span class="player-time" id="time-label">0:00 / 0:00</span>
+                    <button class="player-btn" id="btn-mute" type="button" aria-label="Mute/Unmute">🔊</button>
+                    <button class="player-btn" id="btn-fullscreen" type="button" aria-label="Fullscreen">⛶</button>
+                </div>
+            </div>
             {% else %}
             <div class="item-card empty-state">No video has been uploaded for this lecture yet.</div>
             {% endif %}
@@ -187,7 +281,7 @@
                 <div class="item-list">
                     {% for exam in material.exams %}
                     <div class="item-card">
-                        <h3>{{ exam.tite or exam.title or 'Exam' }}</h3>
+                        <h3>{{ exam.title or 'Exam' }}</h3>
                         <p>Start: {{ exam.start_time or 'Not specified' }} • End: {{ exam.end_time or 'Not specified' }}</p>
                         <div class="exam-actions">
                             <a class="action-link" href="/exam/{{ exam.id }}">Open exam</a>
@@ -204,6 +298,132 @@
             </div>
         </section>
     </main>
+
+    {% if material.video_id %}
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        (function () {
+            const VIDEO_ID = "{{ material.video_id }}";
+
+            let player = null;
+            let isSeeking = false;
+
+            const wrap = document.getElementById('player-wrap');
+            const loading = document.getElementById('player-loading');
+            const overlay = document.getElementById('player-overlay');
+            const controls = document.getElementById('player-controls');
+            const btnPlayPause = document.getElementById('btn-play-pause');
+            const btnMute = document.getElementById('btn-mute');
+            const btnFullscreen = document.getElementById('btn-fullscreen');
+            const seekBar = document.getElementById('seek-bar');
+            const timeLabel = document.getElementById('time-label');
+
+            function formatTime(seconds) {
+                seconds = Math.max(0, Math.floor(seconds || 0));
+                const m = Math.floor(seconds / 60);
+                const s = seconds % 60;
+                return `${m}:${s.toString().padStart(2, '0')}`;
+            }
+
+            function updateTimeUI() {
+                if (!player || typeof player.getCurrentTime !== 'function') return;
+                const current = player.getCurrentTime();
+                const duration = player.getDuration();
+                if (!isSeeking) {
+                    seekBar.value = duration ? (current / duration) * 100 : 0;
+                }
+                timeLabel.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+            }
+
+            window.onYouTubeIframeAPIReady = function () {
+                player = new YT.Player('yt-player', {
+                    videoId: VIDEO_ID,
+                    playerVars: {
+                        controls: 0,          // no native YouTube control bar
+                        modestbranding: 1,     // smallest branding YouTube allows
+                        rel: 0,                 // no unrelated-channel suggestions at end
+                        disablekb: 1,           // native keyboard shortcuts off (we don't wire our own)
+                        fs: 0,                  // no native fullscreen button (we provide our own)
+                        iv_load_policy: 3,      // no video annotations
+                        playsinline: 1,
+                        origin: window.location.origin
+                    },
+                    events: {
+                        onReady: onPlayerReady,
+                        onStateChange: onPlayerStateChange
+                    }
+                });
+            };
+
+            function onPlayerReady() {
+                loading.style.display = 'none';
+                setInterval(updateTimeUI, 250);
+            }
+
+            function onPlayerStateChange(event) {
+                btnPlayPause.textContent = event.data === YT.PlayerState.PLAYING ? '⏸' : '▶';
+            }
+
+            overlay.addEventListener('click', function () {
+                if (!player) return;
+                const state = player.getPlayerState();
+                if (state === YT.PlayerState.PLAYING) {
+                    player.pauseVideo();
+                } else {
+                    player.playVideo();
+                }
+            });
+
+            // Block the right-click / context menu entirely on the player area.
+            // This is what would otherwise let a student open "Copy video URL"
+            // or "Watch on YouTube" from the iframe's native menu.
+            overlay.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+            });
+
+            btnPlayPause.addEventListener('click', function () {
+                if (!player) return;
+                const state = player.getPlayerState();
+                if (state === YT.PlayerState.PLAYING) {
+                    player.pauseVideo();
+                } else {
+                    player.playVideo();
+                }
+            });
+
+            btnMute.addEventListener('click', function () {
+                if (!player) return;
+                if (player.isMuted()) {
+                    player.unMute();
+                    btnMute.textContent = '🔊';
+                } else {
+                    player.mute();
+                    btnMute.textContent = '🔇';
+                }
+            });
+
+            btnFullscreen.addEventListener('click', function () {
+                if (wrap.requestFullscreen) {
+                    wrap.requestFullscreen();
+                } else if (wrap.webkitRequestFullscreen) {
+                    wrap.webkitRequestFullscreen();
+                }
+            });
+
+            seekBar.addEventListener('input', function () {
+                isSeeking = true;
+            });
+
+            seekBar.addEventListener('change', function () {
+                if (!player) return;
+                const duration = player.getDuration();
+                const target = (seekBar.value / 100) * duration;
+                player.seekTo(target, true);
+                isSeeking = false;
+            });
+        })();
+    </script>
+    {% endif %}
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

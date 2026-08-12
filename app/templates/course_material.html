@@ -205,15 +205,96 @@
             color: #4b6579;
         }
 
-        .video-frame {
-            display: block;
+        /* ---- Custom video player ---- */
+        .player-wrap {
+            position: relative;
             width: 100%;
-            min-height: 320px;
-            border: 0;
+            aspect-ratio: 16 / 9;
             border-radius: 14px;
             background: #000;
             margin-bottom: 18px;
+            overflow: hidden;
+            user-select: none;
         }
+
+        .player-wrap iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            pointer-events: none;
+        }
+
+        .player-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .player-controls {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.75), rgba(0,0,0,0));
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .player-wrap:hover .player-controls,
+        .player-wrap.controls-visible .player-controls {
+            opacity: 1;
+        }
+
+        .player-btn {
+            border: none;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 6px 8px;
+            border-radius: 8px;
+            line-height: 1;
+        }
+
+        .player-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .player-seek {
+            flex: 1;
+            height: 4px;
+            accent-color: #eff6ff;
+            cursor: pointer;
+        }
+
+        .player-time {
+            color: #fff;
+            font-size: 0.8rem;
+            min-width: 84px;
+            text-align: right;
+        }
+
+        .player-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            z-index: 1;
+        }
+        /* ---- end custom video player ---- */
 
         .material-section {
             display: grid;
@@ -370,10 +451,189 @@
     </main>
 
     <input id="homework-file-input" type="file" accept="image/*" style="display:none" />
+
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         const lectureItems = Array.from(document.querySelectorAll('.lecture-item'));
         const detailContainer = document.getElementById('lecture-details');
         const placeholder = document.getElementById('lecture-placeholder');
+
+        // ---- YouTube IFrame API readiness handling ----
+        let ytApiReady = false;
+        let ytApiReadyResolvers = [];
+
+        window.onYouTubeIframeAPIReady = function () {
+            ytApiReady = true;
+            ytApiReadyResolvers.forEach((resolve) => resolve());
+            ytApiReadyResolvers = [];
+        };
+
+        function waitForYouTubeApi() {
+            if (ytApiReady) return Promise.resolve();
+            return new Promise((resolve) => ytApiReadyResolvers.push(resolve));
+        }
+
+        // ---- Current player instance (only one lecture viewed at a time) ----
+        let currentPlayer = null;
+        let currentPlayerPollId = null;
+
+        function destroyCurrentPlayer() {
+            if (currentPlayerPollId) {
+                clearInterval(currentPlayerPollId);
+                currentPlayerPollId = null;
+            }
+            if (currentPlayer && typeof currentPlayer.destroy === 'function') {
+                currentPlayer.destroy();
+            }
+            currentPlayer = null;
+        }
+
+        function extractVideoId(raw) {
+            if (!raw) return null;
+            if (!/^https?:\/\//i.test(raw)) return raw; // already a bare video id
+            try {
+                const url = new URL(raw);
+                if (url.hostname.includes('youtu.be')) {
+                    return url.pathname.replace('/', '');
+                }
+                if (url.pathname.startsWith('/embed/')) {
+                    return url.pathname.split('/embed/')[1];
+                }
+                const v = url.searchParams.get('v');
+                if (v) return v;
+            } catch (e) {
+                return null;
+            }
+            return null;
+        }
+
+        function formatTime(seconds) {
+            seconds = Math.max(0, Math.floor(seconds || 0));
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        async function mountPlayer(videoId) {
+            destroyCurrentPlayer();
+            await waitForYouTubeApi();
+
+            // the player mount point must exist in the DOM before YT.Player() runs
+            const mountEl = document.getElementById('yt-player-mount');
+            if (!mountEl) return; // user navigated away before the API resolved
+
+            const overlay = document.getElementById('player-overlay');
+            const controls = document.getElementById('player-controls');
+            const loading = document.getElementById('player-loading');
+            const btnPlayPause = document.getElementById('btn-play-pause');
+            const btnMute = document.getElementById('btn-mute');
+            const btnFullscreen = document.getElementById('btn-fullscreen');
+            const seekBar = document.getElementById('seek-bar');
+            const timeLabel = document.getElementById('time-label');
+            const wrap = document.getElementById('player-wrap');
+
+            let isSeeking = false;
+
+            currentPlayer = new YT.Player('yt-player-mount', {
+                videoId: videoId,
+                playerVars: {
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    disablekb: 1,
+                    fs: 0,
+                    iv_load_policy: 3,
+                    playsinline: 1,
+                    origin: window.location.origin
+                },
+                events: {
+                    onReady: function () {
+                        if (loading) loading.style.display = 'none';
+                        currentPlayerPollId = setInterval(updateTimeUI, 250);
+                    },
+                    onStateChange: function (event) {
+                        if (btnPlayPause) {
+                            btnPlayPause.textContent = event.data === YT.PlayerState.PLAYING ? '⏸' : '▶';
+                        }
+                    }
+                }
+            });
+
+            function updateTimeUI() {
+                if (!currentPlayer || typeof currentPlayer.getCurrentTime !== 'function') return;
+                const current = currentPlayer.getCurrentTime();
+                const duration = currentPlayer.getDuration();
+                if (!isSeeking && seekBar) {
+                    seekBar.value = duration ? (current / duration) * 100 : 0;
+                }
+                if (timeLabel) {
+                    timeLabel.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+                }
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', function () {
+                    if (!currentPlayer) return;
+                    const state = currentPlayer.getPlayerState();
+                    if (state === YT.PlayerState.PLAYING) {
+                        currentPlayer.pauseVideo();
+                    } else {
+                        currentPlayer.playVideo();
+                    }
+                });
+                overlay.addEventListener('contextmenu', function (e) {
+                    e.preventDefault();
+                });
+            }
+
+            if (btnPlayPause) {
+                btnPlayPause.addEventListener('click', function () {
+                    if (!currentPlayer) return;
+                    const state = currentPlayer.getPlayerState();
+                    if (state === YT.PlayerState.PLAYING) {
+                        currentPlayer.pauseVideo();
+                    } else {
+                        currentPlayer.playVideo();
+                    }
+                });
+            }
+
+            if (btnMute) {
+                btnMute.addEventListener('click', function () {
+                    if (!currentPlayer) return;
+                    if (currentPlayer.isMuted()) {
+                        currentPlayer.unMute();
+                        btnMute.textContent = '🔊';
+                    } else {
+                        currentPlayer.mute();
+                        btnMute.textContent = '🔇';
+                    }
+                });
+            }
+
+            if (btnFullscreen) {
+                btnFullscreen.addEventListener('click', function () {
+                    if (wrap.requestFullscreen) {
+                        wrap.requestFullscreen();
+                    } else if (wrap.webkitRequestFullscreen) {
+                        wrap.webkitRequestFullscreen();
+                    }
+                });
+            }
+
+            if (seekBar) {
+                seekBar.addEventListener('input', function () {
+                    isSeeking = true;
+                });
+                seekBar.addEventListener('change', function () {
+                    if (!currentPlayer) return;
+                    const duration = currentPlayer.getDuration();
+                    const target = (seekBar.value / 100) * duration;
+                    currentPlayer.seekTo(target, true);
+                    isSeeking = false;
+                });
+            }
+        }
 
         function escapeHtml(value) {
             return String(value ?? '')
@@ -391,17 +651,29 @@
             });
         }
 
-        function getVideoSrc(videoId) {
-            if (!videoId) return null;
-            if (/^https?:\/\//i.test(videoId)) return videoId;
-            return `https://www.youtube.com/embed/${videoId}`;
+        function renderPlayerMarkup() {
+            return `
+                <div class="player-wrap" id="player-wrap">
+                    <div class="player-loading" id="player-loading">Loading video…</div>
+                    <div id="yt-player-mount"></div>
+                    <div class="player-overlay" id="player-overlay"></div>
+                    <div class="player-controls" id="player-controls">
+                        <button class="player-btn" id="btn-play-pause" type="button" aria-label="Play/Pause">▶</button>
+                        <input class="player-seek" id="seek-bar" type="range" min="0" max="100" value="0" step="0.1" />
+                        <span class="player-time" id="time-label">0:00 / 0:00</span>
+                        <button class="player-btn" id="btn-mute" type="button" aria-label="Mute/Unmute">🔊</button>
+                        <button class="player-btn" id="btn-fullscreen" type="button" aria-label="Fullscreen">⛶</button>
+                    </div>
+                </div>
+            `;
         }
 
         function renderLecture(data) {
             placeholder.hidden = true;
             detailContainer.hidden = false;
+            destroyCurrentPlayer();
 
-            const videoSrc = getVideoSrc(data.video_id);
+            const videoId = extractVideoId(data.video_id);
             const homeworks = Array.isArray(data.homeworks) ? data.homeworks : [];
             const exams = Array.isArray(data.exams) ? data.exams : [];
             const materialUrl = data.material_url;
@@ -411,8 +683,8 @@
                 <p class="lecture-description">Open the video, download the lecture material, and review the homeworks and exams for this class.</p>
             `;
 
-            if (videoSrc) {
-                content += `<iframe class="video-frame" src="${escapeHtml(videoSrc)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            if (videoId) {
+                content += renderPlayerMarkup();
             } else {
                 content += '<div class="material-item">No video has been uploaded for this lecture yet.</div>';
             }
@@ -462,7 +734,7 @@
                 `;
 
                 exams.forEach((exam) => {
-                    const examTitle = exam.tite || exam.title || 'Exam';
+                    const examTitle = exam.title || 'Exam';
                     const examStart = exam.start_time || 'Not specified';
                     const examEnd = exam.end_time || 'Not specified';
                     const hasMark = exam.mark !== undefined && exam.mark !== null;
@@ -488,6 +760,10 @@
 
             detailContainer.innerHTML = content;
             bindHomeworkSubmitButtons();
+
+            if (videoId) {
+                mountPlayer(videoId);
+            }
         }
 
         function bindHomeworkSubmitButtons() {
@@ -513,6 +789,7 @@
         function renderError(message) {
             placeholder.hidden = true;
             detailContainer.hidden = false;
+            destroyCurrentPlayer();
             detailContainer.innerHTML = `
                 <h2 class="lecture-title">Unable to load lecture</h2>
                 <p class="lecture-description">${escapeHtml(message)}</p>

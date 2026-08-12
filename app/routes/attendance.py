@@ -30,32 +30,20 @@ def course_data(request: Request, lecture_id: int, db: Session = Depends(get_db)
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    enrolled_students = (db.query(User, Attendance).join(Student, Student.user_id == User.id)
-                         .join(Enrollment, Enrollment.student_id == Student.id)
-                         .join(Course, Course.id == Enrollment.course_id)
-                         .join(Lecture, Lecture.course_id == Course.id)
-                         .outerjoin(Attendance, and_(Attendance.student_id == Student.id, Attendance.lecture_id == lecture_id))
-                         .filter(Lecture.id == lecture_id)
-                         .all())
+    students = (db.query(User)
+                .join(Student, Student.user_id == User.id)
+                .join(Attendance, Attendance.student_id == Student.id)
+                .filter(Attendance.lecture_id == lecture_id).all())
 
-    attended = []
-    not_attended = []
-    for student, attendance in enrolled_students:
-        if attendance is not None:
-            attended.append({
-                "id": student.id,
-                "first_name": student.first_name,
-                "last_name": student.last_name,
-                "parent_name": student.parent_name,
-                "parent_phone": student.parent_phone_number
-            })
-        else:
-            not_attended.append({
-                "id": student.id,
-                "first_name": student.first_name,
-                "last_name": student.last_name,
-                "parent_name": student.parent_name,
-                "parent_phone": student.parent_phone_number
-            })
+    attended = [
+        {
+            "id": student.id,
+            "first_name": student.first_name,
+            "last_name": student.last_name,
+            "parent_name": student.parent_name,
+            "parent_phone": student.parent_phone_number
+        }
+        for student in students
+    ]
 
-    return templates.TemplateResponse("attendance.html", {"request": request, "attended": attended, "not_attended": not_attended})
+    return templates.TemplateResponse("attendance.html", {"request": request, "attended": attended})

@@ -44,34 +44,6 @@ def login_page(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/login")
     return templates.TemplateResponse("profile.html", {"request": request, "data": data})
 
-@router.get("/courses")
-def get_courses(request: Request, db: Session = Depends(get_db)):
-    token = request.cookies.get("access_token")
-    user_id, user_role = validate_user(token)
-    if user_role != "teacher":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-
-    results = (
-        db.query(Course, func.count(Enrollment.id).label("student_count"))
-        .join(Teacher, Teacher.id == Course.teacher_id)
-        .outerjoin(Enrollment, Enrollment.course_id == Course.id)
-        .filter(Teacher.user_id == user_id, Course.is_public == True)
-        .group_by(Course.id)
-        .all()
-    )
-
-    return [
-        {
-            "id": course.id,
-            "price": course.price,
-            "stage": course.stage,
-            "level": course.level,
-            "subject": course.subject,
-            "student_count": student_count
-        }
-        for course, student_count in results
-    ]
-
 @router.post("/upload_pfp")
 def upload_picture(request: Request,
                pfp: UploadFile = File(...),

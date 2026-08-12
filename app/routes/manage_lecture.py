@@ -20,7 +20,7 @@ from app.schemas.courses import UploadLecture
 from app.core.auth import validate_user
 from app.services.embedder import get_embedding
 from app.database import get_db
-from app.utils import is_valid_image, upload_file, generate_url, upload_material, extract_youtube_id
+from app.utils import is_valid_image, upload_file, generate_url, upload_material, is_material_valid
 from app.config import BASE_DIR
 from datetime import datetime, timedelta
 
@@ -216,6 +216,7 @@ def get_submitted_hms(request: Request, id: int, db: Session = Depends(get_db)):
     results = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.id.in_(student_ids)).all()
     student_lookup = {
         student.id: {
+            "id": row.id,
             "first_name": row.first_name,
             "last_name": row.last_name,
             "phone_number": row.phone_number,
@@ -233,29 +234,11 @@ def get_submitted_hms(request: Request, id: int, db: Session = Depends(get_db)):
         for hm in submitted_hms
     ]
 
-    # rest_students = (
-    #     db.query(User)
-    #     .join(Student, Student.user_id == User.id)
-    #     .join(Enrollment, Enrollment.student_id == Student.id)
-    #     .filter(Enrollment.course_id == homework.course_id, Student.id.notin_(student_ids))
-    #     .all()
-    # )
-    # late_students = [
-    #     {
-    #         "first_name": student.first_name,
-    #         "last_name": student.last_name,
-    #         "phone_number": student.phone_number,
-    #         "parent_name": student.parent_name,
-    #         "parent_phone_number": student.parent_phone_number,
-    #     }
-    #     for student in rest_students
-    # ]
     return templates.TemplateResponse(
         "submittions.html",
         {
             "request": request,
             "submittions": submittions,
-            "late_students": [],
             "submission_type": "homework",
             "item_title": homework.title,
         },
@@ -280,6 +263,7 @@ def get_submitted_exams(request: Request, id: int, db: Session = Depends(get_db)
     results = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.id.in_(student_ids)).all()
     student_lookup = {
         student.id: {
+            "id": row.id,
             "first_name": row.first_name,
             "last_name": row.last_name,
             "phone_number": row.phone_number,
@@ -296,29 +280,12 @@ def get_submitted_exams(request: Request, id: int, db: Session = Depends(get_db)
         }
         for exam_submission in submitted_exams
     ]
-    # rest_students = (
-    #     db.query(User)
-    #     .join(Student, Student.user_id == User.id)
-    #     .join(Enrollment, Enrollment.student_id == Student.id)
-    #     .filter(Enrollment.course_id == exam.course_id, Student.id.notin_(student_ids))
-    #     .all()
-    # )
-    # late_students = [
-    #     {
-    #         "first_name": student.first_name,
-    #         "last_name": student.last_name,
-    #         "phone_number": student.phone_number,
-    #         "parent_name": student.parent_name,
-    #         "parent_phone_number": student.parent_phone_number,
-    #     }
-    #     for student in rest_students
-    # ]
+
     return templates.TemplateResponse(
         "submittions.html",
         {
             "request": request,
             "submittions": submittions,
-            "late_students": [],
             "submission_type": "exam",
             "item_title": exam.title,
         },
@@ -335,7 +302,10 @@ def add_material(request: Request, lecture_id: int, file: UploadFile = File(...)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user, teacher = result
     lecture = db.query(Lecture).join(Course, Course.id == Lecture.course_id).filter(Lecture.id == lecture_id, Course.teacher_id == teacher.id).first()
-
+    if not lecture:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if not is_material_valid(file):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     public_id = upload_material(file)
     try:
         lecture.material_public_id = public_id

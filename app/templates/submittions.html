@@ -115,14 +115,13 @@
                 <div>
                     <h1 style="margin:0 0 6px; font-size: 1.7rem;">{{ item_title or 'Submission overview' }}</h1>
                     <p style="margin:0; color:#58738a;">Teacher view for {{ submission_type|title if submission_type
-                        else 'submission' }} progress.</p>
+                        else 'submission' }} submissions.</p>
                 </div>
-                <div class="pill">{{ submittions|length }} submitted · {{ late_students|length }} pending</div>
+                <div class="pill">{{ submittions|length }} submitted</div>
             </div>
 
-            <div class="grid">
-                <div class="list-card">
-                    <h2>Submitted students</h2>
+            <div class="list-card">
+                <h2>Submitted students</h2>
                     {% if submittions %}
                     {% for submission in submittions %}
                     <div class="item">
@@ -141,22 +140,6 @@
                     {% endfor %}
                     {% else %}
                     <div class="empty">No students have submitted this {{ submission_type|default('item') }} yet.</div>
-                    {% endif %}
-                </div>
-
-                <div class="list-card">
-                    <h2>Not submitted yet</h2>
-                    {% if late_students %}
-                    {% for student in late_students %}
-                    <div class="item">
-                        <h3>{{ student.first_name }} {{ student.last_name }}</h3>
-                        <p class="muted">Student phone: {{ student.phone_number or 'Not provided' }}</p>
-                        <p class="muted">Parent phone: {{ student.parent_phone_number or 'Not provided' }}</p>
-                        <p class="muted">Parent name: {{ student.parent_name or 'Not provided' }}</p>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="empty">All enrolled students have submitted.</div>
                     {% endif %}
                 </div>
             </div>

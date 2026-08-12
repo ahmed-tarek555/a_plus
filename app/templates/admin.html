@@ -1007,13 +1007,13 @@
 					<div>
 						<p class="eyebrow">Teachers</p>
 						<h2>Active teachers</h2>
-						<p>Search current active teachers by phone number.</p>
+						<p>Search current active teachers by ID.</p>
 					</div>
 				</div>
 
 				<div class="search-row">
-					<input id="teacherSearch" class="search-input" type="search" placeholder="Search by phone number"
-						aria-label="Search teachers by phone number" />
+					<input id="teacherSearch" class="search-input" type="search" placeholder="Search by ID"
+						aria-label="Search teachers by ID" />
 				</div>
 				<div id="teacherStatus" class="status" role="status" aria-live="polite">Loading active teachers...</div>
 				<section id="teacherList" class="teacher-list" aria-live="polite"></section>
@@ -1024,11 +1024,14 @@
 					<div>
 						<p class="eyebrow">Students</p>
 						<h2>Active students</h2>
-						<p>Filter the current students by stage and level.</p>
+						<p>Filter the current students by stage, level, or ID.</p>
 					</div>
 				</div>
 
 				<div class="filter-row">
+					<input id="studentSearch" class="search-input" type="search" placeholder="Search by ID"
+						aria-label="Search students by ID" />
+
 					<select id="stageFilter" class="filter-select" aria-label="Filter students by stage">
 						<option value="">All stages</option>
 						<option value="الابتدائية">الابتدائية</option>
@@ -1125,6 +1128,8 @@
 				</div>
 
 				<div class="filter-row">
+					<input id="moderatorSearch" class="search-input" type="search" placeholder="Search by ID"
+						aria-label="Search moderators by ID" />
 					<button id="createModeratorButton" class="button approve-button" type="button">Create a moderator</button>
 				</div>
 
@@ -1213,8 +1218,8 @@
 
 			<div class="modal-grid">
 				<label style="grid-column: 1 / -1;">
-					Student phone number
-					<input id="bookingPhoneInput" type="text" placeholder="Enter student phone number" />
+					Student ID
+					<input id="bookingPhoneInput" type="text" placeholder="Enter student ID" />
 				</label>
 				<label style="grid-column: 1 / -1;">
 					Title
@@ -1230,7 +1235,7 @@
 				</label>
 			</div>
 
-			<div id="bookingModalStatus" class="status" role="status" aria-live="polite">Fill the student phone number and lecture details before saving.</div>
+			<div id="bookingModalStatus" class="status" role="status" aria-live="polite">Fill the student ID and lecture details before saving.</div>
 			<div class="modal-actions">
 				<button id="cancelBookingModalButton" class="button delete-button" type="button">Cancel</button>
 				<button id="saveBookingButton" class="button approve-button" type="button">Save</button>
@@ -1311,8 +1316,10 @@
 		const teacherSearch = document.getElementById("teacherSearch");
 		const teacherStatus = document.getElementById("teacherStatus");
 		const teacherList = document.getElementById("teacherList");
+		const studentSearch = document.getElementById("studentSearch");
 		const stageFilter = document.getElementById("stageFilter");
 		const levelFilter = document.getElementById("levelFilter");
+		const moderatorSearch = document.getElementById("moderatorSearch");
 		const studentStatus = document.getElementById("studentStatus");
 		const studentList = document.getElementById("studentList");
 		const coursesStatus = document.getElementById("coursesStatus");
@@ -1577,6 +1584,10 @@
 			name.className = "teacher-name";
 			name.textContent = `${teacher.first_name || ""} ${teacher.last_name || ""}`.trim() || "Unnamed teacher";
 
+			const id = document.createElement("div");
+			id.className = "teacher-phone";
+			id.textContent = `ID: ${teacher.id}`;
+
 			const phone = document.createElement("div");
 			phone.className = "teacher-phone";
 			phone.textContent = `Phone: ${teacher.phone_number || "Not provided"}`;
@@ -1585,7 +1596,7 @@
 			joined.className = "teacher-phone";
 			joined.textContent = `Joined: ${teacher.date_joined || "Unknown date"}`;
 
-			meta.append(name, phone, joined);
+			meta.append(name, id, phone, joined);
 
 			const actions = document.createElement("div");
 			actions.className = "actions";
@@ -1640,6 +1651,10 @@
 			name.className = "student-name";
 			name.textContent = `${student.first_name || ""} ${student.last_name || ""}`.trim() || "Unnamed student";
 
+			const id = document.createElement("div");
+			id.className = "student-detail";
+			id.textContent = `ID: ${student.id}`;
+
 			const phone = document.createElement("div");
 			phone.className = "student-detail";
 			phone.textContent = `Phone: ${student.phone_number || "Not provided"}`;
@@ -1652,7 +1667,7 @@
 			stage.className = "student-detail";
 			stage.textContent = `Stage: ${student.stage || "Not provided"} • Level: ${student.level ?? "Not provided"}`;
 
-			meta.append(name, phone, parent, stage);
+			meta.append(name, id, phone, parent, stage);
 
 			const actions = document.createElement("div");
 			actions.className = "actions";
@@ -1706,6 +1721,10 @@
 			name.className = "teacher-name";
 			name.textContent = `${mod.first_name || ""} ${mod.last_name || ""}`.trim() || "Unnamed moderator";
 
+			const id = document.createElement("div");
+			id.className = "teacher-phone";
+			id.textContent = `ID: ${mod.id}`;
+
 			const phone = document.createElement("div");
 			phone.className = "teacher-phone";
 			phone.textContent = `Phone: ${mod.phone_number || "Not provided"}`;
@@ -1725,7 +1744,7 @@
 			editButton.textContent = "Edit";
 			editButton.addEventListener("click", () => enterEditMode(card, mod, 'moderator'));
 
-			info.append(name, phone);
+			info.append(name, id, phone);
 			actions.append(editButton, deleteButton);
 			card.append(menuButton, info, actions);
 			return card;
@@ -2149,7 +2168,7 @@
 			bookingTitleInput.value = "";
 			bookingSubjectInput.value = "";
 			bookingStartDateInput.value = "";
-			setBookingModalStatus("Fill the student phone number and lecture details before saving.");
+			setBookingModalStatus("Fill the student ID and lecture details before saving.");
 			bookingModal.classList.add("active");
 			bookingModal.setAttribute("aria-hidden", "false");
 			bookingPhoneInput.focus();
@@ -2166,13 +2185,13 @@
 				return;
 			}
 
-			const phoneNumber = bookingPhoneInput.value.trim();
+			const studentId = bookingPhoneInput.value.trim();
 			const title = bookingTitleInput.value.trim();
 			const subject = bookingSubjectInput.value.trim();
 			const startDate = bookingStartDateInput.value;
 
-			if (!phoneNumber || !title || !subject || !startDate) {
-				setBookingModalStatus("Please fill in the student phone number, title, subject, and start date.", true);
+			if (!studentId || !title || !subject || !startDate) {
+				setBookingModalStatus("Please fill in the student ID, title, subject, and start date.", true);
 				return;
 			}
 
@@ -2187,7 +2206,7 @@
 					credentials: "include",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
-						phone_number: phoneNumber,
+						student_id: studentId,
 						title,
 						subject,
 						start_date: startDate
@@ -2353,14 +2372,37 @@
 		}
 
 		function applyTeacherFilter() {
-			const query = teacherSearch.value.trim().toLowerCase();
+			const query = teacherSearch.value.trim();
 			const filteredTeachers = allTeachers.filter((teacher) => {
-				const phone = (teacher.phone_number || "").toLowerCase();
-				const fullName = `${teacher.first_name || ""} ${teacher.last_name || ""}`.trim().toLowerCase();
-				return phone.includes(query) || fullName.includes(query);
+				return String(teacher.id).includes(query);
 			});
 
 			renderTeachers(filteredTeachers);
+		}
+
+		function applyStudentFilter() {
+			const query = studentSearch.value.trim();
+			const stage = stageFilter.value;
+			const level = levelFilter.value;
+
+			const filteredStudents = allStudents.filter((student) => {
+				const matchesId = query === "" || String(student.id).includes(query);
+				const matchesStage = stage === "" || student.stage === stage;
+				const matchesLevel = level === "" || String(student.level) === level;
+
+				return matchesId && matchesStage && matchesLevel;
+			});
+
+			renderStudents(filteredStudents);
+		}
+
+		function applyModeratorFilter() {
+			const query = moderatorSearch.value.trim();
+			const filteredModerators = allModerators.filter((mod) => {
+				return String(mod.id).includes(query);
+			});
+
+			renderModerators(filteredModerators);
 		}
 
 		async function savePackage() {
@@ -2698,8 +2740,10 @@
 		studentsMode.addEventListener("click", () => setMode("students"));
 		teachersMode.addEventListener("click", () => setMode("teachers"));
 		teacherSearch.addEventListener("input", applyTeacherFilter);
-		stageFilter.addEventListener("change", loadStudents);
-		levelFilter.addEventListener("change", loadStudents);
+		studentSearch.addEventListener("input", applyStudentFilter);
+		stageFilter.addEventListener("change", applyStudentFilter);
+		levelFilter.addEventListener("change", applyStudentFilter);
+		moderatorSearch.addEventListener("input", applyModeratorFilter);
 		createPackageButton.addEventListener("click", openPackagePanel);
 		cancelPackageButton.addEventListener("click", closePackagePanel);
 		savePackageButton.addEventListener("click", savePackage);

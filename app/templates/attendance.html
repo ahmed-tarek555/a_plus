@@ -39,7 +39,7 @@
 
         .attendance-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 20px;
             align-items: start;
         }
@@ -117,23 +117,6 @@
                     </div>
                     {% else %}
                     <div class="empty">No students have attended this lecture yet.</div>
-                    {% endif %}
-                </div>
-
-                <div class="panel">
-                    <h2>Not Attended</h2>
-                    {% if not_attended %}
-                    <div class="student-list">
-                        {% for student in not_attended %}
-                        <article class="student-card">
-                            <p class="student-name">{{ student.first_name or 'Student' }} {{ student.last_name or '' }}</p>
-                            <p class="student-meta">Parent: {{ student.parent_name or 'Not provided' }}</p>
-                            <p class="student-meta">Parent phone: {{ student.parent_phone or 'Not provided' }}</p>
-                        </article>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <div class="empty">All enrolled students have attended this lecture.</div>
                     {% endif %}
                 </div>
             </div>

@@ -154,14 +154,24 @@ def get_lectures(request: Request, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user, student = result
 
-    lec_info = db.query(Lecture, Course).join(Course, Course.id == Lecture.course_id).join(LecturePurchase, LecturePurchase.lecture_id == Lecture.id).filter(LecturePurchase.student_id == student.id).all()
+    lec_info = (db.query(Lecture, Course, User)
+                .join(Course, Course.id == Lecture.course_id)
+                .join(Teacher, Teacher.id == Course.teacher_id)
+                .join(User, User.id == Teacher.user_id)
+                .join(LecturePurchase, LecturePurchase.lecture_id == Lecture.id)
+                .filter(LecturePurchase.student_id == student.id)
+                .all())
+
     student_lectures = [
         {
             "id": lec.id,
             "title": lec.title,
-            "subject": course.subject
+            "subject": course.subject,
+            "first_name": teacher.first_name,
+            "last_name": teacher.last_name,
+            "pfp": generate_url(teacher.pfp_public_id) if teacher.pfp_public_id is not None else None
         }
-        for lec, course in lec_info
+        for lec, course, teacher in lec_info
     ]
     return templates.TemplateResponse("my_lectures.html", {"request": request, "lectures": student_lectures})
 

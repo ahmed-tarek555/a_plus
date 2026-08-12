@@ -28,8 +28,10 @@
         p { margin: 0 0 18px; color: #4f6e86; }
         .lecture-list { display: grid; gap: 12px; }
         .lecture-item {
-            display: block;
-            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 14px;
             border-radius: 12px;
             background: #f7fbff;
             border: 1px solid rgba(44,117,169,0.1);
@@ -37,8 +39,24 @@
             text-decoration: none;
         }
 
+        .lecture-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(47,140,204,0.12);
+            background: #eef6ff;
+            flex: 0 0 56px;
+        }
+
+        .lecture-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .lecture-item-title {
-            margin: 0 0 6px;
+            margin: 0;
             font-size: 1rem;
             font-weight: 700;
         }
@@ -48,6 +66,13 @@
             color: #4f6e86;
             font-size: 0.94rem;
             font-weight: 500;
+        }
+
+        .lecture-teacher {
+            margin-top: 6px;
+            color: #2f6c9d;
+            font-weight: 700;
+            font-size: 0.92rem;
         }
 
         .lecture-item:hover { background: #eef6ff; }
@@ -67,8 +92,12 @@
                 <div class="lecture-list">
                     {% for lecture in lectures %}
                         <a class="lecture-item" href="/lecture/{{ lecture.id }}" data-lecture-id="{{ lecture.id }}">
-                            <p class="lecture-item-title">{{ lecture.title }}</p>
-                            <p class="lecture-item-subject">{{ lecture.subject or 'No subject' }}</p>
+                            <img class="lecture-avatar" src="{{ lecture.pfp or ('https://ui-avatars.com/api/?name=' ~ (lecture.first_name or '') ~ '+' ~ (lecture.last_name or '') ~ '&background=DBEAFE&color=2563EB') }}" alt="{{ lecture.first_name }} {{ lecture.last_name }}">
+                            <div class="lecture-content">
+                                <p class="lecture-item-title">{{ lecture.title }}</p>
+                                <p class="lecture-item-subject">{{ lecture.subject or 'No subject' }}</p>
+                                <p class="lecture-teacher">{{ lecture.first_name }} {{ lecture.last_name }}</p>
+                            </div>
                         </a>
                     {% endfor %}
                 </div>

@@ -164,6 +164,12 @@
             border: 1px solid rgba(47, 140, 204, 0.12);
         }
 
+        .btn.small {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+        }
+
         .btn:hover {
             transform: translateY(-1px);
         }
@@ -331,7 +337,7 @@
             </section>
 
             <section class="panel">
-                <h2>Existing lectures</h2>
+                <h2>Lectures</h2>
                 <div id="lecturesList" class="list">
                     <div class="list-empty">Loading lectures…</div>
                 </div>
@@ -376,7 +382,10 @@
                 const data = await res.json();
                 renderList(lecturesList, data, 'No lectures uploaded yet.', lecture => `
                     <h3>${lecture.title}</h3>
-                    <p><a href="/manage_lecture/${lecture.id}" target="_blank" rel="noreferrer">View</a></p>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <a class="btn secondary small" href="/manage_lecture/${lecture.id}">View</a>
+                        <a class="btn primary small" href="/attendance/${lecture.id}">Attendance</a>
+                    </div>
                 `);
                 setStatus(lectureStatus, 'Lecture list updated.');
             } catch (err) {

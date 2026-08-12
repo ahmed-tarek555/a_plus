@@ -18,6 +18,27 @@ ALLOWED_PFP_MIME_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_PFP_SIZE = 5 * 1024 * 1024
 MAX_PFP_PIXELS = 10_000_000
 
+
+ALLOWED_CONTENT_TYPES = {
+    "image/jpeg", "image/png", "image/webp", "image/gif",
+    "application/pdf"
+}
+MAX_FILE_SIZE = 5 * 1024 * 1024
+
+def is_material_valid(file: UploadFile):
+    if file.content_type not in ALLOWED_CONTENT_TYPES:
+        return False
+
+    file.file.seek(0, 2)
+    size = file.file.tell()
+    file.file.seek(0)
+    if size > MAX_FILE_SIZE:
+        return False
+    if size == 0:
+        return False
+
+    return True
+
 def upload_pfp(file: UploadFile):
     result = cloudinary.uploader.upload(
         file.file,

@@ -16,4 +16,4 @@ class ManualBook(BaseModel):
     title: str
     subject: str
     start_date: datetime
-    phone_number: str
+    student_id: int
