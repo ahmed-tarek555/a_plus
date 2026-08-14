@@ -4,47 +4,132 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Courses | A+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --ink: #10213f;
+      --ink-soft: #56698c;
+      --paper: #f7f9ff;
+      --paper-alt: #eef3fc;
+      --blue: #2563eb;
+      --blue-deep: #14306b;
+      --blue-mid: #1d4ed8;
+      --line: #c9d9f5;
+      --border: #dbe7ff;
+
+      --font-display: "Fraunces", serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
       min-height: 100vh;
-      background: #f4f7fb;
-      color: #1f2937;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
     }
 
     nav {
-      background: white;
-      border-bottom: 1px solid #e5e7eb;
-      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(247, 249, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
     }
 
     .nav-container {
-      max-width: 1180px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 16px 20px;
+      padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 16px;
+      height: 68px;
     }
 
     .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--blue);
       text-decoration: none;
-      color: #2563eb;
-      font-weight: 800;
-      font-size: 1.2rem;
+      flex-shrink: 0;
+      transform: rotate(-4deg);
+    }
+
+    .nav-btn {
+      padding: 9px 16px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s, transform 0.15s;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .nav-btn-secondary {
+      color: var(--blue);
+      background: transparent;
+    }
+
+    .nav-btn-secondary:hover {
+      background: var(--paper-alt);
+    }
+
+    .nav-btn-primary {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+    }
+
+    .nav-btn-primary:hover {
+      background: var(--blue-mid);
     }
 
     .page-shell {
-      max-width: 1180px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 32px 20px;
+      padding: 48px 24px 40px;
     }
 
     .page-header {
@@ -57,102 +142,136 @@
     }
 
     .page-header h1 {
-      font-size: clamp(2rem, 2.5vw, 2.6rem);
-      font-weight: 800;
-      color: #111827;
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 3vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      font-weight: 600;
+      color: var(--blue-deep);
+    }
+
+    .page-header p {
+      color: var(--ink-soft);
+      margin-top: 10px;
+      font-size: 1rem;
     }
 
     .courses-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
     }
 
     .course-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-      border: 1px solid #dbe7ff;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 14px 36px rgba(37, 99, 235, 0.08);
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      display: flex;
-      flex-direction: column;
+      background-size: cover;
+      background-position: center;
+      background-color: var(--blue-deep);
+      border-radius: 16px;
+      padding: 22px;
       text-decoration: none;
       color: inherit;
+      display: flex;
+      flex-direction: column;
       position: relative;
+      overflow: hidden;
+      min-height: 250px;
+      isolation: isolate;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      border: 1px solid var(--border);
     }
 
     .course-card::before {
       content: "";
       position: absolute;
-      inset: 0 0 auto 0;
-      height: 4px;
-      background: linear-gradient(90deg, #2563eb, #60a5fa);
+      inset: 0;
+      background: linear-gradient(190deg, rgba(16, 33, 63, 0.15) 10%, rgba(16, 33, 63, 0.88) 100%);
+      z-index: 0;
     }
 
     .course-card:hover {
       transform: translateY(-4px);
-      border-color: #93c5fd;
-      box-shadow: 0 22px 48px rgba(37, 99, 235, 0.14);
+      box-shadow: 0 20px 44px rgba(20, 48, 107, 0.22);
+    }
+
+    .course-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .course-card__content {
+      display: flex;
+      flex-direction: column;
+      min-height: 250px;
     }
 
     .course-card__top {
-      padding: 20px 20px 12px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .course-badge,
+    .course-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
     }
 
     .course-badge {
-      display: inline-flex;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: #eff6ff;
-      color: #1d4ed8;
-      font-size: 0.78rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #eaf1ff;
     }
 
     .course-tag {
-      font-size: 0.84rem;
-      color: #475569;
-      font-weight: 700;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
     }
 
     .course-card h2 {
       margin: 0;
-      font-size: 1.3rem;
-      font-weight: 800;
-      line-height: 1.3;
-      color: #0f172a;
-      padding: 0 20px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.2rem;
+      line-height: 1.35;
+      color: #ffffff;
+      margin-bottom: 8px;
     }
 
     .course-card__description {
-      padding: 10px 20px 0;
-      color: #475569;
+      color: rgba(255, 255, 255, 0.85);
       line-height: 1.7;
-      flex: 1;
-      font-weight: 600;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
     .course-card__footer {
-      padding: 18px 20px 20px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 10px;
-      border-top: 1px solid #e8eefc;
-      margin-top: 18px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: rgba(255, 255, 255, 0.9);
     }
 
     .course-footer-item {
-      color: #64748b;
-      font-size: 0.9rem;
-      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
     }
 
     .view-link,
@@ -169,8 +288,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
       border: none;
+      font-family: var(--font-body);
     }
 
     .view-link:hover,
@@ -179,26 +298,14 @@
       transform: translateY(-1px);
     }
 
-    .view-link:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-      opacity: 0.95;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .view-link:disabled:hover {
-      background: #94a3b8;
-    }
-
     .empty-state {
       grid-column: 1 / -1;
-      background: #f8fbff;
-      border: 1px dashed #bfdbfe;
+      background: var(--paper-alt);
+      border: 1px dashed var(--border);
       border-radius: 18px;
       padding: 34px 24px;
       text-align: center;
-      color: #1e293b;
+      color: var(--ink-soft);
       box-shadow: inset 0 0 0 1px rgba(191, 219, 254, 0.38);
     }
 
@@ -206,17 +313,28 @@
       font-size: 1.5rem;
       font-weight: 800;
       margin-bottom: 10px;
+      color: var(--ink);
     }
 
     .empty-state p {
-      color: #475569;
+      color: var(--ink-soft);
       font-size: 1rem;
       line-height: 1.7;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
+      .nav-container {
+        padding: 14px 18px;
+        height: auto;
+        flex-wrap: wrap;
+      }
+
       .page-shell {
-        padding: 24px 16px;
+        padding: 40px 18px;
+      }
+
+      .courses-grid {
+        grid-template-columns: 1fr;
       }
 
       .course-card__top,
@@ -225,137 +343,13 @@
         align-items: flex-start;
       }
     }
-
-    .data-section {
-      margin-top: 42px;
-    }
-
-    .data-section h2 {
-      margin-bottom: 18px;
-      font-size: 1.6rem;
-      color: #111827;
-    }
-
-    .data-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .item-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-      border: 1px solid #dbe7ff;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .item-card__header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .item-chip,
-    .status-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 0.76rem;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-
-    .item-chip {
-      background: #eff6ff;
-      color: #1d4ed8;
-    }
-
-    .status-chip.success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .status-chip.pending {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .item-card h3 {
-      margin: 0;
-      font-size: 1.15rem;
-      color: #0f172a;
-      line-height: 1.4;
-    }
-
-    .item-card__meta {
-      display: grid;
-      gap: 8px;
-    }
-
-    .meta-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: center;
-      font-size: 0.92rem;
-      color: #475569;
-      border-bottom: 1px solid #eef2ff;
-      padding-bottom: 8px;
-    }
-
-    .meta-row:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .meta-label {
-      font-weight: 700;
-      color: #64748b;
-    }
-
-    .meta-value {
-      text-align: right;
-      font-weight: 600;
-      color: #0f172a;
-    }
-
-    .item-card__actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: auto;
-    }
-
-    .item-card a {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 700;
-    }
-
-    .item-card a.link-button,
-    .item-card a.link-button:hover {
-      color: #ffffff !important;
-      text-decoration: none;
-    }
-
-    .item-card a:hover {
-      text-decoration: none;
-    }
   </style>
 </head>
 <body>
   <nav>
     <div class="nav-container">
-      <a href="/" class="nav-brand">A+</a>
-      <a href="/profile" class="view-link">Profile</a>
+      <a href="/" class="nav-brand" aria-label="A+ home">A+</a>
+      <a href="/profile" class="nav-btn nav-btn-primary">Profile</a>
     </div>
   </nav>
 
@@ -365,21 +359,26 @@
         <h1>My Courses</h1>
         <p style="color: #475569; margin-top: 10px;">Review the courses you are enrolled in and visit each course page.</p>
       </div>
-      <a href="/" class="view-link">Back to Home</a>
+      <a href="/" class="nav-btn nav-btn-secondary">Back to Home</a>
     </div>
 
     <div class="courses-grid">
       {% if courses %}
         {% for course in courses %}
-        <article class="course-card">
-          <div class="course-card__top">
-            <span class="course-badge">{{ course.subject or 'Course' }}</span>
-            <span class="course-tag">Stage {{ course.stage or 'N/A' }}</span>
-          </div>
-          <p class="course-card__description">Level {{ course.level or 'N/A' }}</p>
-          <div class="course-card__footer">
-            <span class="course-footer-item">Course ID: {{ course.id }}</span>
-            <a href="/my_course/{{ course.id }}" class="view-link">View material</a>
+        <article class="course-card" style="background-image: url('{{ course.cover_url }}')">
+          <div class="course-card__content">
+            <div class="course-card__top">
+              <span class="course-badge">{{ course.subject or 'Course' }}</span>
+              <span class="course-tag">{{ course.stage or 'N/A' }}</span>
+            </div>
+
+            <h2>{{ course.subject or 'Course' }}</h2>
+            <p class="course-card__description">Level {{ course.level or 'N/A' }}</p>
+
+            <div class="course-card__footer">
+              <span class="course-footer-item">Course ID: {{ course.id }}</span>
+              <a href="/my_course/{{ course.id }}" class="view-link">View material</a>
+            </div>
           </div>
         </article>
         {% endfor %}
@@ -393,30 +392,6 @@
   </main>
 
   <script>
-    function renderList(container, items, emptyText, renderer) {
-      container.innerHTML = '';
-      if (!Array.isArray(items) || items.length === 0) {
-        const empty = document.createElement('div');
-        empty.className = 'empty-state';
-        empty.textContent = emptyText;
-        container.appendChild(empty);
-        return;
-      }
-      items.forEach(item => {
-        const card = document.createElement('article');
-        card.className = 'item-card';
-        card.innerHTML = renderer(item);
-        container.appendChild(card);
-      });
-    }
-
-    async function fetchJson(url) {
-      const response = await fetch(url, { credentials: 'include' });
-      if (!response.ok) {
-        throw new Error(`Failed to load ${url}: ${response.status}`);
-      }
-      return response.json();
-    }
   </script>
 </body>
 </html>

@@ -5,37 +5,69 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Private Lectures</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+      --ink: #10213f;
+      --ink-soft: #56698c;
+      --paper: #f7f9ff;
+      --paper-alt: #eef3fc;
+      --blue: #2563eb;
+      --blue-deep: #14306b;
+      --blue-mid: #1d4ed8;
+      --line: #c9d9f5;
+      --border: #dbe7ff;
+      --font-display: "Fraunces", serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+    }
+
+    * { box-sizing: border-box; font-family: var(--font-body); }
+
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
-      color: #19324a;
+      background: var(--paper);
+      color: var(--ink);
     }
+
     nav {
       padding: 18px 20px;
       background: rgba(255, 255, 255, 0.9);
       border-bottom: 1px solid rgba(44, 117, 169, 0.06);
     }
+
     .nav-container {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
     }
+
     .nav-brand {
-      font-weight: 800;
-      color: #2f8dcc;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--blue);
       text-decoration: none;
-      font-size: 1.2rem;
+      transform: rotate(-4deg);
     }
+
     .nav-btn {
       padding: 9px 18px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
@@ -44,79 +76,182 @@
       align-items: center;
       transition: all 0.2s;
       white-space: nowrap;
+      font-family: var(--font-body);
     }
-    .nav-btn-secondary { color: #2563eb; background: transparent; }
-    .nav-btn-secondary:hover { background: #eef2ff; }
+
+    .nav-btn-secondary {
+      color: var(--blue);
+      background: transparent;
+    }
+
+    .nav-btn-secondary:hover {
+      background: var(--paper-alt);
+    }
+
     .nav-btn-profile {
-      background: #eff6ff;
-      color: #2563eb;
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
     }
-    .nav-btn-profile:hover { background: #dbeafe; }
+
+    .nav-btn-profile:hover {
+      background: var(--blue-mid);
+    }
+
     .page {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 28px auto;
       padding: 0 20px 64px;
     }
+
     .panel {
       background: rgba(255, 255, 255, 0.94);
-      border: 1px solid rgba(44, 117, 169, 0.12);
-      border-radius: 14px;
-      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 16px 40px rgba(20, 48, 107, 0.08);
     }
+
     .panel h2 {
       margin: 0 0 12px;
-      font-size: 1.15rem;
-      color: #19324a;
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--blue-deep);
+      font-weight: 600;
     }
+
     .lectures-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 14px;
+      gap: 18px;
     }
+
     .lecture-card {
-      padding: 14px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, #fff, #fbfeff);
-      box-shadow: 0 8px 20px rgba(43, 95, 130, 0.06);
-      border: 1px solid rgba(44, 117, 169, 0.06);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: 220px;
+      padding: 16px;
+      border-radius: 16px;
+      background: linear-gradient(190deg, rgba(16, 33, 63, 0.15) 10%, rgba(16, 33, 63, 0.88) 100%);
+      box-shadow: 0 18px 36px rgba(20, 48, 107, 0.12);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      isolation: isolate;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
-    .lecture-card h3 { margin: 0 0 8px; font-size: 1rem; }
+
+    .lecture-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(11, 20, 31, 0.12) 0%, rgba(11, 20, 31, 0.7) 100%);
+      z-index: 0;
+    }
+
+    .lecture-card::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+      z-index: 2;
+    }
+
+    .lecture-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 44px rgba(20, 48, 107, 0.22);
+    }
+
+    .lecture-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .lecture-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.35;
+    }
+
     .teacher-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 10px;
     }
+
     .teacher-avatar {
       width: 42px;
       height: 42px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #2563eb;
-      background: #eff6ff;
+      border: 2px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.12);
+      flex-shrink: 0;
     }
+
+    .teacher-name {
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .teacher-phone {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.8);
+    }
+
     .meta {
-      font-size: 0.9rem;
-      color: #5b7488;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      color: rgba(255,255,255,0.9);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      border-top: 1px solid rgba(255,255,255,0.18);
+      padding-top: 10px;
     }
+
+    .meta span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #eaf1ff;
+    }
+
     .link-box {
       margin-top: 12px;
       padding: 10px 12px;
       border-radius: 10px;
-      background: #f8fbff;
-      border: 1px solid rgba(44, 117, 169, 0.1);
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
       word-break: break-all;
       font-size: 0.9rem;
+      color: #ffffff;
     }
+
     .link-box a {
-      color: #2563eb;
+      color: #ffffff;
       font-weight: 700;
       text-decoration: none;
     }
+
     .status {
       margin-top: 10px;
       padding: 12px;
@@ -125,8 +260,14 @@
       border: 1px solid rgba(44, 117, 169, 0.08);
       color: #264765;
       min-height: 44px;
+      font-size: 0.92rem;
     }
-    .status.error { border-color: rgba(192, 57, 75, 0.15); background: #fff3f4; color: #a93748; }
+
+    .status.error {
+      border-color: rgba(192, 57, 75, 0.15);
+      background: #fff3f4;
+      color: #a93748;
+    }
   </style>
 </head>
 
@@ -185,7 +326,11 @@
         avatar.alt = teacherName;
 
         const teacherText = document.createElement('div');
-        teacherText.innerHTML = `<strong>${teacherName}</strong><br /><span style="color:#5b7488; font-size:0.9rem;">${lecture.teacher_phone_number || 'No phone provided'}</span>`;
+        teacherText.className = 'teacher-text';
+        teacherText.innerHTML = `
+          <div class="teacher-name">${teacherName}</div>
+          <div class="teacher-phone">${lecture.teacher_phone_number || 'No phone provided'}</div>
+        `;
 
         teacherRow.append(avatar, teacherText);
 

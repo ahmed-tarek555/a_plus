@@ -5,27 +5,78 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Teacher Dashboard | A+</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 	<style>
+		:root {
+			--paper: #f7f4ec;
+			--paper-line: rgba(27, 36, 48, 0.055);
+			--ink: #1c2430;
+			--ink-soft: #636d7a;
+			--ink-faint: #97a0ab;
+			--card: #fffdf8;
+			--border: rgba(27, 36, 48, 0.12);
+			--red: #a83a2c;
+			--red-soft: #f6e6e2;
+			--green: #2e6a4d;
+			--green-soft: #e5efe8;
+			--gold: #b9832c;
+			--gold-soft: #f4e9d2;
+			--ring: rgba(46, 106, 77, 0.35);
+			--radius-lg: 16px;
+			--radius-md: 10px;
+			--radius-sm: 7px;
+			--font-display: 'Fraunces', Georgia, serif;
+			--font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			--font-mono: 'IBM Plex Mono', "Courier New", monospace;
+		}
+
 		* {
 			box-sizing: border-box;
-			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 		}
 
 		body {
 			margin: 0;
 			min-height: 100vh;
-			background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
-			color: #19324a;
+			font-family: var(--font-body);
+			color: var(--ink);
+			background-color: var(--paper);
+			background-image: repeating-linear-gradient(to bottom,
+					transparent 0,
+					transparent 27px,
+					var(--paper-line) 27px,
+					var(--paper-line) 28px);
 		}
 
+		a {
+			color: inherit;
+		}
+
+		button {
+			font-family: var(--font-body);
+		}
+
+		button:focus-visible,
+		a:focus-visible,
+		input:focus-visible,
+		select:focus-visible {
+			outline: 2px solid var(--green);
+			outline-offset: 2px;
+		}
+
+		/* ---------- Nav ---------- */
 		nav {
-			padding: 18px 20px;
-			background: rgba(255, 255, 255, 0.9);
-			border-bottom: 1px solid rgba(44, 117, 169, 0.06);
+			padding: 16px 24px;
+			background: rgba(255, 253, 248, 0.92);
+			border-bottom: 1px solid var(--border);
+			backdrop-filter: blur(6px);
+			position: sticky;
+			top: 0;
+			z-index: 20;
 		}
 
 		.nav-container {
-			max-width: 1100px;
+			max-width: 1180px;
 			margin: 0 auto;
 			display: flex;
 			align-items: center;
@@ -34,288 +85,512 @@
 		}
 
 		.nav-brand {
-			font-weight: 800;
-			color: #2f8dcc;
+			font-family: var(--font-display);
+			font-weight: 700;
+			font-size: 1.5rem;
+			color: var(--ink);
 			text-decoration: none;
-			font-size: 1.2rem
+			display: inline-flex;
+			align-items: baseline;
+			gap: 2px;
+		}
+
+		.nav-brand span {
+			color: var(--red);
 		}
 
 		.nav-btn {
-			padding: 9px 18px;
-			border: none;
-			border-radius: 6px;
-			font-size: 0.9rem;
-			font-weight: 700;
+			padding: 8px 16px;
+			border-radius: 999px;
+			font-size: 0.85rem;
+			font-weight: 600;
 			cursor: pointer;
 			text-decoration: none;
 			display: inline-flex;
 			align-items: center;
-			transition: all 0.2s;
+			transition: all 0.15s ease;
 			white-space: nowrap;
+			border: 1px solid transparent;
 		}
 
 		.nav-btn-secondary {
-			color: #2563eb;
-			background: transparent;
+			color: var(--ink-soft);
 		}
 
 		.nav-btn-secondary:hover {
-			background: #eef2ff;
+			color: var(--ink);
+			background: rgba(27, 36, 48, 0.05);
 		}
 
 		.nav-btn-profile {
-			background: #eff6ff;
-			color: #2563eb;
+			background: var(--green-soft);
+			color: var(--green);
+			border-color: rgba(46, 106, 77, 0.18);
 		}
 
 		.nav-btn-profile:hover {
-			background: #dbeafe;
+			background: #d9eadf;
 		}
 
+		/* ---------- Page / header ---------- */
 		.page {
-			max-width: 1100px;
-			margin: 28px auto;
-			padding: 0 20px 64px;
+			max-width: 1180px;
+			margin: 0 auto;
+			padding: 40px 24px 80px;
 		}
 
-		.dashboard {
-			display: grid;
-			grid-template-columns: 1fr 380px;
+		.dash-header {
+			margin-bottom: 30px;
+		}
+
+		.eyebrow {
+			font-family: var(--font-mono);
+			font-size: 0.72rem;
+			font-weight: 600;
+			letter-spacing: 0.14em;
+			text-transform: uppercase;
+			color: var(--red);
+			margin: 0 0 8px;
+		}
+
+		.dash-header h1 {
+			font-family: var(--font-display);
+			font-size: 2.3rem;
+			font-weight: 600;
+			margin: 0 0 8px;
+			letter-spacing: -0.01em;
+		}
+
+		.dash-sub {
+			color: var(--ink-soft);
+			margin: 0 0 20px;
+			max-width: 46em;
+			line-height: 1.5;
+		}
+
+		.stat-strip {
+			display: flex;
 			gap: 28px;
+			flex-wrap: wrap;
+		}
+
+		.stat {
+			display: flex;
+			align-items: baseline;
+			gap: 8px;
+			padding-right: 28px;
+			border-right: 1px solid var(--border);
+		}
+
+		.stat:last-child {
+			border-right: none;
+		}
+
+		.stat-num {
+			font-family: var(--font-mono);
+			font-size: 1.4rem;
+			font-weight: 600;
+			color: var(--ink);
+		}
+
+		.stat-label {
+			font-size: 0.82rem;
+			color: var(--ink-soft);
+		}
+
+		/* ---------- Tabs ---------- */
+		.tabs {
+			display: flex;
+			gap: 6px;
+			border-bottom: 2px solid var(--border);
+			margin-bottom: 28px;
+		}
+
+		.tab {
+			background: transparent;
+			border: none;
+			border-bottom: 2px solid transparent;
+			margin-bottom: -2px;
+			padding: 12px 6px;
+			font-size: 0.98rem;
+			font-weight: 600;
+			color: var(--ink-faint);
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			transition: color 0.15s ease;
+		}
+
+		.tab:hover {
+			color: var(--ink-soft);
+		}
+
+		.tab.active {
+			color: var(--ink);
+			border-bottom-color: var(--red);
+		}
+
+		.tab-stamp {
+			font-family: var(--font-mono);
+			font-size: 0.68rem;
+			font-weight: 700;
+			letter-spacing: 0.02em;
+			border: 1.5px solid currentColor;
+			border-radius: 999px;
+			padding: 2px 8px;
+			opacity: 0.55;
+			transform: rotate(-4deg);
+		}
+
+		.tab.active .tab-stamp {
+			opacity: 1;
+			color: var(--red);
+			border-color: var(--red);
+		}
+
+		/* ---------- Panels ---------- */
+		.tab-panel[hidden] {
+			display: none;
+		}
+
+		.panel-grid {
+			display: grid;
+			grid-template-columns: 1fr 340px;
+			gap: 26px;
 			align-items: start;
 		}
 
-		.panel {
-			background: rgba(255, 255, 255, 0.94);
-			border: 1px solid rgba(44, 117, 169, 0.12);
-			border-radius: 14px;
-			padding: 20px;
+		.panel-block {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-lg);
+			padding: 22px;
+			box-shadow: 0 1px 0 rgba(27, 36, 48, 0.03);
 		}
 
-		.panel h2 {
-			margin: 0 0 12px;
-			font-size: 1.15rem;
-			color: #19324a
+		.panel-block h2 {
+			font-family: var(--font-display);
+			font-size: 1.2rem;
+			font-weight: 600;
+			margin: 0 0 16px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
 		}
 
-		.courses-grid {
+		.panel-block h2 .count-pill {
+			font-family: var(--font-mono);
+			font-size: 0.7rem;
+			font-weight: 600;
+			color: var(--ink-soft);
+			background: var(--paper);
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			padding: 3px 9px;
+		}
+
+		/* ---------- Course / lecture grids ---------- */
+		.courses-grid,
+		.private-lectures-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 			gap: 14px;
 		}
 
-		.course-card {
-			padding: 14px;
-			border-radius: 12px;
-			background: linear-gradient(180deg, #fff, #fbfeff);
-			box-shadow: 0 8px 20px rgba(43, 95, 130, 0.06);
-			border: 1px solid rgba(44, 117, 169, 0.06);
+		.course-card,
+		.private-lecture-card {
+			padding: 16px;
+			border-radius: var(--radius-md);
+			background: var(--paper);
+			border: 1px solid var(--border);
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
 		}
 
-		.course-card h3 {
-			margin: 0 0 8px;
-			font-size: 1rem
+		.course-card h3,
+		.private-lecture-card h3 {
+			margin: 0;
+			font-family: var(--font-display);
+			font-size: 1.05rem;
+			font-weight: 600;
+			line-height: 1.25;
 		}
 
-		.course-meta {
-			font-size: 0.92rem;
-			color: #5b7488;
+		.course-meta,
+		.private-meta,
+		.private-dates {
+			font-size: 0.84rem;
+			color: var(--ink-soft);
 			display: flex;
 			justify-content: space-between;
 			gap: 8px;
-			margin-bottom: 10px
+		}
+
+		.price-tag {
+			font-family: var(--font-mono);
+			font-weight: 600;
+			font-size: 0.95rem;
+			color: var(--ink);
+		}
+
+		.badge {
+			display: inline-flex;
+			align-items: center;
+			padding: 3px 9px;
+			border-radius: 999px;
+			font-size: 0.72rem;
+			font-weight: 700;
+			letter-spacing: 0.01em;
+		}
+
+		.badge-open {
+			background: var(--gold-soft);
+			color: var(--gold);
+		}
+
+		.badge-booked {
+			background: var(--green-soft);
+			color: var(--green);
 		}
 
 		.course-actions {
 			display: flex;
 			gap: 8px;
-			justify-content: flex-end
-		}
-
-		.private-lectures-grid {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-			gap: 14px;
-			margin-top: 12px
-		}
-
-		.private-lecture-card {
-			padding: 14px;
-			border-radius: 12px;
-			background: linear-gradient(180deg, #fff, #fbfeff);
-			box-shadow: 0 8px 20px rgba(43, 95, 130, 0.06);
-			border: 1px solid rgba(44, 117, 169, 0.06)
-		}
-
-		.private-lecture-card h3 {
-			margin: 0 0 8px;
-			font-size: 1rem
-		}
-
-		.private-meta,
-		.private-dates {
-			font-size: 0.9rem;
-			color: #5b7488;
-			display: flex;
-			justify-content: space-between;
-			gap: 8px;
-			margin-bottom: 8px
-		}
-
-		.private-link-form {
-			display: flex;
-			gap: 8px;
-			margin-top: 12px
-		}
-
-		.private-link-input {
-			flex: 1;
-			min-width: 0;
-			padding: 9px 10px;
-			border-radius: 8px;
-			border: 1px solid rgba(44, 117, 169, 0.12)
-		}
-
-		.private-badge {
-			display: inline-flex;
-			align-items: center;
-			padding: 4px 8px;
-			border-radius: 999px;
-			font-size: 0.78rem;
-			font-weight: 800;
-			background: #eff6ff;
-			color: #2563eb
+			justify-content: flex-end;
+			margin-top: auto;
+			padding-top: 4px;
 		}
 
 		.btn {
-			padding: 8px 12px;
-			border-radius: 10px;
-			border: 0;
+			padding: 8px 14px;
+			border-radius: var(--radius-sm);
+			border: 1px solid transparent;
 			cursor: pointer;
-			font-weight: 700
+			font-weight: 600;
+			font-size: 0.85rem;
+			font-family: var(--font-body);
+			transition: filter 0.15s ease, background 0.15s ease;
+			text-decoration: none;
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
 		}
 
-		.btn.delete {
-			background: #fff3f4;
-			color: #a93748;
-			border: 1px solid rgba(192, 57, 75, 0.12)
+		.btn:disabled {
+			opacity: 0.55;
+			cursor: not-allowed;
 		}
 
 		.btn.view {
-			background: #2f8dcc;
-			color: #fff
+			background: var(--ink);
+			color: #fff;
 		}
 
-		form.add-course {
+		.btn.view:hover:not(:disabled) {
+			background: #30394a;
+		}
+
+		.btn.delete {
+			background: var(--red-soft);
+			color: var(--red);
+		}
+
+		.btn.delete:hover:not(:disabled) {
+			background: #f0d6cf;
+		}
+
+		.btn.ghost {
+			background: transparent;
+			border-color: var(--border);
+			color: var(--ink-soft);
+		}
+
+		.btn.ghost:hover:not(:disabled) {
+			border-color: var(--ink-faint);
+			color: var(--ink);
+		}
+
+		.empty-state {
+			grid-column: 1 / -1;
+			padding: 28px 18px;
+			border-radius: var(--radius-md);
+			background: var(--paper);
+			border: 1px dashed var(--border);
+			text-align: center;
+			color: var(--ink-soft);
+			font-size: 0.92rem;
+		}
+
+		/* ---------- Forms ---------- */
+		.form-block {
 			display: flex;
 			flex-direction: column;
-			gap: 10px
+			gap: 12px;
 		}
 
 		.field {
 			display: flex;
 			flex-direction: column;
-			gap: 6px
+			gap: 6px;
 		}
 
 		.field label {
-			font-size: 0.88rem;
-			color: #506c82
+			font-size: 0.8rem;
+			font-weight: 600;
+			color: var(--ink-soft);
 		}
 
 		.field input,
 		.field select {
-			padding: 10px 12px;
-			border-radius: 8px;
-			border: 1px solid rgba(44, 117, 169, 0.08);
-			font-size: 0.95rem
+			padding: 10px 11px;
+			border-radius: var(--radius-sm);
+			border: 1px solid var(--border);
+			font-size: 0.92rem;
+			font-family: var(--font-body);
+			background: var(--paper);
+			color: var(--ink);
+		}
+
+		.field input:focus,
+		.field select:focus {
+			border-color: var(--green);
 		}
 
 		.submit-row {
 			display: flex;
 			gap: 10px;
-			align-items: center
+			align-items: center;
+			margin-top: 4px;
 		}
 
-		.private-panel {
-			margin-top: 18px;
-			padding-top: 8px;
+		.status {
+			margin-top: 4px;
+			padding: 10px 12px;
+			border-radius: var(--radius-sm);
+			background: var(--paper);
+			border: 1px solid var(--border);
+			color: var(--ink-soft);
+			font-size: 0.85rem;
+			min-height: 20px;
 		}
 
-		.package-panel {
-			margin-top: 16px;
-			padding: 14px;
-			border-radius: 12px;
-			background: #f8fbff;
-			border: 1px solid rgba(44, 117, 169, 0.1)
+		.status.error {
+			border-color: rgba(168, 58, 44, 0.3);
+			background: var(--red-soft);
+			color: var(--red);
 		}
 
-		.package-options {
+		.status.success {
+			border-color: rgba(46, 106, 77, 0.3);
+			background: var(--green-soft);
+			color: var(--green);
+		}
+
+		.link-form {
+			display: flex;
+			gap: 8px;
+			margin-top: 2px;
+		}
+
+		.link-form input {
+			flex: 1;
+			min-width: 0;
+			padding: 8px 10px;
+			border-radius: var(--radius-sm);
+			border: 1px solid var(--border);
+			font-size: 0.85rem;
+			background: var(--card);
+		}
+
+		/* ---------- Packages tab ---------- */
+		.package-layout {
 			display: grid;
-			grid-template-columns: 1fr;
-			gap: 10px;
-			margin: 12px 0 14px
+			grid-template-columns: 340px 1fr;
+			gap: 26px;
+			align-items: start;
+		}
+
+		.package-course-list {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			max-height: 480px;
+			overflow-y: auto;
+			padding-right: 4px;
 		}
 
 		.package-option {
 			display: flex;
 			align-items: center;
-			gap: 10px;
-			padding: 10px 12px;
-			border-radius: 10px;
-			background: #fff;
-			border: 1px solid rgba(44, 117, 169, 0.08)
+			gap: 12px;
+			padding: 11px 12px;
+			border-radius: var(--radius-sm);
+			background: var(--paper);
+			border: 1px solid var(--border);
+			cursor: pointer;
+		}
+
+		.package-option:has(input:checked) {
+			border-color: var(--green);
+			background: var(--green-soft);
 		}
 
 		.package-option input {
-			margin: 0
+			accent-color: var(--green);
+			width: 16px;
+			height: 16px;
+			flex-shrink: 0;
 		}
 
-		.package-check {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			gap: 6px;
-			padding: 6px 10px;
-			border-radius: 999px;
-			background: #eff6ff;
-			color: #2563eb;
-			font-size: 0.78rem;
-			font-weight: 800;
-			border: 1px solid rgba(37, 99, 235, 0.18)
-		}
-
-		.package-check input {
-			margin: 0;
-			accent-color: #2563eb
-		}
-
-		.course-card-top {
+		.package-option-text {
 			display: flex;
-			justify-content: space-between;
-			align-items: flex-start;
-			gap: 10px
+			flex-direction: column;
+			gap: 2px;
+			min-width: 0;
 		}
 
-		.status {
-			margin-top: 10px;
+		.package-option-title {
+			font-weight: 600;
+			font-size: 0.9rem;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.package-option-meta {
+			font-size: 0.76rem;
+			color: var(--ink-soft);
+			font-family: var(--font-mono);
+		}
+
+		.selected-summary {
+			background: var(--paper);
+			border: 1px solid var(--border);
+			border-radius: var(--radius-sm);
 			padding: 12px;
-			border-radius: 10px;
-			background: rgba(255, 255, 255, 0.9);
-			border: 1px solid rgba(44, 117, 169, 0.08);
-			color: #264765;
-			min-height: 44px
+			font-size: 0.86rem;
+			color: var(--ink-soft);
+			min-height: 20px;
 		}
 
-		.status.error {
-			border-color: rgba(192, 57, 75, 0.15);
-			background: #fff3f4;
-			color: #a93748
+		.selected-summary strong {
+			color: var(--ink);
 		}
 
-		@media (max-width:960px) {
-			.dashboard {
-				grid-template-columns: 1fr
+		@media (max-width: 960px) {
+
+			.panel-grid,
+			.package-layout {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			* {
+				transition: none !important;
 			}
 		}
 	</style>
@@ -324,8 +599,8 @@
 <body>
 	<nav>
 		<div class="nav-container">
-			<a href="/" class="nav-brand">A+</a>
-			<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+			<a href="/" class="nav-brand">A<span>+</span></a>
+			<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
 				<a href="/profile" class="nav-btn nav-btn-profile">Profile</a>
 				<a href="/logout" class="nav-btn nav-btn-secondary">Log out</a>
 			</div>
@@ -333,291 +608,248 @@
 	</nav>
 
 	<main class="page">
-		<div class="dashboard">
-			<section class="panel">
-				<h2>Your courses</h2>
-				<div id="coursesGrid" class="courses-grid">
-					<!-- course cards inserted here -->
-				</div>
-				<div id="coursesStatus" class="status">Loading your courses…</div>
+		<header class="dash-header">
+			<p class="eyebrow">Teacher dashboard</p>
+			<h1>Your teaching desk</h1>
+			<p class="dash-sub">Manage your courses, book out private lectures, and bundle offerings into
+				packages — each kept in its own space below.</p>
+			<div class="stat-strip">
+				<div class="stat"><span class="stat-num" id="statCourses">–</span><span class="stat-label">courses</span></div>
+				<div class="stat"><span class="stat-num" id="statPrivate">–</span><span class="stat-label">private
+						lectures</span></div>
+			</div>
+		</header>
 
-				<div style="margin-top: 24px;">
-					<h2>Your private lectures</h2>
+		<div class="tabs" role="tablist">
+			<button class="tab active" data-tab="courses" role="tab" aria-selected="true"><span
+					class="tab-stamp">A+</span>Courses</button>
+			<button class="tab" data-tab="private" role="tab" aria-selected="false"><span
+					class="tab-stamp">1:1</span>Private lectures</button>
+			<button class="tab" data-tab="packages" role="tab" aria-selected="false"><span
+					class="tab-stamp">PKG</span>Packages</button>
+		</div>
+
+		<!-- ===================== COURSES ===================== -->
+		<section class="tab-panel" id="panel-courses" data-panel="courses">
+			<div class="panel-grid">
+				<div class="panel-block">
+					<h2>Your courses <span class="count-pill" id="coursesCountPill">–</span></h2>
+					<div id="coursesGrid" class="courses-grid"></div>
+					<div id="coursesStatus" class="status">Loading your courses…</div>
+				</div>
+
+				<div class="panel-block">
+					<h2>Add a course</h2>
+					<form id="addCourseForm" class="form-block" onsubmit="return false;">
+						<div class="field">
+							<label for="subject">Subject</label>
+							<input id="subject" name="subject" type="text" required />
+						</div>
+						<div class="field">
+							<label for="price">Price (EGP)</label>
+							<input id="price" name="price" type="number" step="0.01" min="0" required />
+						</div>
+						<div class="field">
+							<label for="stage">Stage</label>
+							<select id="stage" name="stage" required>
+								<option value="">Select stage</option>
+								<option value="الثانوية">الثانوية</option>
+								<option value="الاعدادية">الاعدادية</option>
+								<option value="الابتدائية">الابتدائية</option>
+							</select>
+						</div>
+						<div class="field">
+							<label for="level">Level (numeric)</label>
+							<input id="level" name="level" type="number" min="1" required />
+						</div>
+						<div class="field">
+							<label for="courseCoverImage">Cover image</label>
+							<input id="courseCoverImage" name="cover_image" type="file" accept="image/*" required />
+						</div>
+						<div class="submit-row">
+							<button id="addCourseButton" class="btn view" type="button">Add course</button>
+						</div>
+						<div id="addStatus" class="status">Fill the form and click Add course.</div>
+					</form>
+				</div>
+			</div>
+		</section>
+
+		<!-- ===================== PRIVATE LECTURES ===================== -->
+		<section class="tab-panel" id="panel-private" data-panel="private" hidden>
+			<div class="panel-grid">
+				<div class="panel-block">
+					<h2>Your private lectures <span class="count-pill" id="privateCountPill">–</span></h2>
 					<div id="privateLecturesGrid" class="private-lectures-grid"></div>
 					<div id="privateLecturesStatus" class="status">Loading your private lectures…</div>
 				</div>
-			</section>
 
-			<aside class="panel">
-				<h2>Add a course</h2>
-				<form id="addCourseForm" class="add-course" onsubmit="return false;">
-					<div class="field">
-						<label for="subject">Subject</label>
-						<input id="subject" name="subject" type="text" required />
-					</div>
-					<div class="field">
-						<label for="price">Price (EGP)</label>
-						<input id="price" name="price" type="number" step="0.01" min="0" required />
-					</div>
-					<div class="field">
-						<label for="stage">Stage</label>
-						<select id="stage" name="stage" required>
-							<option value="">Select stage</option>
-							<option value="الثانوية">الثانوية</option>
-							<option value="الاعدادية">الاعدادية</option>
-							<option value="الابتدائية">الابتدائية</option>
-						</select>
-					</div>
-					<div class="field">
-						<label for="level">Level (numeric)</label>
-						<input id="level" name="level" type="number" min="1" required />
-					</div>
-
-					<div class="submit-row">
-						<button id="addCourseButton" class="btn view" type="button">Add course</button>
-					</div>
-
-					<div id="addStatus" class="status">Fill the form and click Add course.</div>
-				</form>
-
-			<div class="private-panel">
-				<h2 style="margin-bottom:10px;">Add a private lecture</h2>
-				<form id="addPrivateForm" class="add-course" onsubmit="return false;">
-					<div class="field">
-						<label for="privateTitle">Title</label>
-						<input id="privateTitle" name="privateTitle" type="text" required />
-					</div>
-					<div class="field">
-						<label for="privateSubject">Subject</label>
-						<input id="privateSubject" name="privateSubject" type="text" required />
-					</div>
-					<div class="field">
-						<label for="privateStartDate">Start date</label>
-						<input id="privateStartDate" name="privateStartDate" type="datetime-local" required />
-					</div>
-					<div class="field">
-						<label for="privatePrice">Price (EGP)</label>
-						<input id="privatePrice" name="privatePrice" type="number" step="0.01" min="0" required />
-					</div>
-					<div class="submit-row">
-						<button id="addPrivateButton" class="btn view" type="button">Add private lecture</button>
-					</div>
-					<div id="addPrivateStatus" class="status">Fill the private lecture fields and click Add private lecture.</div>
-				</form>
+				<div class="panel-block">
+					<h2>Add a private lecture</h2>
+					<form id="addPrivateForm" class="form-block" onsubmit="return false;">
+						<div class="field">
+							<label for="privateTitle">Title</label>
+							<input id="privateTitle" name="privateTitle" type="text" required />
+						</div>
+						<div class="field">
+							<label for="privateSubject">Subject</label>
+							<input id="privateSubject" name="privateSubject" type="text" required />
+						</div>
+						<div class="field">
+							<label for="privateStartDate">Start date</label>
+							<input id="privateStartDate" name="privateStartDate" type="datetime-local" required />
+						</div>
+						<div class="field">
+							<label for="privatePrice">Price (EGP)</label>
+							<input id="privatePrice" name="privatePrice" type="number" step="0.01" min="0" required />
+						</div>
+						<div class="submit-row">
+							<button id="addPrivateButton" class="btn view" type="button">Add private lecture</button>
+						</div>
+						<div id="addPrivateStatus" class="status">Fill the private lecture fields and click Add.</div>
+					</form>
+				</div>
 			</div>
+		</section>
 
-			<div class="submit-row" style="margin-top:18px;">
-				<button id="createPackageButton" class="btn view" type="button">Create a package</button>
+		<!-- ===================== PACKAGES ===================== -->
+		<section class="tab-panel" id="panel-packages" data-panel="packages" hidden>
+			<div class="panel-block">
+				<h2>Create a package</h2>
+				<div class="package-layout">
+					<div>
+						<div class="field">
+							<label for="packageTitle">Title</label>
+							<input id="packageTitle" type="text" placeholder="e.g. Full year revision bundle" />
+						</div>
+						<div class="field" style="margin-top:12px;">
+							<label for="packagePrice">Price (EGP)</label>
+							<input id="packagePrice" type="number" step="0.01" min="0" placeholder="Enter package price" />
+						</div>
+						<div class="field" style="margin-top:16px;">
+							<label>Selected courses</label>
+							<div id="selectedCourses" class="selected-summary">No courses selected yet.</div>
+						</div>
+						<div class="submit-row" style="margin-top:16px;">
+							<button id="savePackageButton" class="btn view" type="button">Save package</button>
+						</div>
+						<div id="packageStatus" class="status">Choose a title, price, and at least one course.</div>
+					</div>
+					<div>
+						<label style="font-size:0.8rem; font-weight:600; color:var(--ink-soft); display:block; margin-bottom:8px;">Pick
+							courses to include</label>
+						<div id="packageCourseChoices" class="package-course-list"></div>
+					</div>
+				</div>
 			</div>
+		</section>
+	</main>
 
-			<div id="packagePanel" class="package-panel" hidden>
-				<h2 style="margin-bottom:10px;">Package details</h2>
-				<div class="field">
-					<label for="packageTitle">Title</label>
-					<input id="packageTitle" type="text" placeholder="Enter package title" />
-				</div>
-				<div class="field" style="margin-top:10px;">
-					<label for="packagePrice">Price (EGP)</label>
-					<input id="packagePrice" type="number" step="0.01" min="0" placeholder="Enter package price" />
-				</div>
-				<div class="field" style="margin-top:14px;">
-					<label>Selected courses</label>
-					<div id="selectedCourses" class="status" style="margin-top:8px; min-height: auto;">No courses selected yet.</div>
-				</div>
-				<div class="submit-row" style="margin-top:14px;">
-					<button id="savePackageButton" class="btn view" type="button">Save</button>
-					<button id="cancelPackageButton" class="btn delete" type="button">Cancel</button>
-				</div>
-				<div id="packageStatus" class="status">Choose a title, price, and at least one course.</div>
-			</div>
-		</aside>
-	</div>
-</main>
+	<script>
+		// ---------- element refs ----------
+		const tabs = document.querySelectorAll('.tab');
+		const panels = document.querySelectorAll('.tab-panel');
 
-<script>
-	const coursesGrid = document.getElementById('coursesGrid');
-	const coursesStatus = document.getElementById('coursesStatus');
-	const privateLecturesGrid = document.getElementById('privateLecturesGrid');
-	const privateLecturesStatus = document.getElementById('privateLecturesStatus');
-	const addCourseForm = document.getElementById('addCourseForm');
-	const addCourseButton = document.getElementById('addCourseButton');
-	const addStatus = document.getElementById('addStatus');
-	const addPrivateForm = document.getElementById('addPrivateForm');
-	const addPrivateButton = document.getElementById('addPrivateButton');
-	const addPrivateStatus = document.getElementById('addPrivateStatus');
-	const createPackageButton = document.getElementById('createPackageButton');
-	const packagePanel = document.getElementById('packagePanel');
-	const packageTitle = document.getElementById('packageTitle');
-	const packagePrice = document.getElementById('packagePrice');
-	const packageCourseChoices = document.getElementById('packageCourseChoices');
-	const savePackageButton = document.getElementById('savePackageButton');
-	const cancelPackageButton = document.getElementById('cancelPackageButton');
-	const packageStatus = document.getElementById('packageStatus');
-	let currentCourses = [];
-	let isPackageMode = false;
-	let selectedPackageCourseIds = new Set();
+		const coursesGrid = document.getElementById('coursesGrid');
+		const coursesStatus = document.getElementById('coursesStatus');
+		const coursesCountPill = document.getElementById('coursesCountPill');
+		const statCourses = document.getElementById('statCourses');
 
-	function setStatus(el, text, isError = false) {
-		el.textContent = text;
-		el.classList.toggle('error', isError);
-	}
+		const privateLecturesGrid = document.getElementById('privateLecturesGrid');
+		const privateLecturesStatus = document.getElementById('privateLecturesStatus');
+		const privateCountPill = document.getElementById('privateCountPill');
+		const statPrivate = document.getElementById('statPrivate');
 
-	function renderCourses(courses) {
-		currentCourses = Array.isArray(courses) ? courses : [];
-		coursesGrid.replaceChildren();
-		if (!currentCourses.length) {
-			coursesGrid.innerHTML = '<div style="grid-column:1/-1; padding:18px; border-radius:12px; background:rgba(255,255,255,0.9); text-align:center; color:#5b7488">No courses yet.</div>';
-			setStatus(coursesStatus, 'No courses found.');
-			return;
+		const addCourseForm = document.getElementById('addCourseForm');
+		const addCourseButton = document.getElementById('addCourseButton');
+		const addStatus = document.getElementById('addStatus');
+
+		const addPrivateForm = document.getElementById('addPrivateForm');
+		const addPrivateButton = document.getElementById('addPrivateButton');
+		const addPrivateStatus = document.getElementById('addPrivateStatus');
+
+		const packageTitle = document.getElementById('packageTitle');
+		const packagePrice = document.getElementById('packagePrice');
+		const packageCourseChoices = document.getElementById('packageCourseChoices');
+		const savePackageButton = document.getElementById('savePackageButton');
+		const packageStatus = document.getElementById('packageStatus');
+		const selectedCoursesEl = document.getElementById('selectedCourses');
+
+		let currentCourses = [];
+		let selectedPackageCourseIds = new Set();
+
+		// ---------- helpers ----------
+		function setStatus(el, text, kind) {
+			el.textContent = text;
+			el.classList.remove('error', 'success');
+			if (kind) el.classList.add(kind);
 		}
 
-		currentCourses.forEach(course => {
-			const card = document.createElement('div');
-			card.className = 'course-card';
-
-			const topRow = document.createElement('div');
-			topRow.className = 'course-card-top';
-
-			const title = document.createElement('h3');
-			title.textContent = course.subject || 'Untitled';
-			topRow.appendChild(title);
-
-			const meta = document.createElement('div');
-			meta.className = 'course-meta';
-			meta.innerHTML = `<span>Stage: ${course.stage || 'N/A'}</span><span>${course.student_count || 0} students</span>`;
-
-			const actions = document.createElement('div');
-			actions.className = 'course-actions';
-
-			const viewBtn = document.createElement('a');
-			viewBtn.className = 'btn view';
-			viewBtn.href = `/manage_course/${course.id}`;
-			viewBtn.textContent = 'Manage';
-
-			const deleteBtn = document.createElement('button');
-			deleteBtn.className = 'btn delete';
-			deleteBtn.textContent = 'Delete';
-			deleteBtn.addEventListener('click', () => deleteCourse(course.id, card, deleteBtn));
-
-			actions.append(viewBtn, deleteBtn);
-
-			const price = document.createElement('div');
-			price.style.marginTop = '10px';
-			price.style.fontWeight = '800';
-			price.textContent = `EGP${Number(course.price || 0).toFixed(2)}`;
-
-			if (isPackageMode) {
-				const selectWrap = document.createElement('label');
-				selectWrap.className = 'package-check';
-
-				const checkbox = document.createElement('input');
-				checkbox.type = 'checkbox';
-				checkbox.className = 'course-package-checkbox';
-				checkbox.checked = selectedPackageCourseIds.has(course.id);
-				checkbox.addEventListener('change', (event) => {
-					if (event.target.checked) {
-						selectedPackageCourseIds.add(course.id);
-					} else {
-						selectedPackageCourseIds.delete(course.id);
-					}
-					updateSelectedCoursesList();
+		// ---------- tabs ----------
+		tabs.forEach(tab => {
+			tab.addEventListener('click', () => {
+				const target = tab.dataset.tab;
+				tabs.forEach(t => {
+					t.classList.toggle('active', t === tab);
+					t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
 				});
+				panels.forEach(p => {
+					p.hidden = p.dataset.panel !== target;
+				});
+			});
+		});
 
-				const labelText = document.createElement('span');
-				labelText.textContent = 'Select';
+		// ---------- courses ----------
+		function renderCourses(courses) {
+			currentCourses = Array.isArray(courses) ? courses : [];
+			coursesGrid.replaceChildren();
 
-				selectWrap.append(checkbox, labelText);
-				topRow.appendChild(selectWrap);
+			if (!currentCourses.length) {
+				const empty = document.createElement('div');
+				empty.className = 'empty-state';
+				empty.textContent = 'No courses yet. Add your first one from the panel on the right.';
+				coursesGrid.appendChild(empty);
+			} else {
+				currentCourses.forEach(course => {
+					const card = document.createElement('div');
+					card.className = 'course-card';
+
+					const title = document.createElement('h3');
+					title.textContent = course.subject || 'Untitled';
+
+					const meta = document.createElement('div');
+					meta.className = 'course-meta';
+					meta.innerHTML = `<span>${course.stage || 'N/A'}</span><span>${course.student_count || 0} students</span>`;
+
+					const price = document.createElement('div');
+					price.className = 'price-tag';
+					price.textContent = `EGP ${Number(course.price || 0).toFixed(2)}`;
+
+					const actions = document.createElement('div');
+					actions.className = 'course-actions';
+
+					const viewBtn = document.createElement('a');
+					viewBtn.className = 'btn view';
+					viewBtn.href = `/manage_course/${course.id}`;
+					viewBtn.textContent = 'Manage';
+
+					const deleteBtn = document.createElement('button');
+					deleteBtn.className = 'btn delete';
+					deleteBtn.textContent = 'Delete';
+					deleteBtn.addEventListener('click', () => deleteCourse(course.id, card, deleteBtn));
+
+					actions.append(viewBtn, deleteBtn);
+					card.append(title, meta, price, actions);
+					coursesGrid.appendChild(card);
+				});
 			}
 
-			card.append(topRow, meta, price);
-			card.append(actions);
-			coursesGrid.appendChild(card);
-		});
+			coursesCountPill.textContent = currentCourses.length;
+			statCourses.textContent = currentCourses.length;
+			setStatus(coursesStatus, currentCourses.length ? `${currentCourses.length} course(s)` : 'No courses found.');
 
-		setStatus(coursesStatus, `${currentCourses.length} course(s)`);
-	}
-
-	function renderPrivateLectures(lectures) {
-		const items = Array.isArray(lectures) ? lectures : [];
-		privateLecturesGrid.replaceChildren();
-		if (!items.length) {
-			privateLecturesGrid.innerHTML = '<div style="grid-column:1/-1; padding:18px; border-radius:12px; background:rgba(255,255,255,0.9); text-align:center; color:#5b7488">No private lectures yet.</div>';
-			setStatus(privateLecturesStatus, 'No private lectures found.');
-			return;
+			renderPackageCourseChoices();
 		}
-
-		items.forEach(lecture => {
-			const card = document.createElement('div');
-			card.className = 'private-lecture-card';
-
-			const title = document.createElement('h3');
-			title.textContent = lecture.title || 'Untitled';
-
-			const meta = document.createElement('div');
-			meta.className = 'private-meta';
-			meta.innerHTML = `<span>${lecture.subject || 'N/A'}</span><span class="private-badge">${lecture.student_id != null ? 'Booked' : 'Open'}</span>`;
-
-			const dates = document.createElement('div');
-			dates.className = 'private-dates';
-			const startDate = lecture.start_date ? new Date(lecture.start_date).toLocaleString() : 'N/A';
-			dates.innerHTML = `<span>${startDate}</span><span>EGP${Number(lecture.price || 0).toFixed(2)}</span>`;
-
-			const linkForm = document.createElement('div');
-			linkForm.className = 'private-link-form';
-
-			const linkInput = document.createElement('input');
-			linkInput.className = 'private-link-input';
-			linkInput.type = 'url';
-			linkInput.placeholder = 'Enter meeting link';
-			linkInput.value = lecture.link || '';
-
-			const saveLinkBtn = document.createElement('button');
-			saveLinkBtn.className = 'btn view';
-			saveLinkBtn.type = 'button';
-			saveLinkBtn.textContent = 'Save';
-			saveLinkBtn.addEventListener('click', () => savePrivateLectureLink(lecture.id, linkInput, saveLinkBtn));
-
-			linkForm.append(linkInput, saveLinkBtn);
-			card.append(title, meta, dates, linkForm);
-			privateLecturesGrid.appendChild(card);
-		});
-
-		setStatus(privateLecturesStatus, `${items.length} private lecture(s)`);
-	}
-
-	function updateSelectedCoursesList() {
-		const selectedTitles = currentCourses
-			.filter(course => selectedPackageCourseIds.has(course.id))
-			.map(course => course.subject || 'Untitled');
-
-		const selectedCoursesEl = document.getElementById('selectedCourses');
-		if (selectedCoursesEl) {
-			selectedCoursesEl.textContent = selectedTitles.length
-				? selectedTitles.join(', ')
-				: 'No courses selected yet.';
-		}
-	}
-
-	function openPackagePanel() {
-		isPackageMode = true;
-		selectedPackageCourseIds.clear();
-		renderCourses(currentCourses);
-		packagePanel.hidden = false;
-		packageTitle.focus();
-		updateSelectedCoursesList();
-		setStatus(packageStatus, 'Choose a title, price, and at least one course.');
-	}
-
-	function closePackagePanel() {
-		isPackageMode = false;
-		selectedPackageCourseIds.clear();
-		packagePanel.hidden = true;
-		packageTitle.value = '';
-		packagePrice.value = '';
-		renderCourses(currentCourses);
-		updateSelectedCoursesList();
-	}
 
 		async function loadCourses() {
 			setStatus(coursesStatus, 'Loading your courses…');
@@ -627,8 +859,125 @@
 				const data = await res.json();
 				renderCourses(Array.isArray(data) ? data : []);
 			} catch (err) {
-				setStatus(coursesStatus, err.message || 'Error loading courses', true);
+				setStatus(coursesStatus, err.message || 'Error loading courses', 'error');
 			}
+		}
+
+		async function deleteCourse(id, cardEl, buttonEl) {
+			if (!confirm('Delete this course? This cannot be undone.')) return;
+			buttonEl.disabled = true;
+			setStatus(coursesStatus, 'Deleting course…');
+			try {
+				const res = await fetch(`/teacher/delete_course/${id}`, { method: 'DELETE', credentials: 'include' });
+				if (!res.ok) throw new Error('Unable to delete course');
+				await loadCourses();
+				setStatus(coursesStatus, 'Course deleted.', 'success');
+			} catch (err) {
+				setStatus(coursesStatus, err.message || 'Delete failed', 'error');
+				buttonEl.disabled = false;
+			}
+		}
+
+		addCourseButton.addEventListener('click', async () => {
+			const subject = document.getElementById('subject').value.trim();
+			const price = document.getElementById('price').value;
+			const stage = document.getElementById('stage').value;
+			const level = document.getElementById('level').value.trim();
+			const coverInput = document.getElementById('courseCoverImage');
+			const coverImage = coverInput.files && coverInput.files[0];
+
+			if (!subject || !stage || !price || !level || !coverImage) {
+				setStatus(addStatus, 'Please complete all fields and select a cover image.', 'error');
+				return;
+			}
+			if (!coverImage.type.startsWith('image/')) {
+				setStatus(addStatus, 'Please select a valid image file for the course cover.', 'error');
+				return;
+			}
+
+			addCourseButton.disabled = true;
+			setStatus(addStatus, 'Adding course…');
+
+			try {
+				const formData = new FormData();
+				formData.append('subject', subject);
+				formData.append('price', Number(price).toString());
+				formData.append('stage', stage);
+				formData.append('level', level);
+				formData.append('cover_image', coverImage);
+
+				const res = await fetch('/teacher/add_course', { method: 'POST', credentials: 'include', body: formData });
+				if (!res.ok) {
+					const msg = res.status === 403 ? 'Not authorized to add courses.' : (res.status === 400 ? 'Invalid course data.' : 'Unable to add course.');
+					throw new Error(msg);
+				}
+				const data = await res.json();
+				if (data && data.success) {
+					addCourseForm.reset();
+					await loadCourses();
+					setStatus(addStatus, 'Course added successfully.', 'success');
+				} else {
+					throw new Error('Add course failed.');
+				}
+			} catch (err) {
+				setStatus(addStatus, err.message || 'Add failed', 'error');
+			} finally {
+				addCourseButton.disabled = false;
+			}
+		});
+
+		// ---------- private lectures ----------
+		function renderPrivateLectures(lectures) {
+			const items = Array.isArray(lectures) ? lectures : [];
+			privateLecturesGrid.replaceChildren();
+
+			if (!items.length) {
+				const empty = document.createElement('div');
+				empty.className = 'empty-state';
+				empty.textContent = 'No private lectures yet. Add one from the panel on the right.';
+				privateLecturesGrid.appendChild(empty);
+			} else {
+				items.forEach(lecture => {
+					const card = document.createElement('div');
+					card.className = 'private-lecture-card';
+
+					const title = document.createElement('h3');
+					title.textContent = lecture.title || 'Untitled';
+
+					const meta = document.createElement('div');
+					meta.className = 'private-meta';
+					const badgeClass = lecture.student_id != null ? 'badge-booked' : 'badge-open';
+					const badgeText = lecture.student_id != null ? 'Booked' : 'Open';
+					meta.innerHTML = `<span>${lecture.subject || 'N/A'}</span><span class="badge ${badgeClass}">${badgeText}</span>`;
+
+					const dates = document.createElement('div');
+					dates.className = 'private-dates';
+					const startDate = lecture.start_date ? new Date(lecture.start_date).toLocaleString() : 'N/A';
+					dates.innerHTML = `<span>${startDate}</span><span class="price-tag">EGP ${Number(lecture.price || 0).toFixed(2)}</span>`;
+
+					const linkForm = document.createElement('div');
+					linkForm.className = 'link-form';
+
+					const linkInput = document.createElement('input');
+					linkInput.type = 'url';
+					linkInput.placeholder = 'Enter meeting link';
+					linkInput.value = lecture.link || '';
+
+					const saveLinkBtn = document.createElement('button');
+					saveLinkBtn.className = 'btn ghost';
+					saveLinkBtn.type = 'button';
+					saveLinkBtn.textContent = 'Save';
+					saveLinkBtn.addEventListener('click', () => savePrivateLectureLink(lecture.id, linkInput, saveLinkBtn));
+
+					linkForm.append(linkInput, saveLinkBtn);
+					card.append(title, meta, dates, linkForm);
+					privateLecturesGrid.appendChild(card);
+				});
+			}
+
+			privateCountPill.textContent = items.length;
+			statPrivate.textContent = items.length;
+			setStatus(privateLecturesStatus, items.length ? `${items.length} private lecture(s)` : 'No private lectures found.');
 		}
 
 		async function loadPrivateLectures() {
@@ -639,17 +988,16 @@
 				const data = await res.json();
 				renderPrivateLectures(Array.isArray(data) ? data : []);
 			} catch (err) {
-				setStatus(privateLecturesStatus, err.message || 'Error loading private lectures', true);
+				setStatus(privateLecturesStatus, err.message || 'Error loading private lectures', 'error');
 			}
 		}
 
 		async function savePrivateLectureLink(id, inputEl, buttonEl) {
 			const link = inputEl.value.trim();
 			if (!link) {
-				setStatus(privateLecturesStatus, 'Please enter a link to save.', true);
+				setStatus(privateLecturesStatus, 'Please enter a link to save.', 'error');
 				return;
 			}
-
 			buttonEl.disabled = true;
 			setStatus(privateLecturesStatus, 'Saving link…');
 			try {
@@ -666,73 +1014,16 @@
 				}
 				const data = await res.json();
 				if (data && data.success) {
-					setStatus(privateLecturesStatus, 'Private lecture link saved successfully.');
+					setStatus(privateLecturesStatus, 'Private lecture link saved successfully.', 'success');
 				} else {
 					throw new Error('Unable to save link.');
 				}
 			} catch (err) {
-				setStatus(privateLecturesStatus, err.message || 'Unable to save link.', true);
+				setStatus(privateLecturesStatus, err.message || 'Unable to save link.', 'error');
 			} finally {
 				buttonEl.disabled = false;
 			}
 		}
-
-		async function deleteCourse(id, cardEl, buttonEl) {
-			if (!confirm('Delete this course? This cannot be undone.')) return;
-			buttonEl.disabled = true;
-			setStatus(coursesStatus, 'Deleting course…');
-			try {
-				const res = await fetch(`/teacher/delete_course/${id}`, { method: 'DELETE', credentials: 'include' });
-				if (!res.ok) throw new Error('Unable to delete course');
-				cardEl.remove();
-				setStatus(coursesStatus, 'Course deleted.');
-			} catch (err) {
-				setStatus(coursesStatus, err.message || 'Delete failed', true);
-				buttonEl.disabled = false;
-			}
-		}
-
-		addCourseButton.addEventListener('click', async () => {
-			const subject = document.getElementById('subject').value.trim();
-			const price = document.getElementById('price').value;
-			const stage = document.getElementById('stage').value;
-			const level = Number(document.getElementById('level').value);
-
-			if (!subject || !stage || !price || !level) {
-				setStatus(addStatus, 'Please complete all fields.', true);
-				return;
-			}
-
-			addCourseButton.disabled = true;
-			setStatus(addStatus, 'Adding course…');
-
-			try {
-				const payload = { subject, price: Number(price), stage, level };
-				const res = await fetch('/teacher/add_course', {
-					method: 'POST',
-					credentials: 'include',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(payload)
-				});
-				if (!res.ok) {
-					const msg = res.status === 403 ? 'Not authorized to add courses.' : (res.status === 400 ? 'Invalid course data.' : 'Unable to add course.');
-					throw new Error(msg);
-				}
-				const data = await res.json();
-				if (data && data.success) {
-					setStatus(addStatus, 'Course added. Refreshing list…');
-					addCourseForm.reset();
-					await loadCourses();
-					setStatus(addStatus, 'Course added successfully.');
-				} else {
-					throw new Error('Add course failed.');
-				}
-			} catch (err) {
-				setStatus(addStatus, err.message || 'Add failed', true);
-			} finally {
-				addCourseButton.disabled = false;
-			}
-		});
 
 		addPrivateButton.addEventListener('click', async () => {
 			const title = document.getElementById('privateTitle').value.trim();
@@ -741,7 +1032,7 @@
 			const price = document.getElementById('privatePrice').value;
 
 			if (!title || !subject || !startDate || !price) {
-				setStatus(addPrivateStatus, 'Please complete all private lecture fields.', true);
+				setStatus(addPrivateStatus, 'Please complete all private lecture fields.', 'error');
 				return;
 			}
 
@@ -755,47 +1046,90 @@
 					start_date: new Date(startDate).toISOString(),
 					price: Number(price)
 				};
-
 				const res = await fetch('/teacher/add_private', {
 					method: 'POST',
 					credentials: 'include',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(payload)
 				});
-
 				if (!res.ok) {
 					const msg = res.status === 403 ? 'Not authorized to add private lectures.'
 						: (res.status === 400 ? 'Invalid private lecture data.' : 'Unable to add private lecture.');
 					throw new Error(msg);
 				}
-
 				const data = await res.json();
 				if (data && data.success) {
-					setStatus(addPrivateStatus, 'Private lecture added successfully.');
 					addPrivateForm.reset();
 					await loadPrivateLectures();
+					setStatus(addPrivateStatus, 'Private lecture added successfully.', 'success');
 				} else {
 					throw new Error('Private lecture creation failed.');
 				}
 			} catch (err) {
-				setStatus(addPrivateStatus, err.message || 'Unable to add private lecture.', true);
+				setStatus(addPrivateStatus, err.message || 'Unable to add private lecture.', 'error');
 			} finally {
 				addPrivateButton.disabled = false;
 			}
 		});
 
-		createPackageButton.addEventListener('click', openPackagePanel);
-		cancelPackageButton.addEventListener('click', closePackagePanel);
+		// ---------- packages ----------
+		function renderPackageCourseChoices() {
+			packageCourseChoices.replaceChildren();
+			selectedPackageCourseIds = new Set([...selectedPackageCourseIds].filter(id => currentCourses.some(c => c.id === id)));
+
+			if (!currentCourses.length) {
+				const empty = document.createElement('div');
+				empty.className = 'empty-state';
+				empty.textContent = 'Add a course first to build a package.';
+				packageCourseChoices.appendChild(empty);
+				updateSelectedCoursesList();
+				return;
+			}
+
+			currentCourses.forEach(course => {
+				const label = document.createElement('label');
+				label.className = 'package-option';
+
+				const checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.checked = selectedPackageCourseIds.has(course.id);
+				checkbox.addEventListener('change', event => {
+					if (event.target.checked) {
+						selectedPackageCourseIds.add(course.id);
+					} else {
+						selectedPackageCourseIds.delete(course.id);
+					}
+					updateSelectedCoursesList();
+				});
+
+				const text = document.createElement('div');
+				text.className = 'package-option-text';
+				text.innerHTML = `<span class="package-option-title">${course.subject || 'Untitled'}</span><span class="package-option-meta">${course.stage || 'N/A'} · EGP ${Number(course.price || 0).toFixed(2)}</span>`;
+
+				label.append(checkbox, text);
+				packageCourseChoices.appendChild(label);
+			});
+
+			updateSelectedCoursesList();
+		}
+
+		function updateSelectedCoursesList() {
+			const selectedTitles = currentCourses
+				.filter(course => selectedPackageCourseIds.has(course.id))
+				.map(course => course.subject || 'Untitled');
+
+			selectedCoursesEl.innerHTML = selectedTitles.length
+				? `<strong>${selectedTitles.length} selected:</strong> ${selectedTitles.join(', ')}`
+				: 'No courses selected yet.';
+		}
 
 		savePackageButton.addEventListener('click', async () => {
 			const title = packageTitle.value.trim();
 			const price = Number(packagePrice.value);
-			const selected = Array.from(document.querySelectorAll('.course-package-checkbox:checked')).map((checkbox) => ({
-				course_id: Number(checkbox.closest('.course-card')?.querySelector('a.btn.view')?.href?.split('/').pop() || 0)
-			}));
+			const selected = [...selectedPackageCourseIds].map(id => ({ course_id: id }));
 
 			if (!title || !price || !selected.length) {
-				setStatus(packageStatus, 'Please enter a title, price, and select at least one course.', true);
+				setStatus(packageStatus, 'Please enter a title, price, and select at least one course.', 'error');
 				return;
 			}
 
@@ -803,38 +1137,35 @@
 			setStatus(packageStatus, 'Saving package…');
 
 			try {
-				const payload = {
-					title,
-					price,
-					courses_ids: selected
-				};
-
+				const payload = { title, price, courses_ids: selected };
 				const res = await fetch('/teacher/create_package', {
 					method: 'POST',
 					credentials: 'include',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(payload)
 				});
-
 				if (!res.ok) {
 					const msg = res.status === 403 ? 'Not authorized to create packages.' : 'Unable to create package.';
 					throw new Error(msg);
 				}
-
 				const data = await res.json();
 				if (data && data.success) {
-					setStatus(packageStatus, 'Package created successfully.');
-					closePackagePanel();
+					setStatus(packageStatus, 'Package created successfully.', 'success');
+					packageTitle.value = '';
+					packagePrice.value = '';
+					selectedPackageCourseIds.clear();
+					renderPackageCourseChoices();
 				} else {
 					throw new Error('Package creation failed.');
 				}
 			} catch (err) {
-				setStatus(packageStatus, err.message || 'Unable to create package.', true);
+				setStatus(packageStatus, err.message || 'Unable to create package.', 'error');
 			} finally {
 				savePackageButton.disabled = false;
 			}
 		});
 
+		// ---------- init ----------
 		loadCourses();
 		loadPrivateLectures();
 	</script>

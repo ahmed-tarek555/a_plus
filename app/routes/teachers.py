@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, HTTPException, Request
+from fastapi import APIRouter, Depends, status, HTTPException, Request, Form, UploadFile, File
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
@@ -12,11 +12,12 @@ from app.models.packages_model import Package
 from app.models.package_items import PackageItem
 from app.core.auth import validate_user
 from app.database import get_db
-from app.schemas.courses import AddCourse
 from app.schemas.package import PackageCreate
 from app.schemas.private import CreatePrivate
 from app.schemas.private import PrivateLink
+from app.utils import is_valid_image, upload_image, delete_file, generate_url
 from app.config import BASE_DIR
+from decimal import Decimal
 
 router = APIRouter(prefix="/teacher")
 
@@ -61,13 +62,20 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
             "level": course.level,
             "subject": course.subject,
             "is_public": course.is_public,
-            "student_count": student_count
+            "student_count": student_count,
+            "cover_url": generate_url(course.cover_public_id)
         }
         for course, student_count in results
     ]
 
 @router.post("/add_course")
-def add_course(request: Request, new_course: AddCourse, db: Session = Depends(get_db)):
+def add_course(request: Request,
+               price: Decimal = Form(...),
+               stage: str = Form(...),
+               level: str = Form(...),
+               subject: str = Form(...),
+               cover_image: UploadFile = File(...),
+               db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")
     user_id, user_role = validate_user(token)
     if user_role != "teacher":
@@ -79,15 +87,21 @@ def add_course(request: Request, new_course: AddCourse, db: Session = Depends(ge
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
 
-    if new_course.stage not in ("الثانوية", "الاعدادية", "الابتدائية"):
+    if stage not in ("الثانوية", "الاعدادية", "الابتدائية"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid stage")
+
+    if not is_valid_image(cover_image):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid stage")
+
+    public_id = upload_image(cover_image, "covers")
 
     course = Course(
         teacher_id=teacher.id,
-        price=new_course.price,
-        stage=new_course.stage,
-        level=new_course.level,
-        subject=new_course.subject,
+        price=price,
+        stage=stage,
+        level=level,
+        subject=subject,
+        cover_public_id=public_id,
         is_public=True
     )
     try:
@@ -118,6 +132,8 @@ def delete_course(request: Request, id: int, db: Session = Depends(get_db)):
 
     if course.teacher_id != teacher.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    if course.cover_public_id is not None:
+        delete_file(course.cover_public_id, "image")
     try:
         db.delete(course)
         db.commit()

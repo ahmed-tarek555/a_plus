@@ -39,10 +39,10 @@ def is_material_valid(file: UploadFile):
 
     return True
 
-def upload_pfp(file: UploadFile):
+def upload_image(file: UploadFile, folder: str):
     result = cloudinary.uploader.upload(
         file.file,
-        folder="teachers/pfp",
+        folder=f"{folder}",
         transformation=[
             {"width": 256, "height": 256, "crop": "fill"},
             {"quality": "auto"}
@@ -50,20 +50,10 @@ def upload_pfp(file: UploadFile):
     )
     return result["public_id"]
 
-def upload_file(file: UploadFile):
+def upload_file(file: UploadFile, folder: str):
     result = cloudinary.uploader.upload(
         file.file,
-        folder="homework",
-        transformation=[
-            {"quality": "auto"}
-        ]
-    )
-    return result["public_id"]
-
-def upload_material(file: UploadFile):
-    result = cloudinary.uploader.upload(
-        file.file,
-        folder="material",
+        folder=f"{folder}",
         transformation=[
             {"quality": "auto"}
         ]

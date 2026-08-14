@@ -4,356 +4,586 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>A+ - Learn with Top Educators</title>
+  <title>A+ — Learn with Top Educators</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --ink: #10213f;
+      --ink-soft: #56698c;
+      --paper: #f7f9ff;
+      --paper-alt: #eef3fc;
+      --blue: #2563eb;
+      --blue-deep: #14306b;
+      --blue-mid: #1d4ed8;
+      --line: #c9d9f5;
+      --border: #dbe7ff;
+
+      --font-display: "Fraunces", serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
-      background: linear-gradient(180deg, #f8fbff 0%, #f3f7fb 100%);
-      color: #1a202c;
+      font-family: var(--font-body);
+      background: var(--paper);
+      color: var(--ink);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Navigation Bar */
+    a { color: inherit; }
+
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+
+    /* ---------------- Nav ---------------- */
     nav {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: white;
-      border-bottom: 1px solid #e8ebf0;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      background: rgba(247, 249, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
     }
 
     .nav-container {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 64px;
+      height: 68px;
+      gap: 24px;
     }
 
     .nav-brand {
-      font-size: 1.4rem;
-      font-weight: 800;
-      letter-spacing: -1px;
-      color: #2563eb;
-      text-decoration: none;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      min-width: 120px;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--blue);
+      text-decoration: none;
+      flex-shrink: 0;
+      transform: rotate(-4deg);
     }
 
     .nav-search {
       flex: 1;
-      max-width: 400px;
-      margin: 0 40px;
+      max-width: 420px;
     }
 
     .nav-search input {
       width: 100%;
       padding: 10px 16px;
-      border: 1px solid #e0e7ff;
-      border-radius: 8px;
-      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      font-family: var(--font-body);
       font-size: 0.9rem;
+      color: var(--ink);
       outline: none;
-      transition: all 0.2s;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
+    .nav-search input::placeholder { color: #94a3c4; }
+
     .nav-search input:focus {
-      background: white;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
 
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .nav-btn {
-      padding: 9px 18px;
+      padding: 9px 16px;
       border: none;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      transition: all 0.2s;
       white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
     }
 
-    .nav-btn-secondary {
-      color: #2563eb;
-      background: transparent;
+    .nav-btn-secondary { color: var(--blue); background: transparent; }
+    .nav-btn-secondary:hover { background: var(--paper-alt); }
+
+    .nav-btn-primary { background: var(--blue); color: #fff; }
+    .nav-btn-primary:hover { background: var(--blue-mid); }
+
+    .nav-btn-profile { background: var(--paper-alt); color: var(--blue-deep); }
+    .nav-btn-profile:hover { background: var(--border); }
+
+    @media (max-width: 860px) {
+      .nav-container { height: auto; flex-wrap: wrap; padding: 14px 18px; }
+      .nav-search { order: 3; max-width: none; min-width: 100%; margin-top: 4px; }
+      .nav-actions { order: 2; flex-wrap: wrap; }
     }
 
-    .nav-btn-secondary:hover {
-      background: #eef2ff;
-    }
-
-    .nav-btn-primary {
-      background: #2563eb;
-      color: white;
-    }
-
-    .nav-btn-primary:hover {
-      background: #1d4ed8;
-    }
-
-    .nav-btn-profile {
-      background: #eff6ff;
-      color: #2563eb;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 700;
-    }
-
-    .nav-btn-profile:hover {
-      background: #dbeafe;
-    }
-
-    @media (max-width: 768px) {
-      .nav-container {
-        height: auto;
-        flex-wrap: wrap;
-        padding: 12px 16px;
-      }
-
-      .nav-brand {
-        flex: 1;
-      }
-
-      .nav-search {
-        flex: 1;
-        max-width: none;
-        margin: 12px 0;
-        min-width: 100%;
-        order: 3;
-      }
-
-      .nav-actions {
-        order: 2;
-      }
-    }
-
-    /* Main Content */
+    /* ---------------- Layout shell ---------------- */
     .page-shell {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 56px 24px 40px;
     }
 
+    /* ---------------- Hero ---------------- */
     .hero {
-      margin-bottom: 60px;
-      padding: 64px 40px;
-      border-radius: 24px;
-      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-      color: white;
-      text-align: center;
-      box-shadow: 0 20px 45px rgba(37, 99, 235, 0.18);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 48px;
+      margin-bottom: 76px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue-mid);
+      margin-bottom: 18px;
+    }
+
+    .hero-eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue);
     }
 
     .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      margin-bottom: 16px;
-      font-weight: 800;
-      letter-spacing: -1px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: var(--blue-deep);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--blue);
     }
 
     .hero p {
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto;
-      opacity: 0.95;
-      line-height: 1.7;
+      font-size: 1.05rem;
+      max-width: 480px;
+      color: var(--ink-soft);
+      margin-bottom: 0;
     }
 
-    .section {
-      margin-bottom: 50px;
+    /* ---- signature element: graded notebook card ---- */
+    .hero-visual-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
+
+    .hero-visual {
+      position: relative;
+      width: 280px;
+      min-height: 340px;
+      background-color: #ffffff;
+      background-image:
+        repeating-linear-gradient(to bottom, transparent, transparent 30px, var(--line) 31px);
+      background-position: 0 8px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(20, 48, 107, 0.16);
+      transform: rotate(-5deg);
+      padding: 32px 26px 26px;
+    }
+
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 46px;
+      width: 1px;
+      background: rgba(37, 99, 235, 0.22);
+    }
+
+    .hero-line {
+      height: 10px;
+      border-radius: 4px;
+      background: var(--paper-alt);
+      margin-bottom: 20px;
+      margin-left: 6px;
+    }
+
+    .hero-line.w-80 { width: 80%; }
+    .hero-line.w-60 { width: 58%; }
+    .hero-line.w-90 { width: 88%; }
+    .hero-line.w-40 { width: 42%; }
+
+    .hero-check {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+    }
+
+    .hero-check svg { width: 100%; height: 100%; }
+
+    .hero-stamp {
+      position: absolute;
+      top: -22px;
+      right: -20px;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      border: 3px solid var(--blue);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--blue);
+      transform: rotate(10deg);
+      box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+    }
+
+    .hero-stamp::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px dashed rgba(37, 99, 235, 0.45);
+      border-radius: 50%;
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; text-align: center; }
+      .hero p { margin: 0 auto; }
+      .hero-eyebrow { justify-content: center; }
+    }
+
+    /* ---------------- Sections ---------------- */
+    .section { margin-bottom: 60px; }
 
     .section-header {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       justify-content: space-between;
-      margin-bottom: 24px;
+      gap: 16px;
+      margin-bottom: 26px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header-text {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .section-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1.5px solid var(--blue);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--blue);
+      flex-shrink: 0;
     }
 
     .section-header h2 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: #0f172a;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.55rem;
+      color: var(--blue-deep);
     }
 
     .section-header small {
-      font-size: 0.9rem;
-      color: #64748b;
-      font-weight: 600;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--ink-soft);
+      white-space: nowrap;
     }
 
-    /* Teachers Section */
+    @media (max-width: 700px) {
+      .section-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+    }
+
+    /* ---------------- Teachers ---------------- */
     .teachers-row {
       display: grid;
       grid-auto-flow: column;
-      grid-auto-columns: minmax(220px, 1fr);
-      gap: 20px;
+      grid-auto-columns: minmax(210px, 1fr);
+      gap: 18px;
       overflow-x: auto;
-      padding: 4px 4px 12px;
+      padding: 4px 4px 14px;
       scroll-snap-type: x proximity;
     }
 
-    .teachers-row::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .teachers-row::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
+    .teachers-row::-webkit-scrollbar { height: 6px; }
+    .teachers-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
     .teacher-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-      border: 1px solid #dbe7ff;
-      border-radius: 20px;
-      padding: 24px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      transition: all 0.3s ease;
       text-decoration: none;
       color: inherit;
       scroll-snap-align: start;
-      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.08);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .teacher-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 4px;
-      background: linear-gradient(90deg, #2563eb, #60a5fa);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     }
 
     .teacher-card:hover {
-      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.15);
-      transform: translateY(-4px);
-      border-color: #93c5fd;
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(20, 48, 107, 0.1);
+      border-color: #b7cdfa;
     }
 
     .teacher-avatar {
-      width: 100px;
-      height: 100px;
+      width: 84px;
+      height: 84px;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid #2563eb;
-      margin-bottom: 16px;
-      background: #eff6ff;
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+      border: 2px solid var(--blue);
+      margin-bottom: 14px;
+      background: var(--paper-alt);
     }
 
     .teacher-card h3 {
-      font-size: 1.1rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      color: var(--ink);
     }
 
-    .teacher-card p {
-      color: #6b7280;
+    /* ---------------- Shared card bits ---------------- */
+    .course-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--blue-mid);
+      background: var(--paper-alt);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .course-price {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--blue-mid);
+      font-size: 0.98rem;
+      white-space: nowrap;
+    }
+
+    /* ---------------- Private lectures ---------------- */
+    .private-lectures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
+    }
+
+    .private-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .private-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(20, 48, 107, 0.1);
+      border-color: #b7cdfa;
+    }
+
+    .private-teacher { display: flex; align-items: center; gap: 10px; }
+
+    .private-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--blue);
+      background: var(--paper-alt);
+      flex-shrink: 0;
+    }
+
+    .private-book-btn {
+      margin-top: auto;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 9px;
+      background: var(--blue);
+      color: #fff;
+      font-family: var(--font-body);
+      font-weight: 700;
       font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
     }
 
-    /* Courses Grid */
+    .private-book-btn:hover:not(:disabled) { background: var(--blue-mid); }
+    .private-book-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    /* ---------------- Packages ---------------- */
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .package-card {
+      background: linear-gradient(165deg, #ffffff, var(--paper-alt));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .package-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(20, 48, 107, 0.1);
+      border-color: #b7cdfa;
+    }
+
+    .package-card h3 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--blue-deep);
+    }
+
+    .package-price {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--blue-mid);
+      font-size: 1rem;
+      margin-top: auto;
+    }
+
+    /* ---------------- Courses ---------------- */
     .courses-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
+      gap: 22px;
     }
 
     .course-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-      border: 1px solid #dbe7ff;
-      border-radius: 18px;
-      padding: 20px;
-      transition: all 0.3s ease;
+      background-size: cover;
+      background-position: center;
+      background-color: var(--blue-deep);
+      border-radius: 16px;
+      padding: 22px;
       text-decoration: none;
       color: inherit;
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
+      min-height: 250px;
+      isolation: isolate;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
     .course-card::before {
       content: "";
       position: absolute;
-      inset: 0 0 auto 0;
-      height: 4px;
-      background: linear-gradient(90deg, #2563eb, #60a5fa);
+      inset: 0;
+      background: linear-gradient(190deg, rgba(16, 33, 63, 0.15) 10%, rgba(16, 33, 63, 0.88) 100%);
+      z-index: 0;
     }
 
     .course-card:hover {
-      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
       transform: translateY(-4px);
-      border-color: #93c5fd;
+      box-shadow: 0 20px 44px rgba(20, 48, 107, 0.22);
     }
+
+    .course-card > * { position: relative; z-index: 1; }
 
     .course-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
-    .course-tag {
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #1d4ed8;
-      background: #eff6ff;
-      padding: 4px 12px;
-      border-radius: 999px;
-      flex-shrink: 0;
+    .course-card .course-tag {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #eaf1ff;
     }
 
-    .course-price {
-      font-weight: 800;
-      color: #1d4ed8;
-      font-size: 1.05rem;
-    }
+    .course-card .course-price { color: #ffffff; }
 
     .course-card h3 {
-      font-size: 1.08rem;
-      font-weight: 800;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.15rem;
+      line-height: 1.35;
+      color: #ffffff;
       margin-bottom: 8px;
-      line-height: 1.4;
-      color: #0f172a;
     }
 
     .course-card p {
-      color: #64748b;
-      font-size: 0.92rem;
-      margin-bottom: 12px;
-      flex-grow: 1;
-      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
     }
 
     .course-meta {
@@ -363,171 +593,39 @@
       gap: 10px;
       margin-top: auto;
       padding-top: 12px;
-      font-size: 0.85rem;
-      color: #64748b;
-      border-top: 1px solid #e8eefc;
-      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .private-lectures-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-    }
-
-    .packages-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 24px;
-    }
-
-    .package-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-      border: 1px solid #dbe7ff;
-      border-radius: 18px;
-      padding: 20px;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      color: inherit;
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .package-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 4px;
-      background: linear-gradient(90deg, #2563eb, #60a5fa);
-    }
-
-    .package-card:hover {
-      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
-      transform: translateY(-4px);
-      border-color: #93c5fd;
-    }
-
-    .package-card h3 {
-      font-size: 1.08rem;
-      font-weight: 800;
-      color: #0f172a;
-      line-height: 1.4;
-    }
-
-    .package-price {
-      font-weight: 800;
-      color: #1d4ed8;
-      font-size: 1.05rem;
-      margin-top: auto;
-    }
-
-    .private-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-      border: 1px solid #dbe7ff;
-      border-radius: 18px;
-      padding: 20px;
-      transition: all 0.3s ease;
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .private-card::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 4px;
-      background: linear-gradient(90deg, #2563eb, #60a5fa);
-    }
-
-    .private-card:hover {
-      box-shadow: 0 18px 40px rgba(37, 99, 235, 0.14);
-      transform: translateY(-4px);
-      border-color: #93c5fd;
-    }
-
-    .private-teacher {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .private-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #2563eb;
-      background: #eff6ff;
-      flex-shrink: 0;
-    }
-
-    .private-book-btn {
-      margin-top: auto;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 10px;
-      background: #2563eb;
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .private-book-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
+    /* ---------------- Empty state ---------------- */
     .empty-state {
       padding: 40px 20px;
-      border-radius: 18px;
-      background: #f8fbff;
-      color: #64748b;
-      border: 1px dashed #bfdbfe;
+      border-radius: 16px;
+      background: var(--paper-alt);
+      color: var(--ink-soft);
+      border: 1px dashed var(--border);
       text-align: center;
-      font-weight: 700;
+      font-weight: 600;
+      font-size: 0.92rem;
     }
 
     @media (max-width: 768px) {
-      .page-shell {
-        padding: 24px 16px;
-      }
-
-      .hero {
-        padding: 40px 24px;
-      }
-
-      .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-
-      .teachers-row {
-        grid-auto-columns: minmax(180px, 1fr);
-      }
-
-      .courses-grid {
-        grid-template-columns: 1fr;
-      }
+      .page-shell { padding: 40px 18px; }
+      .teachers-row { grid-auto-columns: minmax(170px, 1fr); }
+      .courses-grid { grid-template-columns: 1fr; }
     }
   </style>
-
 </head>
 
 <body>
   <nav>
-    <div class="nav-container"><a href="/" class="nav-brand">A+</a>
+    <div class="nav-container">
+      <a href="/" class="nav-brand" aria-label="A+ home">A+</a>
       <div class="nav-search">
-        <form id="searchForm" style="display: flex;"><input type="text" placeholder="Search teachers, courses..."
-            aria-label="Search" /></form>
+        <form id="searchForm">
+          <input type="text" placeholder="Search teachers, courses…" aria-label="Search" />
+        </form>
       </div>
       <div class="nav-actions">
         {% if is_logged %}
@@ -548,40 +646,75 @@
       </div>
     </div>
   </nav>
+
   <div id="homeData" data-logged="{{ 'true' if is_logged else 'false' }}" hidden></div>
+
   <div class="page-shell">
     <section class="hero">
-      <h1>Learn from Top Educators</h1>
-      <p>Explore expert-led courses,
-        connect with trusted teachers,
-        and start your learning journey today. </p>
+      <div>
+        <div class="hero-eyebrow">Enroll Now!</div>
+        <h1>Study with teachers<br />who make it <em>click</em>.</h1>
+        <p>Browse real educators, book one-on-one sessions, and enroll in courses built around your stage and level — all graded, tracked, and taught in one place.</p>
+      </div>
+      <div class="hero-visual-wrap">
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-stamp">A+</div>
+          <div class="hero-line w-60"></div>
+          <div class="hero-line w-90"></div>
+          <div class="hero-line w-80"></div>
+          <div class="hero-line w-40"></div>
+          <div class="hero-line w-90"></div>
+        </div>
+      </div>
     </section>
+
     <section class="section">
       <div class="section-header">
-        <h2>Teachers</h2><small>Scroll right to see more</small>
+        <div class="section-header-text">
+          <span class="section-mark">01</span>
+          <h2>Meet the faculty</h2>
+        </div>
+        <small>Scroll right to see more</small>
       </div>
       <div class="teachers-row" id="teachersRow"></div>
     </section>
+
     <section class="section">
       <div class="section-header">
-        <h2>Available private lectures</h2><small>Book a one-on-one session</small>
+        <div class="section-header-text">
+          <span class="section-mark">02</span>
+          <h2>Book a 1:1 session</h2>
+        </div>
+        <small>Private lectures, taught live</small>
       </div>
       <div class="private-lectures-grid" id="privateLecturesGrid"></div>
     </section>
+
     <section class="section">
       <div class="section-header">
-        <h2>Packages</h2><small>Choose a plan that fits your goals</small>
+        <div class="section-header-text">
+          <span class="section-mark">03</span>
+          <h2>Course bundles</h2>
+        </div>
+        <small>Save by learning in packages</small>
       </div>
       <div class="packages-grid" id="packagesGrid"></div>
     </section>
+
     <section class="section">
       <div class="section-header">
-        <h2>Courses</h2><small>Enroll today and start learning</small>
+        <div class="section-header-text">
+          <span class="section-mark">04</span>
+          <h2>Full course catalog</h2>
+        </div>
+        <small>Enroll today and start learning</small>
       </div>
       <div class="courses-grid" id="coursesGrid"></div>
     </section>
   </div>
-  <script>const teachersRow = document.getElementById('teachersRow');
+
+  <script>
+    const teachersRow = document.getElementById('teachersRow');
     const coursesGrid = document.getElementById('coursesGrid');
     const privateLecturesGrid = document.getElementById('privateLecturesGrid');
     const packagesGrid = document.getElementById('packagesGrid');
@@ -603,7 +736,7 @@
         const fullName = [teacher.first_name, teacher.last_name].filter(Boolean).join(' ');
         const imageSrc = teacher.pfp_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(fullName || 'Teacher') + '&background=DBEAFE&color=2563EB';
 
-        return ` <a href="/teacher_profile/${teacher.id}" class="teacher-card" > <img class="teacher-avatar" src="${imageSrc}" alt="${fullName}" /> <h3>${fullName}</h3> </a> `;
+        return `<a href="/teacher_profile/${teacher.id}" class="teacher-card"><img class="teacher-avatar" src="${imageSrc}" alt="${fullName}" /><h3>${fullName}</h3></a>`;
       }).join('');
     }
 
@@ -630,7 +763,7 @@
             </div>
             <div class="course-top">
               <span class="course-tag">${lecture.subject || 'General'}</span>
-              <span class="course-price">EGP${Number(lecture.price || 0).toFixed(2)}</span>
+              <span class="course-price">EGP ${Number(lecture.price || 0).toFixed(2)}</span>
             </div>
             <h3>${lecture.title || 'Private lecture'}</h3>
             <p>${new Date(lecture.start_date).toLocaleString()}</p>
@@ -686,7 +819,7 @@
       packagesGrid.innerHTML = packages.map((pkg) => `
         <a href="/package/${pkg.id}" class="package-card">
           <h3>${pkg.title || 'Package'}</h3>
-          <div class="package-price">EGP${Number(pkg.price || 0).toFixed(2)}</div>
+          <div class="package-price">EGP ${Number(pkg.price || 0).toFixed(2)}</div>
         </a>
       `).join('');
     }
@@ -698,35 +831,44 @@
       }
 
       coursesGrid.innerHTML = courses.map((course) => {
-      return ` 
-      <a href="/course/${course.id}" class="course-card" style="text-decoration: none; color: inherit;" >
-        <div class="course-top" > <span class="course-tag" >${course.subject || 'General'}
-          </span> <span class="course-price" >EGP${Number(course.price || 0).toFixed(2)}</span> </div>
-          <h3>Stage: ${course.stage || 'Course'}</h3>
-          <h3>Level: ${course.level || 'Course'}</h3>
-          <p> Taught by ${course.teacher_first_name || ''} ${course.teacher_last_name || ''} </p> 
-          <div class="course-meta" > <span>👥 ${course.student_count || 0}
-          students</span> <span>ID: ${course.id}</span> 
-        </div> 
-      </a> `;
+        const coverUrl = course.cover_url ? `background-image: url('${course.cover_url}');` : '';
+
+        return `
+          <a href="/course/${course.id}" class="course-card" style="${coverUrl}">
+            <div class="course-top">
+              <span class="course-tag">${course.subject || 'General'}</span>
+              <span class="course-price">EGP ${Number(course.price || 0).toFixed(2)}</span>
+            </div>
+            <p style="color: rgba(255,255,255,0.85); font-weight: 700;">Stage ${course.stage || 'N/A'} · Level ${course.level || 'N/A'}</p>
+            <p style="color: rgba(255,255,255,0.85);">Taught by ${course.teacher_first_name || ''} ${course.teacher_last_name || ''}</p>
+            <div class="course-meta" style="color: rgba(255,255,255,0.9);">
+              <span>${course.student_count || 0} enrolled</span>
+              <span>#${course.id}</span>
+            </div>
+          </a>
+        `;
       }).join('');
     }
 
-    fetch('/home/teachers', {
-      credentials: 'include'
-    }).then((response) => response.ok ? response.json() : []).then((teachers) => renderTeachers(teachers)).catch(() => renderTeachers([]));
+    fetch('/home/teachers', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() : [])
+      .then((teachers) => renderTeachers(teachers))
+      .catch(() => renderTeachers([]));
 
-    fetch('/home/private_lectures', {
-      credentials: 'include'
-    }).then((response) => response.ok ? response.json() : []).then((lectures) => renderPrivateLectures(lectures)).catch(() => renderPrivateLectures([]));
+    fetch('/home/private_lectures', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() : [])
+      .then((lectures) => renderPrivateLectures(lectures))
+      .catch(() => renderPrivateLectures([]));
 
-    fetch('/home/packages', {
-      credentials: 'include'
-    }).then((response) => response.ok ? response.json() : []).then((packages) => renderPackages(packages)).catch(() => renderPackages([]));
+    fetch('/home/packages', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() : [])
+      .then((packages) => renderPackages(packages))
+      .catch(() => renderPackages([]));
 
-    fetch('/home/courses', {
-      credentials: 'include'
-    }).then((response) => response.ok ? response.json() : []).then((courses) => renderCourses(courses)).catch(() => renderCourses([]));
+    fetch('/home/courses', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() : [])
+      .then((courses) => renderCourses(courses))
+      .catch(() => renderCourses([]));
   </script>
 </body>
 

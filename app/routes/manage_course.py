@@ -1,28 +1,16 @@
-from typing import Optional
-from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFile, File, Form
+from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from app.models.enrollments_model import Enrollment
-from app.models.submitted_homeworks import SubmittedHomework
-from app.models.submittted_exams import SubmittedExam
 from app.models.users_model import User
 from app.models.teachers_model import Teacher
 from app.models.courses_model import Course
-from app.models.exams_model import Exam
-from app.models.questions_model import Question
-from app.models.choices_model import Choice
-from app.models.homeworks_model import Homework
-from app.models.students_model import Student
 from app.models.lectures_model import Lecture
-from app.schemas.exam import ExamCreate
 from app.schemas.courses import UploadLecture
 from app.core.auth import validate_user
-from app.services.embedder import get_embedding
 from app.database import get_db
-from app.utils import is_valid_image, upload_file, generate_url, upload_material, extract_youtube_id
+from app.utils import extract_youtube_id
 from app.config import BASE_DIR
-from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/manage_course")
 
@@ -46,6 +34,7 @@ def course_data(request: Request, id: int, db: Session = Depends(get_db)):
 
     course_info = {
         "id": course.id,
+        "price": course.price,
         "subject": course.subject,
         "level": course.level,
         "stage": course.stage

@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFile, File
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import Session
 from app.models.homeworks_model import Homework
@@ -137,6 +136,7 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
             "stage": course.stage,
             "level": course.level,
             "subject": course.subject,
+            "cover_url": generate_url(course.cover_public_id)
         }
         for course in courses
     ]
@@ -169,7 +169,8 @@ def get_lectures(request: Request, db: Session = Depends(get_db)):
             "subject": course.subject,
             "first_name": teacher.first_name,
             "last_name": teacher.last_name,
-            "pfp": generate_url(teacher.pfp_public_id) if teacher.pfp_public_id is not None else None
+            "pfp": generate_url(teacher.pfp_public_id) if teacher.pfp_public_id is not None else None,
+            "cover_url": generate_url(course.cover_public_id)
         }
         for lec, course, teacher in lec_info
     ]

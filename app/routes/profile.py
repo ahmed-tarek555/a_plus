@@ -11,7 +11,7 @@ from app.models.enrollments_model import Enrollment
 from app.core.auth import validate_user
 from app.core.security import hash_password
 from app.schemas.user import EditProfile
-from app.utils import generate_url, is_valid_image, delete_file, upload_pfp
+from app.utils import generate_url, is_valid_image, delete_file, upload_image
 from app.database import get_db
 from app.config import BASE_DIR
 
@@ -62,7 +62,7 @@ def upload_picture(request: Request,
     if not is_valid_image(pfp):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-    public_id = upload_pfp(pfp)
+    public_id = upload_image(pfp, "teachers/pfp")
     if user.pfp_public_id is not None:
         delete_file(user.pfp_public_id, "image")
     user.pfp_public_id = public_id

@@ -412,13 +412,13 @@
                     <h1>{{ course.subject or 'Course' }}</h1>
                     <p>Stage: {{ course.stage or 'Not provided' }} • Level: {{ course.level or 'Not provided' }}</p>
                 </div>
-                <div class="teacher-card">
+                <a href="/teacher_profile/{{ course.teacher_id }}" class="teacher-card" style="text-decoration: none; color: inherit;">
                     <img class="teacher-avatar" src="{{ course.teacher_pfp_url or ('https://ui-avatars.com/api/?name=' ~ (course.teacher_first_name or 'Teacher') ~ '+' ~ (course.teacher_last_name or '') ~ '&background=DBEAFE&color=2563EB') }}" alt="Teacher profile picture" />
                     <div>
                         <h2>{{ course.teacher_first_name or 'Teacher' }} {{ course.teacher_last_name or '' }}</h2>
                         <p>Instructor</p>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="content-shell">

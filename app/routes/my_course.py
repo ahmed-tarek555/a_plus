@@ -57,6 +57,7 @@ def course_data(request: Request, course_id: int, db: Session = Depends(get_db))
         "stage": course.stage,
         "level": course.level,
         "lectures": course_lectures,
+        "teacher_id": teacher.id,
         "teacher_first_name": teacher.first_name,
         "teacher_last_name": teacher.last_name,
         "teacher_pfp_url": generate_url(teacher.pfp_public_id),

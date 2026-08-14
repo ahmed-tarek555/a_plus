@@ -10,4 +10,5 @@ class Course(Base):
     stage = Column(String, nullable=False)
     level = Column(Integer, nullable=False)
     subject = Column(String, nullable=False)
+    cover_public_id = Column(String, nullable=False)
     is_public = Column(Boolean, nullable=False)

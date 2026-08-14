@@ -20,7 +20,7 @@ from app.schemas.courses import UploadLecture
 from app.core.auth import validate_user
 from app.services.embedder import get_embedding
 from app.database import get_db
-from app.utils import is_valid_image, upload_file, generate_url, upload_material, is_material_valid
+from app.utils import is_valid_image, upload_file, generate_url, is_material_valid
 from app.config import BASE_DIR
 from datetime import datetime, timedelta
 
@@ -125,7 +125,7 @@ def add_homework(request: Request, lecture_id: int, title: str = Form(...), due_
     if not is_valid_image(homework):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-    public_id = upload_file(homework)
+    public_id = upload_file(homework, "homeworks")
 
     new_homework = Homework(
         lecture_id=lecture_id,
@@ -306,7 +306,7 @@ def add_material(request: Request, lecture_id: int, file: UploadFile = File(...)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     if not is_material_valid(file):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-    public_id = upload_material(file)
+    public_id = upload_file(file, "materials")
     try:
         lecture.material_public_id = public_id
         db.commit()

@@ -43,7 +43,8 @@ def login_page(request: Request, id: int, db: Session = Depends(get_db)):
             "stage": course.stage,
             "level": course.level,
             "subject": course.subject,
-            "student_count": student_count
+            "student_count": student_count,
+            "cover_url": generate_url(course.cover_public_id)
         }
         for course, student_count in result
     ]
