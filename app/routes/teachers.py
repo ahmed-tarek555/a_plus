@@ -63,7 +63,6 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
             "subject": course.subject,
             "is_public": course.is_public,
             "student_count": student_count,
-            "cover_url": generate_url(course.cover_public_id)
         }
         for course, student_count in results
     ]

@@ -11,3 +11,6 @@ class UploadLecture(BaseModel):
     title: str
     price: Decimal
     url: str
+
+class ChangePrice(BaseModel):
+    price: Decimal

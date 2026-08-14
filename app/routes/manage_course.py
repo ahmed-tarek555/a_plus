@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, HTTPException, Request
+from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFile, File
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -6,10 +6,10 @@ from app.models.users_model import User
 from app.models.teachers_model import Teacher
 from app.models.courses_model import Course
 from app.models.lectures_model import Lecture
-from app.schemas.courses import UploadLecture
+from app.schemas.courses import UploadLecture, ChangePrice
 from app.core.auth import validate_user
 from app.database import get_db
-from app.utils import extract_youtube_id
+from app.utils import extract_youtube_id, generate_url, delete_file, upload_image, is_valid_image
 from app.config import BASE_DIR
 
 router = APIRouter(prefix="/manage_course")
@@ -37,7 +37,8 @@ def course_data(request: Request, id: int, db: Session = Depends(get_db)):
         "price": course.price,
         "subject": course.subject,
         "level": course.level,
-        "stage": course.stage
+        "stage": course.stage,
+        "cover_url": generate_url(course.cover_public_id)
     }
 
     return templates.TemplateResponse("manage_course.html", {"request": request, "course_info": course_info})
@@ -91,3 +92,58 @@ def upload_material(request: Request, course_id: int, payload: UploadLecture, db
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return {"success": True}
+
+@router.patch("/change_cover/{course_id}")
+def change_cover(request: Request, course_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "teacher":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user, teacher = result
+
+    course = db.query(Course).filter(Course.id == course_id, Course.teacher_id == teacher.id).first()
+    if not course:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    if course.cover_public_id is not None:
+        delete_file(course.cover_public_id, "image")
+
+    if not is_valid_image(file):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+    new_public_id = upload_image(file, "covers")
+    course.cover_public_id = new_public_id
+    try:
+        db.commit()
+        db.refresh(course)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"url": generate_url(new_public_id)}
+
+@router.patch("/change_price/{course_id}")
+def change_price(request: Request, course_id: int, payload: ChangePrice, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "teacher":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    result = db.query(User, Teacher).join(Teacher, Teacher.user_id == User.id).filter(User.id == user_id).first()
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    user, teacher = result
+
+    course = db.query(Course).filter(Course.id == course_id, Course.teacher_id == teacher.id).first()
+    if not course:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    course.price = payload.price
+    try:
+        db.commit()
+        db.refresh(course)
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return {"price": course.price}

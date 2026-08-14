@@ -5,100 +5,346 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Manage Course | A+</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ink: #10213f;
+            --ink-soft: #56698c;
+            --ink-faint: #94a3c4;
+            --paper: #f7f9ff;
+            --paper-alt: #eef3fc;
+            --blue: #2563eb;
+            --blue-deep: #14306b;
+            --blue-mid: #1d4ed8;
+            --line: #c9d9f5;
+            --border: #dbe7ff;
+            --paper-line: rgba(37, 99, 235, 0.08);
+            --card: #ffffff;
+            --red: #2563eb;
+            --red-soft: #dbeafe;
+            --green: #2563eb;
+            --green-soft: #dbeafe;
+            --gold: #1d4ed8;
+            --gold-soft: #bfdbfe;
+            --ring: rgba(37, 99, 235, 0.35);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --font-display: 'Fraunces', serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
         * {
             box-sizing: border-box;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-body);
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
             margin: 0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
-            color: #19324a;
+            font-family: var(--font-body);
+            color: var(--ink);
+            background-color: var(--paper);
+            background-image: repeating-linear-gradient(to bottom,
+                    transparent 0,
+                    transparent 27px,
+                    var(--paper-line) 27px,
+                    var(--paper-line) 28px);
+        }
+
+        a {
+            color: inherit;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: var(--font-body);
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid var(--green);
+            outline-offset: 2px;
         }
 
         nav {
-            padding: 18px 20px;
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid rgba(44, 117, 169, 0.08);
+            padding: 16px 24px;
+            background: rgba(255, 253, 248, 0.92);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(6px);
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
         .nav-container {
-            max-width: 1100px;
+            max-width: 1180px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 16px;
         }
 
         .nav-brand {
-            font-weight: 800;
-            color: #2f8dcc;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid var(--blue);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--blue);
             text-decoration: none;
-            font-size: 1.2rem
+            flex-shrink: 0;
+            transform: rotate(-4deg);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            border: 1px solid transparent;
+        }
+
+        .nav-btn-secondary {
+            color: var(--blue);
+            background: transparent;
+        }
+
+        .nav-btn-secondary:hover {
+            background: var(--paper-alt);
+        }
+
+        .nav-btn-profile {
+            background: var(--blue);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+            border-color: transparent;
+        }
+
+        .nav-btn-profile:hover {
+            background: var(--blue-mid);
         }
 
         .page {
-            max-width: 1100px;
-            margin: 28px auto;
-            padding: 0 20px 64px;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
         }
 
         .course-header {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 18px;
-            margin-bottom: 20px;
-            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: end;
+            gap: 16px;
+            margin-bottom: 22px;
         }
 
-        .course-card {
-            background: rgba(255, 255, 255, 0.96);
-            border: 1px solid rgba(44, 117, 169, 0.12);
-            border-radius: 16px;
-            padding: 22px;
-            box-shadow: 0 16px 40px rgba(43, 95, 130, 0.08);
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--red);
+            margin: 0 0 8px;
         }
 
         .course-card h1 {
-            margin: 0 0 10px;
-            font-size: 1.8rem;
+            margin: 0 0 8px;
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 3vw, 2.6rem);
+            line-height: 1.1;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .course-subtitle {
+            margin: 0;
+            color: var(--ink-soft);
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+
+        .course-id-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: var(--paper-alt);
+            color: var(--blue-deep);
+            font-weight: 700;
+            border: 1px solid var(--border);
+            font-size: 0.82rem;
+        }
+
+        .course-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: 0 1px 0 rgba(27, 36, 48, 0.03);
         }
 
         .course-meta {
             display: grid;
             grid-template-columns: repeat(4, minmax(120px, 1fr));
             gap: 12px;
-            margin-top: 12px;
+            margin-top: 18px;
         }
 
         .meta-item {
-            background: #f7fbff;
-            border: 1px solid rgba(44, 117, 169, 0.1);
-            border-radius: 12px;
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             padding: 12px;
-            color: #275272;
+            color: var(--ink-soft);
             font-size: 0.95rem;
+            min-width: 0;
+            overflow: hidden;
+            align-self: start;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .meta-item strong {
+            color: var(--ink);
+            font-size: 0.92rem;
+        }
+
+        .meta-item.clickable {
+            cursor: pointer;
+            transition: border-color .12s ease, box-shadow .12s ease, transform .12s ease;
+        }
+
+        .meta-item.clickable:hover {
+            border-color: rgba(44, 117, 169, 0.22);
+            box-shadow: 0 8px 18px rgba(43, 95, 130, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .meta-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .meta-item-value {
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            word-break: break-word;
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .meta-edit-wrap {
+            display: none;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .meta-item.editing .meta-edit-wrap {
+            display: flex;
+        }
+
+        .meta-item.editing .meta-item-value {
+            display: none;
+        }
+
+        .meta-item input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #fff;
+            color: var(--ink);
+            font-size: 0.95rem;
+        }
+
+        .meta-edit-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .meta-item img {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: 120px;
+            min-height: 120px;
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #dfeef8;
+            flex-shrink: 0;
+            border: 1px solid rgba(37, 99, 235, 0.08);
+        }
+
+        .save-btn {
+            padding: 8px 10px;
+            font-size: 0.78rem;
+            border-radius: 10px;
+            border: 0;
+            background: var(--blue);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 700;
         }
 
         .panels {
             display: grid;
             grid-template-columns: 1.2fr 0.9fr;
             gap: 22px;
+            margin-top: 24px;
         }
 
         .panel {
-            background: rgba(255, 255, 255, 0.96);
-            border: 1px solid rgba(44, 117, 169, 0.12);
-            border-radius: 16px;
-            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: 0 1px 0 rgba(27, 36, 48, 0.03);
         }
 
         .panel h2 {
             margin: 0 0 14px;
-            font-size: 1.2rem;
-            color: #19324a;
+            font-size: 1.3rem;
+            color: var(--ink);
+            font-family: var(--font-display);
+            font-weight: 600;
         }
 
         .panel form {
@@ -113,20 +359,21 @@
         }
 
         .field label {
-            font-size: 0.9rem;
-            color: #4b6579;
+            font-size: 0.8rem;
             font-weight: 600;
+            color: var(--ink-soft);
         }
 
         .field input,
         .field textarea,
         .field select {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid rgba(44, 117, 169, 0.14);
-            border-radius: 12px;
-            font-size: 0.95rem;
-            color: #1d3145;
+            padding: 10px 11px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.92rem;
+            background: var(--paper);
+            color: var(--ink);
         }
 
         .field textarea {
@@ -145,28 +392,39 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 12px 16px;
-            border: 0;
-            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid transparent;
+            border-radius: 999px;
             cursor: pointer;
             font-weight: 700;
-            transition: transform .12s ease, box-shadow .12s ease;
+            transition: transform .12s ease, background .12s ease, border-color .12s ease;
+            text-decoration: none;
+            font-size: 0.85rem;
         }
 
         .btn.primary {
-            background: #2f8dcc;
+            background: var(--blue);
             color: #fff;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn.primary:hover {
+            background: var(--blue-mid);
         }
 
         .btn.secondary {
-            background: #f5f9ff;
-            color: #2f6c9d;
-            border: 1px solid rgba(47, 140, 204, 0.12);
+            background: transparent;
+            color: var(--blue);
+            border-color: var(--border);
+        }
+
+        .btn.secondary:hover {
+            background: var(--paper-alt);
         }
 
         .btn.small {
             padding: 8px 10px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             border-radius: 10px;
         }
 
@@ -176,17 +434,18 @@
 
         .status {
             margin-top: 8px;
-            padding: 14px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.92);
-            border: 1px solid rgba(44, 117, 169, 0.1);
-            color: #27456b;
-            min-height: 48px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: var(--paper);
+            border: 1px solid var(--border);
+            color: var(--ink-soft);
+            font-size: 0.85rem;
+            min-height: 20px;
         }
 
         .status.error {
+            border-color: rgba(168, 58, 44, 0.3);
             background: #fff3f4;
-            border-color: rgba(192, 57, 75, 0.16);
             color: #a72a40;
         }
 
@@ -197,85 +456,52 @@
 
         .list-item {
             padding: 14px 16px;
-            border-radius: 14px;
-            background: #f8fbff;
-            border: 1px solid rgba(44, 117, 169, 0.08);
+            border-radius: 12px;
+            background: var(--paper);
+            border: 1px solid var(--border);
         }
 
         .list-item h3 {
             margin: 0 0 8px;
             font-size: 1rem;
+            font-family: var(--font-display);
+            font-weight: 600;
         }
 
         .list-item p {
             margin: 4px 0;
-            color: #4a6578;
+            color: var(--ink-soft);
             font-size: 0.95rem;
         }
 
         .list-item a {
-            color: #2f8dcc;
+            color: var(--blue);
             text-decoration: none;
             font-weight: 700;
         }
 
-        .question-card {
-            background: #f7fbff;
-            border: 1px solid rgba(47, 140, 204, 0.16);
-            border-radius: 14px;
-            padding: 16px;
-            display: grid;
-            gap: 12px;
-        }
-
-        .question-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            align-items: end;
-        }
-
-        .choice-row {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .choice-row input {
-            width: 100%;
-        }
-
-        .question-card h3 {
-            margin: 0;
-            font-size: 1rem;
-            color: #1e3e60;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .question-actions {
-            justify-content: flex-end;
-        }
-
         .list-empty {
-            color: #5b7488;
-            padding: 14px 16px;
-            border-radius: 14px;
-            background: #f6f8fb;
+            padding: 18px 14px;
+            border-radius: 12px;
+            background: var(--paper);
+            border: 1px dashed var(--border);
+            color: var(--ink-soft);
+            text-align: center;
         }
 
         @media (max-width:980px) {
             .panels {
-                grid-template-columns: 1fr
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width:660px) {
             .course-meta {
                 grid-template-columns: 1fr;
+            }
+
+            .course-header {
+                align-items: flex-start;
             }
         }
     </style>
@@ -284,8 +510,11 @@
 <body>
     <nav>
         <div class="nav-container">
-            <a href="/" class="nav-brand">A+</a>
-            <a href="/teacher" style="text-decoration:none; color:#2f8dcc; font-weight:700">Back to dashboard</a>
+            <a href="/" class="nav-brand" aria-label="A+ home">A+</a>
+            <div class="nav-actions">
+                <a href="/profile" class="nav-btn nav-btn-profile">Profile</a>
+                <a href="/teacher" class="nav-btn nav-btn-secondary">Back to dashboard</a>
+            </div>
         </div>
     </nav>
 
@@ -293,25 +522,42 @@
         <section class="course-card">
             <div class="course-header">
                 <div>
+                    <p class="eyebrow">Course details</p>
                     <h1>{{ course_info.subject or 'Course' }}</h1>
-                    <p style="margin:0; color:#4f6e86; font-size:1rem;">View this course and manage its lectures.</p>
+                    <p class="course-subtitle">View this course and manage its lectures.</p>
                 </div>
                 <div>
-                    <span style="display:inline-flex; padding:10px 16px; border-radius:14px; background:#eef6ff; color:#276cb5; font-weight:700;">Course ID: {{ course_info.id }}</span>
+                    <span class="course-id-pill">Course ID: {{ course_info.id }}</span>
                 </div>
             </div>
             <div class="course-meta">
-                <div class="meta-item"><strong>Subject</strong>
-                    <div>{{ course_info.subject }}</div>
+                <div class="meta-item">
+                    <strong>Stage</strong>
+                    <div class="meta-item-value">{{ course_info.stage }}</div>
                 </div>
-                <div class="meta-item"><strong>Stage</strong>
-                    <div>{{ course_info.stage }}</div>
+                <div class="meta-item">
+                    <strong>Level</strong>
+                    <div class="meta-item-value">{{ course_info.level }}</div>
                 </div>
-                <div class="meta-item"><strong>Level</strong>
-                    <div>{{ course_info.level }}</div>
+                <div class="meta-item clickable" id="priceCell" tabindex="0" role="button" aria-label="Change course price">
+                    <div class="meta-item-header">
+                        <strong>Price</strong>
+                    </div>
+                    <div class="meta-item-value">{{ course_info.price }}</div>
+                    <div class="meta-edit-wrap">
+                        <input id="coursePriceInput" type="number" min="0" step="1" value="{{ course_info.price }}" />
+                        <div class="meta-edit-actions">
+                            <button class="save-btn" type="button" id="savePriceBtn">Save</button>
+                            <button class="btn secondary small" type="button" id="cancelPriceBtn">Cancel</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="meta-item"><strong>Price</strong>
-                    <div>{{ course_info.price }}</div>
+                <div class="meta-item clickable" id="coverCell" tabindex="0" role="button" aria-label="Change course cover">
+                    <div class="meta-item-header">
+                        <strong>Cover</strong>
+                    </div>
+                    <input id="coverInput" type="file" accept="image/*" class="hidden" />
+                    <img id="courseCoverImage" src="{{ course_info.cover_url }}" alt="Course cover" />
                 </div>
             </div>
         </section>
@@ -354,11 +600,117 @@
         const submitLecture = document.getElementById('submitLecture');
         const lectureStatus = document.getElementById('lectureStatus');
         const lecturesList = document.getElementById('lecturesList');
+        const priceCell = document.getElementById('priceCell');
+        const coursePriceInput = document.getElementById('coursePriceInput');
+        const savePriceBtn = document.getElementById('savePriceBtn');
+        const cancelPriceBtn = document.getElementById('cancelPriceBtn');
+        const coverInput = document.getElementById('coverInput');
+        const coverCell = document.getElementById('coverCell');
+        const courseCoverImage = document.getElementById('courseCoverImage');
 
         function setStatus(element, message, isError = false) {
             element.textContent = message;
             element.classList.toggle('error', isError);
         }
+
+        function openPriceEditor() {
+            priceCell.classList.add('editing');
+            coursePriceInput.focus();
+            coursePriceInput.select();
+        }
+
+        function closePriceEditor() {
+            priceCell.classList.remove('editing');
+        }
+
+        async function updatePrice() {
+            const price = Number.parseFloat(coursePriceInput.value);
+            if (Number.isNaN(price) || price < 0) {
+                setStatus(lectureStatus, 'Please provide a valid price.', true);
+                return;
+            }
+
+            savePriceBtn.disabled = true;
+            setStatus(lectureStatus, 'Updating price…');
+            try {
+                const res = await fetch(`/manage_course/change_price/${courseId}`, {
+                    method: 'PATCH',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ price })
+                });
+                if (!res.ok) throw new Error('Unable to update price');
+                const data = await res.json();
+                const nextPrice = Number(data.price);
+                if (!Number.isNaN(nextPrice)) {
+                    const valueNode = priceCell.querySelector('.meta-item-value');
+                    valueNode.textContent = nextPrice;
+                    coursePriceInput.value = nextPrice;
+                }
+                closePriceEditor();
+                setStatus(lectureStatus, `Price updated to ${nextPrice}.`);
+            } catch (err) {
+                setStatus(lectureStatus, err.message || 'Failed to update price', true);
+            } finally {
+                savePriceBtn.disabled = false;
+            }
+        }
+
+        async function updateCover(file) {
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            coverCell.style.pointerEvents = 'none';
+            setStatus(lectureStatus, 'Updating cover…');
+            try {
+                const res = await fetch(`/manage_course/change_cover/${courseId}`, {
+                    method: 'PATCH',
+                    credentials: 'include',
+                    body: formData
+                });
+                if (!res.ok) throw new Error('Unable to update cover');
+                const data = await res.json();
+                if (data && data.url) {
+                    courseCoverImage.src = data.url;
+                }
+                setStatus(lectureStatus, 'Cover updated successfully.');
+            } catch (err) {
+                setStatus(lectureStatus, err.message || 'Failed to update cover', true);
+            } finally {
+                coverCell.style.pointerEvents = 'auto';
+                coverInput.value = '';
+            }
+        }
+
+        priceCell.addEventListener('click', (event) => {
+            if (event.target.closest('button')) return;
+            if (!priceCell.classList.contains('editing')) {
+                openPriceEditor();
+            }
+        });
+
+        savePriceBtn.addEventListener('click', updatePrice);
+        cancelPriceBtn.addEventListener('click', () => {
+            closePriceEditor();
+            coursePriceInput.value = priceCell.querySelector('.meta-item-value').textContent.trim();
+        });
+        coursePriceInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                updatePrice();
+            }
+            if (event.key === 'Escape') {
+                closePriceEditor();
+                coursePriceInput.value = priceCell.querySelector('.meta-item-value').textContent.trim();
+            }
+        });
+
+        coverCell.addEventListener('click', () => coverInput.click());
+        coverInput.addEventListener('change', () => {
+            const file = coverInput.files && coverInput.files[0];
+            if (file) updateCover(file);
+        });
 
         function renderList(container, items, emptyText, itemRenderer) {
             container.replaceChildren();
