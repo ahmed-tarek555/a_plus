@@ -411,7 +411,7 @@
                     });
 
                     if (!response.ok) {
-                        if (response.status === 401){
+                        if (response.status === 401 || response.status === 403) {
                             throw new Error('Only active students can buy lectures.');    
                         }
                         else if (response.status === 409){

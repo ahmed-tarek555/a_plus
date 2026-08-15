@@ -5,46 +5,127 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Manage Lecture | A+</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ink: #10213f;
+            --ink-soft: #56698c;
+            --ink-faint: #94a3c4;
+            --paper: #f7f9ff;
+            --paper-alt: #eef3fc;
+            --blue: #2563eb;
+            --blue-deep: #14306b;
+            --blue-mid: #1d4ed8;
+            --line: #c9d9f5;
+            --border: #dbe7ff;
+            --paper-line: rgba(37, 99, 235, 0.08);
+            --card: #ffffff;
+            --red: #2563eb;
+            --red-soft: #dbeafe;
+            --green: #2563eb;
+            --green-soft: #dbeafe;
+            --gold: #1d4ed8;
+            --gold-soft: #bfdbfe;
+            --ring: rgba(37, 99, 235, 0.35);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 7px;
+            --font-display: 'Fraunces', serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
         * {
             box-sizing: border-box;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-body);
         }
 
         body {
             margin: 0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
-            color: #19324a;
+            background: var(--paper);
+            background-image: repeating-linear-gradient(to bottom,
+                    transparent 0,
+                    transparent 27px,
+                    var(--paper-line) 27px,
+                    var(--paper-line) 28px);
+            color: var(--ink);
         }
 
+        a {
+            color: inherit;
+        }
+
+        button {
+            font-family: var(--font-body);
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid var(--green);
+            outline-offset: 2px;
+        }
+
+        /* ---------- Nav ---------- */
         nav {
-            padding: 18px 20px;
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid rgba(44, 117, 169, 0.08);
+            padding: 16px 24px;
+            background: rgba(255, 253, 248, 0.92);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(6px);
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
         .nav-container {
-            max-width: 1100px;
+            max-width: 1180px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 16px;
         }
 
         .nav-brand {
-            font-weight: 800;
-            color: #2f8dcc;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid var(--blue);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--blue);
             text-decoration: none;
-            font-size: 1.2rem;
+            flex-shrink: 0;
+            transform: rotate(-4deg);
         }
 
+        .nav-back {
+            text-decoration: none;
+            color: var(--blue);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.15s ease;
+        }
+
+        .nav-back:hover {
+            color: var(--blue-mid);
+        }
+
+        /* ---------- Page ---------- */
         .page {
-            max-width: 1100px;
-            margin: 28px auto;
-            padding: 0 20px 64px;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
         }
 
+        /* ---------- Header ---------- */
         .lecture-header {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -53,63 +134,46 @@
             align-items: center;
         }
 
-        .lecture-card {
-            background: rgba(255, 255, 255, 0.96);
-            border: 1px solid rgba(44, 117, 169, 0.12);
-            border-radius: 16px;
-            padding: 22px;
-            box-shadow: 0 16px 40px rgba(43, 95, 130, 0.08);
-        }
-
-        .lecture-card h1 {
-            margin: 0 0 10px;
+        .lecture-header h1 {
+            font-family: var(--font-display);
             font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0 0 8px;
         }
 
-        .lecture-meta {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(120px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .meta-item {
-            background: #f7fbff;
-            border: 1px solid rgba(44, 117, 169, 0.1);
-            border-radius: 12px;
-            padding: 12px;
-            color: #275272;
+        .lecture-header p {
+            margin: 0;
+            color: var(--ink-soft);
             font-size: 0.95rem;
         }
 
-        .video-container {
-            margin-top: 20px;
-            background: #f8fbff;
-            border: 1px solid rgba(44, 117, 169, 0.1);
-            border-radius: 16px;
-            padding: 14px;
-        }
-
-        .video-label {
-            margin-bottom: 10px;
-            color: #285e8d;
+        .lecture-id-badge {
+            display: inline-flex;
+            padding: 10px 16px;
+            border-radius: var(--radius-lg);
+            background: var(--paper-alt);
+            color: var(--blue);
             font-weight: 700;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
 
-        .video-frame {
-            width: 100%;
-            min-height: 280px;
-            border: 0;
-            border-radius: 12px;
-            background: #000;
+        /* ---------- Panels ---------- */
+        .panel-block {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            box-shadow: 0 1px 0 rgba(27, 36, 48, 0.03);
         }
 
-        .video-empty {
-            color: #5b7488;
-            background: #f8fbff;
-            border: 1px dashed rgba(44, 117, 169, 0.25);
-            border-radius: 12px;
-            padding: 18px;
+        .panel-block h2 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 16px;
+            color: var(--ink);
         }
 
         .panels {
@@ -118,45 +182,89 @@
             gap: 22px;
         }
 
-        .panel {
-            background: rgba(255, 255, 255, 0.96);
-            border: 1px solid rgba(44, 117, 169, 0.12);
-            border-radius: 16px;
-            padding: 20px;
+        .video-container {
+            margin-bottom: 20px;
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px;
         }
 
-        .panel h2 {
-            margin: 0 0 14px;
-            font-size: 1.2rem;
-            color: #19324a;
+        .video-label {
+            margin-bottom: 10px;
+            color: var(--blue);
+            font-weight: 700;
+            font-size: 0.9rem;
         }
 
-        .panel form {
+        .video-frame {
+            width: 100%;
+            min-height: 280px;
+            border: 0;
+            border-radius: var(--radius-md);
+            background: #000;
+        }
+
+        .video-empty {
+            color: var(--ink-soft);
+            background: var(--paper);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            text-align: center;
+        }
+
+        .lecture-meta {
             display: grid;
-            gap: 14px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .meta-item {
+            background: var(--paper-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            color: var(--ink-soft);
+            font-size: 0.9rem;
+        }
+
+        .meta-item strong {
+            color: var(--ink);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        /* ---------- Forms ---------- */
+        .form-block {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .field {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
         }
 
         .field label {
-            font-size: 0.9rem;
-            color: #4b6579;
+            font-size: 0.8rem;
             font-weight: 600;
+            color: var(--ink-soft);
         }
 
         .field input,
         .field textarea,
         .field select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid rgba(44, 117, 169, 0.14);
-            border-radius: 12px;
-            font-size: 0.95rem;
-            color: #1d3145;
+            padding: 10px 11px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-size: 0.92rem;
+            font-family: var(--font-body);
+            background: var(--paper);
+            color: var(--ink);
         }
 
         .field textarea {
@@ -164,56 +272,87 @@
             resize: vertical;
         }
 
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            border-color: var(--green);
+            outline: none;
+        }
+
+        /* ---------- Buttons ---------- */
         .actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
+            margin-top: 4px;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 12px 16px;
-            border: 0;
-            border-radius: 12px;
+            gap: 6px;
+            padding: 10px 14px;
+            border: none;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-weight: 700;
-            transition: transform .12s ease, box-shadow .12s ease;
+            font-weight: 600;
+            font-size: 0.85rem;
+            font-family: var(--font-body);
+            transition: filter 0.15s ease, background 0.15s ease;
+            text-decoration: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
         }
 
         .btn.primary {
-            background: #2f8dcc;
+            background: var(--blue);
             color: #fff;
         }
 
+        .btn.primary:hover:not(:disabled) {
+            background: var(--blue-mid);
+        }
+
         .btn.secondary {
-            background: #f5f9ff;
-            color: #2f6c9d;
-            border: 1px solid rgba(47, 140, 204, 0.12);
+            background: var(--paper-alt);
+            color: var(--blue);
+            border: 1px solid var(--border);
         }
 
-        .btn:hover {
-            transform: translateY(-1px);
+        .btn.secondary:hover:not(:disabled) {
+            border-color: var(--blue);
+            background: #f0f5ff;
         }
 
+        /* ---------- Status Messages ---------- */
         .status {
             margin-top: 8px;
-            padding: 14px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.92);
-            border: 1px solid rgba(44, 117, 169, 0.1);
-            color: #27456b;
-            min-height: 48px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--paper);
+            border: 1px solid var(--border);
+            color: var(--ink-soft);
+            font-size: 0.85rem;
+            min-height: 20px;
         }
 
         .status.error {
-            background: #fff3f4;
-            border-color: rgba(192, 57, 75, 0.16);
+            background: rgba(215, 26, 33, 0.08);
+            border-color: rgba(215, 26, 33, 0.2);
             color: #a72a40;
         }
 
+        .status.success {
+            background: rgba(34, 197, 94, 0.08);
+            border-color: rgba(34, 197, 94, 0.2);
+            color: #166534;
+        }
+
+        /* ---------- Lists ---------- */
         .list {
             display: grid;
             gap: 12px;
@@ -221,35 +360,60 @@
 
         .list-item {
             padding: 14px 16px;
-            border-radius: 14px;
-            background: #f8fbff;
-            border: 1px solid rgba(44, 117, 169, 0.08);
+            border-radius: var(--radius-md);
+            background: var(--paper);
+            border: 1px solid var(--border);
         }
 
         .list-item h3 {
             margin: 0 0 8px;
             font-size: 1rem;
+            font-weight: 600;
+            color: var(--ink);
         }
 
         .list-item p {
             margin: 4px 0;
-            color: #4a6578;
-            font-size: 0.95rem;
+            color: var(--ink-soft);
+            font-size: 0.9rem;
         }
 
         .list-item a {
-            color: #2f8dcc;
+            color: var(--blue);
             text-decoration: none;
             font-weight: 700;
+            font-size: 0.9rem;
         }
 
+        .list-item a:hover {
+            text-decoration: underline;
+        }
+
+        .list-empty {
+            color: var(--ink-soft);
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            background: var(--paper);
+            border: 1px dashed var(--border);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* ---------- Question Cards ---------- */
         .question-card {
-            background: #f7fbff;
-            border: 1px solid rgba(47, 140, 204, 0.16);
-            border-radius: 14px;
+            background: var(--paper-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             padding: 16px;
             display: grid;
             gap: 12px;
+        }
+
+        .question-card h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--ink);
+            font-weight: 600;
         }
 
         .question-row {
@@ -270,33 +434,59 @@
             width: 100%;
         }
 
-        .question-card h3 {
-            margin: 0;
-            font-size: 1rem;
-            color: #1e3e60;
-        }
-
         .hidden {
             display: none !important;
         }
 
-        .list-empty {
-            color: #5b7488;
-            padding: 14px 16px;
-            border-radius: 14px;
-            background: #f6f8fb;
-        }
-
-        @media (max-width:980px) {
+        @media (max-width: 980px) {
             .panels {
                 grid-template-columns: 1fr;
             }
-        }
 
-        @media (max-width:660px) {
             .lecture-meta {
                 grid-template-columns: 1fr;
             }
+
+            .question-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ---------- Tabs ---------- */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 28px;
+        }
+
+        .tab {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            padding: 12px 6px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: var(--ink-faint);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.15s ease;
+        }
+
+        .tab:hover {
+            color: var(--ink-soft);
+        }
+
+        .tab.active {
+            color: var(--ink);
+            border-bottom-color: var(--blue);
+        }
+
+        .tab-panel[hidden] {
+            display: none;
         }
     </style>
 </head>
@@ -304,20 +494,20 @@
 <body>
     <nav>
         <div class="nav-container">
-            <a href="/" class="nav-brand">A+</a>
-            <a href="/teacher" style="text-decoration:none; color:#2f8dcc; font-weight:700">Back to dashboard</a>
+            <a href="/" class="nav-brand" aria-label="A+ home">A+</a>
+            <a href="/teacher" class="nav-back">← Back to dashboard</a>
         </div>
     </nav>
 
     <main class="page">
-        <section class="lecture-card">
+        <div class="panel-block">
             <div class="lecture-header">
                 <div>
                     <h1>{{ lecture.title or 'Lecture' }}</h1>
-                    <p style="margin:0; color:#4f6e86; font-size:1rem;">Manage homework, exams, and lecture material for this class.</p>
+                    <p>Manage homework, exams, and lecture material for this class.</p>
                 </div>
                 <div>
-                    <span style="display:inline-flex; padding:10px 16px; border-radius:14px; background:#eef6ff; color:#276cb5; font-weight:700;">Lecture ID: {{ lecture.id }}</span>
+                    <span class="lecture-id-badge">Lecture ID: {{ lecture.id }}</span>
                 </div>
             </div>
             <div class="video-container">
@@ -343,31 +533,90 @@
                     <div>{% if lecture.material_url %}<a href="{{ lecture.material_url }}" target="_blank" rel="noreferrer">Open current material</a>{% else %}No material uploaded yet.{% endif %}</div>
                 </div>
             </div>
+        </div>
+
+        <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="homeworks" role="tab" aria-selected="true">Homeworks</button>
+            <button class="tab" data-tab="exams" role="tab" aria-selected="false">Exams</button>
+            <button class="tab" data-tab="materials" role="tab" aria-selected="false">Materials</button>
+        </div>
+
+        <!-- ===================== HOMEWORKS ===================== -->
+        <section class="tab-panel" id="panel-homeworks" data-panel="homeworks">
+            <div class="panels">
+                <section class="panel-block">
+                    <h2>Add new homework</h2>
+                    <form id="homeworkForm" enctype="multipart/form-data" onsubmit="return false;">
+                        <div class="field">
+                            <label for="hwTitle">Homework title</label>
+                            <input id="hwTitle" name="title" type="text" required />
+                        </div>
+                        <div class="field">
+                            <label for="hwDueDate">Due date</label>
+                            <input id="hwDueDate" name="due_date" type="datetime-local" required />
+                        </div>
+                        <div class="field">
+                            <label for="hwFile">Homework file (image)</label>
+                            <input id="hwFile" name="homework" type="file" accept="image/*" required />
+                        </div>
+                        <div class="actions">
+                            <button id="submitHomework" class="btn primary" type="button">Upload homework</button>
+                        </div>
+                        <div id="homeworkStatus" class="status">Upload an image file and submit.</div>
+                    </form>
+                </section>
+
+                <section class="panel-block">
+                    <h2>Existing homeworks</h2>
+                    <div id="homeworksList" class="list">
+                        <div class="list-empty">Loading homeworks…</div>
+                    </div>
+                </section>
+            </div>
         </section>
 
-        <div class="panels">
-            <section class="panel">
-                <h2>Add new homework</h2>
-                <form id="homeworkForm" enctype="multipart/form-data" onsubmit="return false;">
-                    <div class="field">
-                        <label for="hwTitle">Homework title</label>
-                        <input id="hwTitle" name="title" type="text" required />
-                    </div>
-                    <div class="field">
-                        <label for="hwDueDate">Due date</label>
-                        <input id="hwDueDate" name="due_date" type="datetime-local" required />
-                    </div>
-                    <div class="field">
-                        <label for="hwFile">Homework file (image)</label>
-                        <input id="hwFile" name="homework" type="file" accept="image/*" required />
-                    </div>
-                    <div class="actions">
-                        <button id="submitHomework" class="btn primary" type="button">Upload homework</button>
-                    </div>
-                    <div id="homeworkStatus" class="status">Upload an image file and submit.</div>
-                </form>
+        <!-- ===================== EXAMS ===================== -->
+        <section class="tab-panel" id="panel-exams" data-panel="exams" hidden>
+            <div class="panels">
+                <section class="panel-block">
+                    <h2>Create new exam</h2>
+                    <form id="examForm" onsubmit="return false;">
+                        <div class="field">
+                            <label for="examTitle">Exam title</label>
+                            <input id="examTitle" name="title" type="text" required />
+                        </div>
+                        <div class="field">
+                            <label for="examStartDate">Start date</label>
+                            <input id="examStartDate" name="start_time" type="datetime-local" required />
+                        </div>
+                        <div class="field">
+                            <label for="examTime">Duration (hours)</label>
+                            <input id="examTime" name="time" type="number" min="1" step="1" value="1" required />
+                        </div>
+                        <div class="actions">
+                            <button id="addQuestion" class="btn secondary" type="button">Add question</button>
+                        </div>
+                        <div id="questionsContainer" class="list"></div>
+                        <div class="actions">
+                            <button id="submitExam" class="btn primary" type="button">Create exam</button>
+                        </div>
+                        <div id="examStatus" class="status">Enter exam data and submit.</div>
+                    </form>
+                </section>
 
-                <h2 style="margin-top:32px;">Upload lecture material</h2>
+                <section class="panel-block">
+                    <h2>Existing exams</h2>
+                    <div id="examsList" class="list">
+                        <div class="list-empty">Loading exams…</div>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ===================== MATERIALS ===================== -->
+        <section class="tab-panel" id="panel-materials" data-panel="materials" hidden>
+            <div class="panel-block">
+                <h2>Upload lecture material</h2>
                 <form id="materialForm" enctype="multipart/form-data" onsubmit="return false;">
                     <div class="field">
                         <label for="materialFile">Material file</label>
@@ -378,46 +627,29 @@
                     </div>
                     <div id="materialStatus" class="status">Upload a material file and submit.</div>
                 </form>
-
-                <h2 style="margin-top:32px;">Create new exam</h2>
-                <form id="examForm" onsubmit="return false;">
-                    <div class="field">
-                        <label for="examTitle">Exam title</label>
-                        <input id="examTitle" name="title" type="text" required />
-                    </div>
-                    <div class="field">
-                        <label for="examStartDate">Start date</label>
-                        <input id="examStartDate" name="start_time" type="datetime-local" required />
-                    </div>
-                    <div class="field">
-                        <label for="examTime">Duration (hours)</label>
-                        <input id="examTime" name="time" type="number" min="1" step="1" value="1" required />
-                    </div>
-                    <div class="actions">
-                        <button id="addQuestion" class="btn secondary" type="button">Add question</button>
-                    </div>
-                    <div id="questionsContainer" class="list"></div>
-                    <div class="actions">
-                        <button id="submitExam" class="btn primary" type="button">Create exam</button>
-                    </div>
-                    <div id="examStatus" class="status">Enter exam data and submit.</div>
-                </form>
-            </section>
-
-            <section class="panel">
-                <h2>Existing homeworks</h2>
-                <div id="homeworksList" class="list">
-                    <div class="list-empty">Loading homeworks…</div>
-                </div>
-                <h2 style="margin-top:28px;">Existing exams</h2>
-                <div id="examsList" class="list">
-                    <div class="list-empty">Loading exams…</div>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
     </main>
 
     <script>
+        // ---------- Tab switching ----------
+        const tabs = document.querySelectorAll('.tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.tab;
+                tabs.forEach(t => {
+                    t.classList.toggle('active', t === tab);
+                    t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+                });
+                panels.forEach(p => {
+                    p.hidden = p.dataset.panel !== target;
+                });
+            });
+        });
+
+        // ---------- Element refs ----------
         const lectureId = "{{ lecture.id }}";
         const homeworkForm = document.getElementById('homeworkForm');
         const materialForm = document.getElementById('materialForm');
@@ -435,7 +667,10 @@
 
         function setStatus(element, message, isError = false) {
             element.textContent = message;
-            element.classList.toggle('error', isError);
+            element.classList.remove('error', 'success');
+            if (isError) {
+                element.classList.add('error');
+            }
         }
 
         function createChoiceRow(questionIndex, choiceIndex, value = '') {

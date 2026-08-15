@@ -670,7 +670,15 @@
                     credentials: 'include',
                     body: formData
                 });
-                if (!res.ok) throw new Error('Unable to update cover');
+                if (!res.ok){
+                    if (res.status === 400) {
+                        throw new Error('Please choose a valid image image.');
+                    }
+                    else {
+                        throw new Error('Unable to update cover');
+                    }
+                    
+                }
                 const data = await res.json();
                 if (data && data.url) {
                     courseCoverImage.src = data.url;

@@ -195,7 +195,7 @@ def submit_homework(request: Request, id: int, hm: UploadFile = File(...), db: S
 
     if not is_valid_image(hm):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-    public_id = upload_file(hm)
+    public_id = upload_file(hm, "homeworks")
 
     new_submitted_hm = SubmittedHomework(
         homework_id = id,
@@ -369,7 +369,6 @@ def book_private(request: Request, db: Session = Depends(get_db)):
             "link": lec.link,
             "teacher_first_name": teacher.first_name,
             "teacher_last_name": teacher.last_name,
-            "teacher_phone_number": teacher.phone_number,
             "teacher_pfp_url": generate_url(teacher.pfp_public_id)
         }
         for lec, teacher in lec_teacher
