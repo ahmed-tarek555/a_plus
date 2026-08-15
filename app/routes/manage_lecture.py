@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFi
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from app.models.enrollments_model import Enrollment
 from app.models.submitted_homeworks import SubmittedHomework
 from app.models.submittted_exams import SubmittedExam
 from app.models.users_model import User
@@ -16,11 +15,10 @@ from app.models.homeworks_model import Homework
 from app.models.students_model import Student
 from app.models.lectures_model import Lecture
 from app.schemas.exam import ExamCreate
-from app.schemas.courses import UploadLecture
 from app.core.auth import validate_user
 from app.services.embedder import get_embedding
 from app.database import get_db
-from app.utils import is_valid_image, upload_file, generate_url, is_material_valid
+from app.utils import upload_file, generate_url, is_material_valid, delete_file
 from app.config import BASE_DIR
 from datetime import datetime, timedelta
 
@@ -122,7 +120,7 @@ def add_homework(request: Request, lecture_id: int, title: str = Form(...), due_
     if not lecture:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
-    if not is_valid_image(homework):
+    if not is_material_valid(homework):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
     public_id = upload_file(homework, "homeworks")
@@ -301,11 +299,13 @@ def add_material(request: Request, lecture_id: int, file: UploadFile = File(...)
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user, teacher = result
+    if not is_material_valid(file):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     lecture = db.query(Lecture).join(Course, Course.id == Lecture.course_id).filter(Lecture.id == lecture_id, Course.teacher_id == teacher.id).first()
     if not lecture:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    if not is_material_valid(file):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    if lecture.material_public_id is not None:
+        delete_file(lecture.material_public_id, "image")
     public_id = upload_file(file, "materials")
     try:
         lecture.material_public_id = public_id
@@ -314,4 +314,4 @@ def add_material(request: Request, lecture_id: int, file: UploadFile = File(...)
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    return {"success": True}
+    return {"material_url": generate_url(lecture.material_public_id)}

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import Session
 from app.models.packages_model import Package
 from app.models.users_model import User
@@ -38,9 +38,9 @@ def course_data(request: Request, id: int, db: Session = Depends(get_db)):
             "level": c.level,
             "subject": c.subject,
             "price": float(c.price),
+            "cover_url": generate_url(c.cover_public_id),
             "first_name": u.first_name,
             "last_name": u.last_name,
-            "phone_number": u.phone_number,
             "pfp_url": generate_url(u.pfp_public_id)
         }
         for c, u in resutl
@@ -53,6 +53,8 @@ def buy_package(request: Request, id: int, db: Session = Depends(get_db)):
 
     token = request.cookies.get("access_token")
     user_id, user_role = validate_user(token)
+    if user_role != "student":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     result = db.query(User, Student).join(Student, Student.user_id == User.id).filter(User.id == user_id).first()
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -74,6 +76,10 @@ def buy_package(request: Request, id: int, db: Session = Depends(get_db)):
             )
             db.add(enrollment)
         db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+
     except SQLAlchemyError:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

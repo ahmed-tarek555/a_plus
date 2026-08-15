@@ -4,42 +4,177 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ package.title if package else 'Package' }} - A+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --ink: #10213f;
+      --ink-soft: #56698c;
+      --paper: #f7f9ff;
+      --paper-alt: #eef3fc;
+      --blue: #2563eb;
+      --blue-deep: #14306b;
+      --blue-mid: #1d4ed8;
+      --line: #c9d9f5;
+      --border: #dbe7ff;
+
+      --font-display: "Fraunces", serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-family: var(--font-body);
     }
 
     body {
-      background: linear-gradient(180deg, #f8fbff 0%, #f3f7fb 100%);
-      color: #0f172a;
+      background: var(--paper);
+      color: var(--ink);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .page-shell {
-      max-width: 1120px;
+    a { color: inherit; }
+
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(247, 249, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-container {
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 40px 20px 60px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      gap: 24px;
     }
 
-    .back-link {
+    .nav-brand {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      color: #2563eb;
-      text-decoration: none;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      font-family: var(--font-display);
       font-weight: 700;
-      margin-bottom: 20px;
+      font-size: 1rem;
+      color: var(--blue);
+      text-decoration: none;
+      flex-shrink: 0;
+      transform: rotate(-4deg);
     }
 
-    .package-card {
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .nav-btn {
+      padding: 9px 16px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-btn-secondary { color: var(--blue); background: transparent; }
+    .nav-btn-secondary:hover { background: var(--paper-alt); }
+
+    .nav-btn-primary { background: var(--blue); color: #fff; }
+    .nav-btn-primary:hover { background: var(--blue-mid); }
+
+    .nav-btn-profile { background: var(--paper-alt); color: var(--blue-deep); }
+    .nav-btn-profile:hover { background: var(--border); }
+
+    .page-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 56px 24px 40px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 26px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header-text {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .section-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1.5px solid var(--blue);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--blue);
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.55rem;
+      color: var(--blue-deep);
+    }
+
+    .section-header small {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--ink-soft);
+      white-space: nowrap;
+    }
+
+    .package-hero {
       background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
-      border: 1px solid #dbe7ff;
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 24px 22px;
+      box-shadow: 0 18px 40px rgba(20, 48, 107, 0.08);
       margin-bottom: 28px;
     }
 
@@ -49,108 +184,178 @@
       align-items: flex-start;
       gap: 20px;
       flex-wrap: wrap;
+      margin-bottom: 16px;
     }
 
     .package-title {
-      font-size: 2rem;
-      font-weight: 800;
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--blue-deep);
+      line-height: 1.12;
       margin-bottom: 8px;
     }
 
+    .package-subtitle {
+      color: var(--ink-soft);
+      font-size: 1rem;
+    }
+
     .package-price {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: #2563eb;
-      background: #eff6ff;
-      padding: 10px 16px;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--blue-mid);
+      background: var(--paper-alt);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
       border-radius: 999px;
     }
 
     .buy-btn {
-      margin-top: 16px;
-      padding: 12px 20px;
       border: none;
       border-radius: 10px;
-      background: #2563eb;
-      color: white;
+      background: var(--blue);
+      color: #fff;
+      font-family: var(--font-body);
       font-weight: 700;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 0.96rem;
+      padding: 12px 18px;
+      transition: background 0.15s ease;
     }
 
-    .buy-btn:hover {
-      background: #1d4ed8;
+    .buy-btn:hover { background: var(--blue-mid); }
+    .buy-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .status-message {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      border: 1px solid transparent;
     }
 
-    .section-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      margin-bottom: 16px;
+    .status-message.visible {
+      display: block;
+    }
+
+    .status-message.success {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.25);
+      color: #166534;
+    }
+
+    .status-message.error {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.22);
+      color: #991b1b;
     }
 
     .courses-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      gap: 22px;
     }
 
     .course-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+      background-size: cover;
+      background-position: center;
+      background-color: var(--blue-deep);
+      border-radius: 16px;
+      padding: 22px;
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      min-height: 250px;
+      isolation: isolate;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      border: 1px solid var(--border);
+    }
+
+    .course-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(190deg, rgba(16, 33, 63, 0.15) 10%, rgba(16, 33, 63, 0.88) 100%);
+      z-index: 0;
     }
 
     .course-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.12);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 44px rgba(20, 48, 107, 0.22);
     }
 
-    .course-badge {
-      display: inline-block;
-      padding: 5px 10px;
-      background: #eff6ff;
-      color: #2563eb;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 700;
+    .course-card > * { position: relative; z-index: 1; }
+
+    .course-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .course-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-bottom: 10px;
-    }
-
-    .course-card h3 {
-      font-size: 1.05rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .course-meta {
-      color: #64748b;
-      font-size: 0.95rem;
-      margin-bottom: 6px;
+      letter-spacing: 0.06em;
+      color: #eaf1ff;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      padding: 4px 10px;
+      border-radius: 999px;
+      flex-shrink: 0;
     }
 
     .course-price {
-      font-size: 1rem;
-      font-weight: 800;
-      color: #2563eb;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: #ffffff;
+      font-size: 0.98rem;
+      white-space: nowrap;
+    }
+
+    .course-card h3 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.15rem;
+      line-height: 1.35;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .course-card p {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .course-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255,255,255,0.9);
     }
 
     .teacher-box {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid #e8eefc;
+      margin-top: auto;
+      padding-top: 20px;
     }
 
     .teacher-avatar {
@@ -158,105 +363,153 @@
       height: 48px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #2563eb;
-      background: #eff6ff;
+      border: 2px solid rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.08);
       flex-shrink: 0;
     }
 
     .teacher-name {
       font-weight: 700;
+      color: #ffffff;
+      line-height: 1.35;
     }
 
     .teacher-phone {
       font-size: 0.9rem;
-      color: #64748b;
+      color: rgba(255,255,255,0.82);
     }
 
     .empty-state {
-      padding: 24px;
+      padding: 40px 20px;
       border-radius: 16px;
-      background: #f8fbff;
-      color: #64748b;
-      border: 1px dashed #bfdbfe;
+      background: var(--paper-alt);
+      color: var(--ink-soft);
+      border: 1px dashed var(--border);
       text-align: center;
-      font-weight: 700;
+      font-weight: 600;
+      font-size: 0.92rem;
     }
 
     @media (max-width: 768px) {
       .page-shell {
-        padding: 24px 16px 40px;
+        padding: 40px 18px;
       }
 
-      .package-card {
-        padding: 22px;
+      .nav-container {
+        height: auto;
+        flex-wrap: wrap;
+        padding: 14px 18px;
+      }
+
+      .package-header {
+        flex-direction: column;
       }
 
       .package-title {
-        font-size: 1.6rem;
+        font-size: 1.7rem;
+      }
+
+      .courses-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page-shell">
-    <a href="/" class="back-link">← Back to home</a>
-
-    <section class="package-card">
-      <div class="package-header">
-        <div>
-          <h1 class="package-title">{{ package.title if package else 'Package' }}</h1>
-          <p>Explore the courses included in this package.</p>
-        </div>
-        <div class="package-price">EGP{{ "%.2f"|format(package.price if package and package.price is not none else 0) }}</div>
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-brand" aria-label="A+ home">A+</a>
+      <div class="nav-actions">
+        <a href="/" class="nav-btn nav-btn-secondary">Back to home</a>
       </div>
-      <button id="buy-package-btn" class="buy-btn" type="button" onclick="buyPackage()">Buy now</button>
+    </div>
+  </nav>
+
+  <div class="page-shell">
+    <section class="section">
+      <div class="section-header">
+        <div class="section-header-text">
+          <span class="section-mark">01</span>
+          <h2>{{ package.title if package else 'Package' }}</h2>
+        </div>
+        <small>Bundle details</small>
+      </div>
+
+      <div class="package-hero">
+        <div class="package-header">
+          <div>
+            <h1 class="package-title">{{ package.title if package else 'Package' }}</h1>
+            <p class="package-subtitle">Explore the courses included in this package.</p>
+          </div>
+          <div class="package-price">EGP{{ "%.2f"|format(package.price if package and package.price is not none else 0) }}</div>
+        </div>
+        <button id="buy-package-btn" class="buy-btn" type="button" onclick="buyPackage()">Buy now</button>
+        <div id="package-status" class="status-message" role="status" aria-live="polite"></div>
+      </div>
     </section>
 
-    <h2 class="section-title">Included courses</h2>
-
-    {% if courses %}
-      <div class="courses-grid">
-        {% for course in courses %}
-          <a href="/course/{{ course.id }}" class="course-card">
-            <span class="course-badge">{{ course.subject or 'Course' }}</span>
-            <h3>Stage: {{ course.stage or 'N/A' }}</h3>
-            <h3>Level: {{ course.level or 'N/A' }}</h3>
-            <div class="course-meta">
-              <p>Course ID: {{ course.id }}</p>
-            </div>
-            <div class="course-price">EGP{{ "%.2f"|format(course.price if course and course.price is not none else 0) }}</div>
-
-            <div class="teacher-box">
-              <img
-                class="teacher-avatar"
-                src="{{ course.pfp_url or 'https://ui-avatars.com/api/?name=' ~ (course.first_name ~ ' ' ~ course.last_name) ~ '&background=DBEAFE&color=2563EB' }}"
-                alt="{{ course.first_name or '' }} {{ course.last_name or '' }}"
-              />
-              <div>
-                <div class="teacher-name">{{ (course.first_name or '') ~ ' ' ~ (course.last_name or '') }}</div>
-                <div class="teacher-phone">{{ course.phone_number or 'No phone provided' }}</div>
-              </div>
-            </div>
-          </a>
-        {% endfor %}
+    <section class="section">
+      <div class="section-header">
+        <div class="section-header-text">
+          <span class="section-mark">02</span>
+          <h2>Included courses</h2>
+        </div>
+        <small>Learn more, save more</small>
       </div>
-    {% else %}
-      <div class="empty-state">No courses are included in this package yet.</div>
-    {% endif %}
+
+      {% if courses %}
+        <div class="courses-grid">
+          {% for course in courses %}
+            <a href="/course/{{ course.id }}" class="course-card" style="background-image: url('{{ course.cover_url }}');">
+              <div class="course-top">
+                <span class="course-tag">{{ course.subject or 'Course' }}</span>
+                <span class="course-price">EGP{{ "%.2f"|format(course.price if course and course.price is not none else 0) }}</span>
+              </div>
+              <p style="font-weight: 700;">Stage {{ course.stage or 'N/A' }} · Level {{ course.level or 'N/A' }}</p>
+              <div class="teacher-box" style="border-top: 1px solid rgba(255,255,255,0.18);">
+                <img
+                  class="teacher-avatar"
+                  src="{{ course.pfp_url or 'https://ui-avatars.com/api/?name=' ~ (course.first_name ~ ' ' ~ course.last_name) ~ '&background=DBEAFE&color=2563EB' }}"
+                  alt="{{ course.first_name or '' }} {{ course.last_name or '' }}"
+                />
+                <div>
+                  <div class="teacher-name">{{ (course.first_name or '') ~ ' ' ~ (course.last_name or '') }}</div>
+                </div>
+              </div>
+              <div class="course-meta" style="padding-top: 0; border-top: none;">
+                <span>#{{ course.id }}</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">No courses are included in this package yet.</div>
+      {% endif %}
+    </section>
   </div>
 
   <script>
+    const packageStatus = document.getElementById('package-status');
+
+    function showPackageStatus(type, message) {
+      if (!packageStatus) return;
+
+      packageStatus.textContent = message;
+      packageStatus.className = 'status-message visible ' + type;
+    }
+
     async function buyPackage() {
       const button = document.getElementById('buy-package-btn');
       const packageId = "{{ package.id if package else 0 }}";
 
       if (!packageId) {
-        alert('Package not found.');
+        showPackageStatus('error', 'Error: Package not found.');
         return;
       }
 
       button.disabled = true;
       button.textContent = 'Processing...';
+      showPackageStatus('error', '');
 
       try {
         const response = await fetch(`/package/buy/${packageId}`, {
@@ -270,12 +523,28 @@
         const data = await response.json().catch(() => ({}));
 
         if (response.ok && data.success) {
-          alert('Package purchased successfully!');
+          showPackageStatus('success', 'Package purchased successfully.');
+          return;
+        }
+
+        const detail = data?.detail || 'Unable to complete purchase.';
+        const statusCode = response.status || 0;
+
+        if (statusCode === 403) {
+          showPackageStatus('error', 'Only students can buy packages.');
+        } else if (statusCode === 404) {
+          showPackageStatus('error', 'Package or student not found.');
+        } else if (statusCode === 400) {
+          showPackageStatus('error', 'This package has no courses.');
+        } else if (statusCode === 500) {
+          showPackageStatus('error', 'Internal server error.');
+        } else if (statusCode === 409) {
+          showPackageStatus('error', 'This package contains a course you have already purchased.');
         } else {
-          alert(data.detail || 'Unable to complete purchase.');
+          showPackageStatus('error', `${detail}`);
         }
       } catch (error) {
-        alert('Something went wrong while processing the purchase.');
+        showPackageStatus('error', 'Error: Something went wrong while processing the purchase.');
       } finally {
         button.disabled = false;
         button.textContent = 'Buy now';

@@ -530,7 +530,7 @@
                     <div>EGP{{ "%.2f"|format(lecture.price or 0) }}</div>
                 </div>
                 <div class="meta-item"><strong>Material</strong>
-                    <div>{% if lecture.material_url %}<a href="{{ lecture.material_url }}" target="_blank" rel="noreferrer">Open current material</a>{% else %}No material uploaded yet.{% endif %}</div>
+                    <div>{% if lecture.material_url %}<a href="{{ lecture.material_url }}" target="_blank" rel="noreferrer">View</a>{% else %}No material uploaded yet.{% endif %}</div>
                 </div>
             </div>
         </div>
@@ -556,8 +556,8 @@
                             <input id="hwDueDate" name="due_date" type="datetime-local" required />
                         </div>
                         <div class="field">
-                            <label for="hwFile">Homework file (image)</label>
-                            <input id="hwFile" name="homework" type="file" accept="image/*" required />
+                            <label for="hwFile">Homework file (image or pdf, max size 5MB)</label>
+                            <input id="hwFile" name="homework" type="file" required />
                         </div>
                         <div class="actions">
                             <button id="submitHomework" class="btn primary" type="button">Upload homework</button>
@@ -986,13 +986,11 @@
                     credentials: 'include',
                     body: formData
                 });
-                if (!res.ok) throw new Error('Unable to upload material');
-                const data = await res.json();
-                if (data.success) {
+                if (!res.ok){
+                    throw new Error('Unable to upload material');
+                }else {
                     setStatus(materialStatus, 'Material uploaded.');
                     materialForm.reset();
-                } else {
-                    throw new Error('Upload failed');
                 }
             } catch (err) {
                 setStatus(materialStatus, err.message || 'Upload failed', true);

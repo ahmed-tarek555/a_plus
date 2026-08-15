@@ -22,7 +22,7 @@ from app.schemas.exam import ExamSubmit
 from app.config import BASE_DIR
 from datetime import datetime, timezone
 from app.services.embedder import get_embedding, cosine_similarity
-from app.utils import generate_url, is_valid_image, upload_file
+from app.utils import generate_url, upload_file, is_material_valid
 
 router = APIRouter(prefix="/student")
 
@@ -193,7 +193,7 @@ def submit_homework(request: Request, id: int, hm: UploadFile = File(...), db: S
     if homework.due_date < datetime.now(timezone.utc):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    if not is_valid_image(hm):
+    if not is_material_valid(hm):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     public_id = upload_file(hm, "homeworks")
 

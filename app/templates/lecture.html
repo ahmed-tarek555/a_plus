@@ -4,42 +4,173 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ material.title or 'Lecture' }} | A+</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ink: #10213f;
+            --ink-soft: #56698c;
+            --paper: #f7f9ff;
+            --paper-alt: #eef3fc;
+            --blue: #2563eb;
+            --blue-deep: #14306b;
+            --blue-mid: #1d4ed8;
+            --line: #c9d9f5;
+            --border: #dbe7ff;
+            --paper-line: rgba(37, 99, 235, 0.08);
+            --card: #ffffff;
+            --font-display: "Fraunces", serif;
+            --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: "IBM Plex Mono", monospace;
+        }
+
         * {
             box-sizing: border-box;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             margin: 0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f8fbfd, #eef6fc 45%, #dceefa 100%);
-            color: #19324a;
+            font-family: var(--font-body);
+            background-color: var(--paper);
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0,
+                transparent 27px,
+                var(--paper-line) 27px,
+                var(--paper-line) 28px
+            );
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--blue);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+
+        /* ---------- nav ---------- */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(247, 249, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            height: 68px;
+        }
+
+        .nav-brand {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid var(--blue);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--blue);
+            text-decoration: none;
+            flex-shrink: 0;
+            transform: rotate(-4deg);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 9px 16px;
+            border: none;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .nav-btn-secondary {
+            color: var(--blue);
+            background: transparent;
+        }
+
+        .nav-btn-secondary:hover {
+            background: var(--paper-alt);
+        }
+
+        .nav-btn-primary {
+            background: var(--blue);
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+        }
+
+        .nav-btn-primary:hover {
+            background: var(--blue-mid);
         }
 
         .page {
-            max-width: 1080px;
-            margin: 32px auto;
-            padding: 0 20px 48px;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 48px 20px 64px;
         }
 
         .card {
             background: rgba(255, 255, 255, 0.96);
-            border: 1px solid rgba(44, 117, 169, 0.12);
-            border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 16px 40px rgba(43, 95, 130, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px 28px 24px;
+            box-shadow: 0 20px 50px rgba(20, 48, 107, 0.08);
         }
 
         .title {
             margin: 0 0 12px;
-            font-size: 1.6rem;
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 3vw, 2.7rem);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: var(--blue-deep);
         }
 
         .subtitle {
-            margin: 0 0 20px;
-            color: #4b6579;
-            line-height: 1.6;
+            margin: 0 0 22px;
+            color: var(--ink-soft);
+            line-height: 1.65;
+            font-size: 1rem;
         }
 
         /* ---- Custom video player ---- */
@@ -49,9 +180,11 @@
             aspect-ratio: 16 / 9;
             border-radius: 16px;
             background: #0f172a;
-            margin-bottom: 20px;
+            margin-bottom: 22px;
             overflow: hidden;
             user-select: none;
+            border: 1px solid rgba(16, 33, 63, 0.08);
+            box-shadow: 0 16px 40px rgba(20, 48, 107, 0.12);
         }
 
         .player-wrap iframe {
@@ -61,13 +194,9 @@
             width: 100%;
             height: 100%;
             border: 0;
-            pointer-events: none; /* all interaction goes through our overlay, not the raw iframe */
+            pointer-events: none;
         }
 
-        /* Transparent layer sitting on top of the iframe.
-           This is what actually receives clicks/right-clicks, so the
-           iframe's own right-click menu (which can show a YouTube link)
-           never gets a chance to appear. */
         .player-overlay {
             position: absolute;
             inset: 0;
@@ -138,17 +267,18 @@
         /* ---- end custom video player ---- */
 
         .section {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(44, 117, 169, 0.12);
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
         }
 
         .section h2 {
             margin: 0 0 12px;
-            font-size: 1rem;
+            font-size: 0.78rem;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #294e6b;
+            letter-spacing: 0.12em;
+            color: var(--blue-deep);
+            font-weight: 700;
         }
 
         .item-list {
@@ -157,20 +287,22 @@
         }
 
         .item-card {
-            padding: 14px 16px;
+            padding: 16px 18px;
             border-radius: 14px;
             background: #f8fbff;
-            border: 1px solid rgba(44, 117, 169, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.12);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
         }
 
         .item-card h3 {
             margin: 0 0 6px;
-            font-size: 1rem;
+            font-size: 1.02rem;
+            color: var(--ink);
         }
 
         .item-card p {
             margin: 0 0 8px;
-            color: #4b6579;
+            color: var(--ink-soft);
             font-size: 0.92rem;
         }
 
@@ -179,20 +311,39 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 8px 12px;
+            padding: 9px 14px;
             border-radius: 10px;
-            background: #eff6ff;
-            color: #1d4ed8;
+            background: var(--paper-alt);
+            color: var(--blue);
             text-decoration: none;
             font-weight: 700;
-            border: none;
+            border: 1px solid rgba(37, 99, 235, 0.12);
             cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+
+        .action-link:hover,
+        .submit-button:hover:not([disabled]) {
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        .submit-button {
+            background: var(--blue);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
+        }
+
+        .submit-button:hover:not([disabled]) {
+            background: var(--blue-mid);
         }
 
         .submit-button[disabled] {
             background: #d1d5db;
             color: #6b7280;
+            border-color: transparent;
             cursor: default;
+            box-shadow: none;
         }
 
         .homework-actions,
@@ -205,18 +356,28 @@
 
         .exam-mark {
             margin: 0;
-            color: #0f766e;
+            color: var(--blue-deep);
             font-weight: 700;
         }
 
         .empty-state {
-            color: #5b7488;
-            background: #f8fbff;
+            color: var(--ink-soft);
+            background: var(--paper-alt);
             border-style: dashed;
         }
     </style>
 </head>
 <body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="nav-brand" aria-label="A+ home">A+</a>
+            <div class="nav-actions">
+                <a class="nav-btn nav-btn-secondary" href="/">Home</a>
+                <a class="nav-btn nav-btn-primary" href="/profile">My profile</a>
+            </div>
+        </div>
+    </nav>
+
     <main class="page">
         <section class="card">
             <h1 class="title">{{ material.title or 'Lecture' }}</h1>
