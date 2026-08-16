@@ -12,6 +12,7 @@ from app.models.packages_model import Package
 from app.models.permissions_model import Permission
 from app.models.package_items import PackageItem
 from app.models.private_lectures import PrivateLecture
+from app.models.lectures_model import Lecture
 from app.schemas.package import PackageCreate
 from app.schemas.students import SearchStudents, EditLevel
 from app.schemas.user import ModeratorCreate, EditUser
@@ -572,3 +573,37 @@ def create_booking(request: Request, teacher_id: int, payload: ManualBook, db: S
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return {"success": True}
+
+@router.get("/course_details/{course_id}")
+def create_booking(request: Request, course_id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    course = db.query(Course).filter(Course.id == course_id).first()
+    if not course:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    course_info = {
+        "id": course.id,
+        "stage": course.stage,
+        "price": course.price,
+        "level": course.level,
+        "subject": course.subject,
+    }
+    lectures = db.query(Lecture).filter(Lecture.course_id == course_id).all()
+
+    course_lectures = [
+        {
+            "id": l.id,
+            "title": l.title,
+            "price": l.price,
+        }
+        for l in lectures
+    ]
+    return templates.TemplateResponse("course_details.html", {"request": request, "course_info": course_info, "lectures": course_lectures})

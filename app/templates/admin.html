@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>FireBeat - Admin</title>
+	<title>APLUS - {{ role }}</title>
 	<style>
 		* {
 			box-sizing: border-box;
@@ -176,6 +176,7 @@
 			background: linear-gradient(145deg, #ffffff 0%, #f7fbff 58%, #eef6fc 100%);
 			box-shadow: 0 10px 28px rgba(43, 95, 130, 0.08);
 			overflow: hidden;
+			cursor: pointer;
 			transition: transform 0.2s ease, box-shadow 0.2s ease;
 		}
 
@@ -943,7 +944,6 @@
 				<div>
 					<p class="eyebrow">Administration</p>
 					<h1>{{ role }} dashboard</h1>
-					<p>Manage platform activity from a single control center.</p>
 				</div>
 				<a class="logout-button" href="/logout">Logout</a>
 			</header>
@@ -1357,7 +1357,7 @@
 		const currentRole = "{{ role | default('admin') }}";
 		const basePath = currentRole === "admin" ? "/admin" : "/mod";
 		let currentMode = "students";
-		let currentView = "overview";
+		let currentView = "pending";
 		let allTeachers = [];
 		let allStudents = [];
 		let currentCourses = [];
@@ -1964,7 +1964,15 @@
 				return card;
 			}
 
-			card.append(cardTop, cardBottom);
+			const link = document.createElement("a");
+			link.href = `${basePath}/course_details/${course.id}`;
+			link.setAttribute("aria-label", `View details for ${course.subject || "course"}`);
+			link.style.display = "block";
+			link.style.textDecoration = "none";
+			link.style.color = "inherit";
+			link.appendChild(cardTop);
+			link.appendChild(cardBottom);
+			card.appendChild(link);
 			return card;
 		}
 
@@ -2751,8 +2759,7 @@
 				closeBookingModal();
 			}
 		});
-		setView("overview");
-		setMode("students");
+		setView("pending");
 	</script>
 </body>
 
