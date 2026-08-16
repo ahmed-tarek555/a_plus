@@ -6,4 +6,4 @@ class Choice(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     question_id = Column(Integer, ForeignKey("questions.id", ondelete="CASCADE"), nullable=False)
-    text = Column(String, nullable=False)
+    text = Column(String(30), nullable=False)

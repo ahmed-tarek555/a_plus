@@ -6,7 +6,7 @@ class Lecture(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
-    title = Column(String, nullable=False)
+    title = Column(String(20), nullable=False)
     price = Column(Integer, nullable=False)
     video_id = Column(String, nullable=False)
     material_public_id = Column(String, nullable=True)

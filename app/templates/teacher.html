@@ -667,8 +667,10 @@
 							</select>
 						</div>
 						<div class="field">
-							<label for="level">Level (numeric)</label>
-							<input id="level" name="level" type="number" min="1" required />
+							<label for="level">Level</label>
+							<select id="level" name="level" required>
+								<option value="">Select a level</option>
+							</select>
 						</div>
 						<div class="field">
 							<label for="courseCoverImage">Cover image</label>
@@ -783,8 +785,33 @@
 		const packageStatus = document.getElementById('packageStatus');
 		const selectedCoursesEl = document.getElementById('selectedCourses');
 
+		const stageSelect = document.getElementById('stage');
+		const levelSelect = document.getElementById('level');
+
+		const levelOptions = {
+			'الثانوية': [1, 2, 3],
+			'الاعدادية': [1, 2, 3],
+			'الابتدائية': [1, 2, 3, 4, 5, 6]
+		};
+
 		let currentCourses = [];
 		let selectedPackageCourseIds = new Set();
+
+		function updateLevelOptions() {
+			const selectedStage = stageSelect.value;
+			levelSelect.innerHTML = '<option value="">Select a level</option>';
+			
+			if (selectedStage && levelOptions[selectedStage]) {
+				levelOptions[selectedStage].forEach(level => {
+					const option = document.createElement('option');
+					option.value = level;
+					option.textContent = level;
+					levelSelect.appendChild(option);
+				});
+			}
+		}
+
+		stageSelect.addEventListener('change', updateLevelOptions);
 
 		// ---------- helpers ----------
 		function setStatus(el, text, kind) {
@@ -890,7 +917,7 @@
 			const subject = document.getElementById('subject').value.trim();
 			const price = document.getElementById('price').value;
 			const stage = document.getElementById('stage').value;
-			const level = document.getElementById('level').value.trim();
+			const level = document.getElementById('level').value;
 			const coverInput = document.getElementById('courseCoverImage');
 			const coverImage = coverInput.files && coverInput.files[0];
 
@@ -911,7 +938,7 @@
 				formData.append('subject', subject);
 				formData.append('price', Number(price).toString());
 				formData.append('stage', stage);
-				formData.append('level', level);
+				formData.append('level', Number(level));
 				formData.append('cover_image', coverImage);
 
 				const res = await fetch('/teacher/add_course', { method: 'POST', credentials: 'include', body: formData });

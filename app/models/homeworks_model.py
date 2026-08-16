@@ -6,6 +6,6 @@ class Homework(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     lecture_id = Column(Integer, ForeignKey("lectures.id", ondelete="CASCADE"), nullable=False)
-    title = Column(String, nullable=False)
+    title = Column(String(20), nullable=False)
     due_date = Column(DateTime(timezone=True), nullable=False)
     public_id = Column(String, nullable=False)

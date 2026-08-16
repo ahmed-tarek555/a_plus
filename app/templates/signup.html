@@ -120,10 +120,28 @@
       color: #8095a7;
     }
 
-    input:focus {
+    input:focus,
+    select:focus {
       border-color: rgba(36, 121, 184, 0.72);
       background: #fff;
       box-shadow: 0 0 12px rgba(36, 121, 184, 0.14);
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid rgba(44, 117, 169, 0.22);
+      border-radius: 10px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.86);
+      color: #19324a;
+      font-size: 0.95rem;
+      transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer;
+    }
+
+    select option {
+      color: #19324a;
     }
 
     .role-section {
@@ -339,12 +357,19 @@
 
             <div id="studentFields" class="conditional-fields">
               <div class="form-group">
-                <label for="level">Level</label>
-                <input type="number" id="level" name="level" min="1" step="1" placeholder="e.g. 3" />
+                <label for="stage">Stage</label>
+                <select id="stage" name="stage" required>
+                  <option value="">Select a stage</option>
+                  <option value="الثانوية">الثانوية</option>
+                  <option value="الاعدادية">الاعدادية</option>
+                  <option value="الابتدائية">الابتدائية</option>
+                </select>
               </div>
               <div class="form-group">
-                <label for="stage">Stage</label>
-                <input type="text" id="stage" name="stage" placeholder="e.g. High School" />
+                <label for="level">Level</label>
+                <select id="level" name="level" required>
+                  <option value="">Select a level</option>
+                </select>
               </div>
               <div class="form-group">
                 <label for="parentName">Parent name</label>
@@ -371,11 +396,33 @@
   <script>
     const signupForm = document.getElementById("signupForm");
     const studentFields = document.getElementById("studentFields");
-    const level = document.getElementById("level");
-    const stage = document.getElementById("stage");
+    const levelSelect = document.getElementById("level");
+    const stageSelect = document.getElementById("stage");
     const parentName = document.getElementById("parentName");
     const parentPhoneNumber = document.getElementById("parentPhoneNumber");
     const message = document.getElementById("message");
+
+    const levelOptions = {
+      "الثانوية": [1, 2, 3],
+      "الاعدادية": [1, 2, 3],
+      "الابتدائية": [1, 2, 3, 4, 5, 6]
+    };
+
+    function updateLevelOptions() {
+      const selectedStage = stageSelect.value;
+      levelSelect.innerHTML = '<option value="">Select a level</option>';
+      
+      if (selectedStage && levelOptions[selectedStage]) {
+        levelOptions[selectedStage].forEach(level => {
+          const option = document.createElement("option");
+          option.value = level;
+          option.textContent = level;
+          levelSelect.appendChild(option);
+        });
+      }
+    }
+
+    stageSelect.addEventListener("change", updateLevelOptions);
 
     function updateRoleFields() {
       const role = document.querySelector('input[name="role"]:checked')?.value;
@@ -383,10 +430,10 @@
       const isTeacher = role === "teacher";
 
       studentFields.classList.toggle("visible", isStudent);
-      level.required = isStudent;
+      levelSelect.required = isStudent;
       parentName.required = isStudent;
       parentPhoneNumber.required = isStudent;
-      stage.required = isStudent;
+      stageSelect.required = isStudent;
     }
 
     document.querySelectorAll('input[name="role"]').forEach((roleInput) => {

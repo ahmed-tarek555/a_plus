@@ -244,7 +244,9 @@ def submit_exam(request: Request, id: int, payload: ExamSubmit, db: Session = De
         if question.is_choices:
             if answers[question.id] == question.correct_choice:
                 total_mark += question.mark
-                answers_data.append({"question_id": question.id, "mark": question.mark})
+                answers_data.append({"question_id": question.id, "mark": question.mark, "correct_answer": question.correct_choice})
+            else:
+                answers_data.append({"question_id": question.id, "mark": 0, "correct_answer": question.correct_choice})
         else:
             similarity = cosine_similarity(get_embedding(answers[question.id]), question.answer_embedding)
             if similarity > 0.8:
@@ -253,7 +255,7 @@ def submit_exam(request: Request, id: int, payload: ExamSubmit, db: Session = De
             else:
                 mark = int(round(question.mark * similarity))
                 total_mark += mark
-            answers_data.append({"question_id": question.id, "mark": mark})
+            answers_data.append({"question_id": question.id, "mark": mark, "correct_answer": question.model_answer})
 
     new_submitted_exam = SubmittedExam(
         exam_id=id,
