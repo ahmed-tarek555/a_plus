@@ -46,8 +46,9 @@ async def signup(usercreate: UserCreate,
     if usercreate.stage is not None and usercreate.stage not in ("الثانوية", "الاعدادية", "الابتدائية"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid stage")
 
-    if usercreate.level > 3 and usercreate.stage != "الابتدائية":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid stage")
+    if usercreate.role == "student":
+        if usercreate.level > 3 and usercreate.stage != "الابتدائية":
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid stage")
 
 
     new_user = User(

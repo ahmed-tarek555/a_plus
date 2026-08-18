@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A+ — Student Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #10213f;
+      --ink-soft: #56698c;
+      --paper: #f7f9ff;
+      --paper-alt: #eef3fc;
+      --blue: #2563eb;
+      --blue-deep: #14306b;
+      --blue-mid: #1d4ed8;
+      --line: #c9d9f5;
+      --border: #dbe7ff;
+
+      --font-display: "Fraunces", serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(247, 249, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      gap: 24px;
+    }
+
+    .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--blue);
+      text-decoration: none;
+      flex-shrink: 0;
+      transform: rotate(-4deg);
+    }
+
+    .nav-search {
+      flex: 1;
+      max-width: 420px;
+    }
+
+    .nav-search input {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .nav-search input::placeholder { color: #94a3c4; }
+
+    .nav-search input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 9px 16px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-btn-secondary { color: var(--blue); background: transparent; }
+    .nav-btn-secondary:hover { background: var(--paper-alt); }
+
+    .nav-btn-primary { background: var(--blue); color: #fff; }
+    .nav-btn-primary:hover { background: var(--blue-mid); }
+
+    .nav-btn-profile { background: var(--paper-alt); color: var(--blue-deep); }
+    .nav-btn-profile:hover { background: var(--border); }
+
+    @media (max-width: 860px) {
+      .nav-container { height: auto; flex-wrap: wrap; padding: 14px 18px; }
+      .nav-search { order: 3; max-width: none; min-width: 100%; margin-top: 4px; }
+      .nav-actions { order: 2; flex-wrap: wrap; }
+    }
+
+    .page-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 56px 24px 40px;
+    }
+
+    .student-hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 52px;
+    }
+
+    .student-summary,
+    .student-detail-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 14px 28px rgba(20, 48, 107, 0.06);
+    }
+
+    .student-summary {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 30px;
+    }
+
+    .student-avatar {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      border: 3px solid var(--blue);
+      border-radius: 50%;
+      background: var(--paper-alt);
+      flex-shrink: 0;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue-mid);
+      margin-bottom: 14px;
+    }
+
+    .hero-eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .student-summary h1 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      color: var(--blue-deep);
+      margin-bottom: 8px;
+    }
+
+    .student-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .student-meta span {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--paper-alt);
+      border: 1px solid var(--border);
+      color: var(--blue-mid);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .student-detail-card {
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .student-detail-card h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--blue-deep);
+      margin-bottom: 16px;
+    }
+
+    .student-detail-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 18px;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-height: 64px;
+    }
+
+    .detail-item span {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--ink-soft);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .detail-item strong {
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .section { margin-bottom: 60px; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 26px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header-text {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .section-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1.5px solid var(--blue);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--blue);
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.55rem;
+      color: var(--blue-deep);
+    }
+
+    .section-header small {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--ink-soft);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 700px) {
+      .section-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    .course-card {
+      background-size: cover;
+      background-position: center;
+      background-color: var(--blue-deep);
+      border-radius: 16px;
+      padding: 22px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      min-height: 250px;
+      isolation: isolate;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      border: 1px solid var(--border);
+    }
+
+    .course-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(190deg, rgba(16, 33, 63, 0.15) 10%, rgba(16, 33, 63, 0.88) 100%);
+      z-index: 0;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 44px rgba(20, 48, 107, 0.22);
+    }
+
+    .course-card > * { position: relative; z-index: 1; }
+
+    .course-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .course-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--blue-mid);
+      background: var(--paper-alt);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .course-card .course-tag {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #eaf1ff;
+    }
+
+    .course-price {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--blue-mid);
+      font-size: 0.98rem;
+      white-space: nowrap;
+    }
+
+    .course-card .course-price { color: #ffffff; }
+
+    .course-card h3 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.15rem;
+      line-height: 1.35;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .course-card p {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .course-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .private-lectures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
+    }
+
+    .private-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .private-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(20, 48, 107, 0.1);
+      border-color: #b7cdfa;
+    }
+
+    .private-teacher {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .private-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--blue);
+      background: var(--paper-alt);
+      flex-shrink: 0;
+    }
+
+    .private-card h3 {
+      font-size: 1.08rem;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .private-card p {
+      color: var(--ink-soft);
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      border-radius: 16px;
+      background: var(--paper-alt);
+      color: var(--ink-soft);
+      border: 1px dashed var(--border);
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 768px) {
+      .page-shell { padding: 40px 18px; }
+      .student-hero { grid-template-columns: 1fr; }
+      .student-summary { flex-direction: column; align-items: flex-start; }
+      .student-detail-list { grid-template-columns: 1fr; }
+      .courses-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-shell">
+    <section class="student-hero">
+      <div class="student-summary">
+        <div>
+          <div class="hero-eyebrow">Student profile</div>
+          <h1>{{ student_info.first_name or 'Student' }} {{ student_info.last_name or '' }}</h1>
+          <div class="student-meta">
+            <span>Stage {{ student_info.stage or 'N/A' }}</span>
+            <span>Level {{ student_info.level or 'N/A' }}</span>
+            <span>Joined {{ student_info.date_joined.strftime('%Y') if student_info.date_joined else 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="student-detail-card">
+        <h2>Details</h2>
+        <div class="student-detail-list">
+          <div class="detail-item">
+            <span>Student ID</span>
+            <strong>#{{ student_info.id }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Phone</span>
+            <strong>{{ student_info.phone_number or 'Not provided' }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Parent name</span>
+            <strong>{{ student_info.parent_name or 'Not provided' }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Parent phone</span>
+            <strong>{{ student_info.parent_phone_number or 'Not provided' }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Stage</span>
+            <strong>{{ student_info.stage or 'N/A' }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Level</span>
+            <strong>{{ student_info.level or 'N/A' }}</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div class="section-header-text">
+          <span class="section-mark">01</span>
+          <h2>Enrolled courses</h2>
+        </div>
+        <small>{{ student_courses|length }} courses</small>
+      </div>
+
+      {% if student_courses %}
+      <div class="courses-grid">
+        {% for course in student_courses %}
+        <a href="/course/{{ course.id }}" class="course-card" {% if course.cover_url %}style="background-image: url('{{ course.cover_url }}')"{% endif %}>
+          <div class="course-top">
+            <span class="course-tag">{{ course.subject or 'General' }}</span>
+            <span class="course-price">EGP {{ '%.2f'|format(course.price|default(0)) if course.price is defined else '0.00' }}</span>
+          </div>
+          <p style="color: rgba(255,255,255,0.85); font-weight: 700;">Stage {{ course.stage or 'N/A' }} · Level {{ course.level or 'N/A' }}</p>
+          <p style="color: rgba(255,255,255,0.85);">Taught by {{ course.teacher_first_name or '' }} {{ course.teacher_last_name or '' }}</p>
+          <div class="course-meta" style="color: rgba(255,255,255,0.9);">
+            <span>#{{ course.id }}</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">This student is not enrolled in any courses yet.</div>
+      {% endif %}
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div class="section-header-text">
+          <span class="section-mark">02</span>
+          <h2>Attended lectures</h2>
+        </div>
+        <small>{{ attended_lectures|length }} lectures</small>
+      </div>
+
+      {% if attended_lectures %}
+      <div class="private-lectures-grid">
+        {% for lecture in attended_lectures %}
+        {% set lecture_cover_style = "background-image: url('" ~ lecture.cover_url ~ "');" if lecture.cover_url else "" %}
+        <div class="course-card" {% if lecture.cover_url %}style="{{ lecture_cover_style }}"{% endif %}>
+          <div class="course-top">
+            <span class="course-tag">{{ lecture.subject or 'General' }}</span>
+            <span class="course-price">{{ lecture.stage or 'N/A' }}</span>
+          </div>
+          <p style="color: rgba(255,255,255,0.85); font-weight: 700;">Stage {{ lecture.stage or 'N/A' }} · Level {{ lecture.level or 'N/A' }}</p>
+          <h3>{{ lecture.title or 'Lecture' }}</h3>
+          <div class="course-meta" style="color: rgba(255,255,255,0.9);">
+            <span>Level {{ lecture.level or 'N/A' }}</span>
+            <span>#{{ lecture.id }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">No lectures attended by this student yet.</div>
+      {% endif %}
+    </section>
+  </div>
+</body>
+
+</html>

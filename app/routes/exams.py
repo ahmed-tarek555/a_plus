@@ -1,15 +1,9 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.models.questions_model import Question
-from app.models.users_model import User
-from app.models.teachers_model import Teacher
-from app.models.courses_model import Course
 from app.models.exams_model import Exam
 from app.models.choices_model import Choice
-from app.models.enrollments_model import Enrollment
-from app.utils import generate_url
 from app.database import get_db
 from app.config import BASE_DIR
 from datetime import datetime, timezone

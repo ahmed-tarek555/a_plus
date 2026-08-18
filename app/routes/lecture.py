@@ -1,13 +1,10 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import and_
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from app.models.packages_model import Package
 from app.models.submitted_homeworks import SubmittedHomework
 from app.models.submittted_exams import SubmittedExam
 from app.models.users_model import User
-from app.models.teachers_model import Teacher
 from app.models.students_model import Student
 from app.models.lectures_model import Lecture
 from app.models.homeworks_model import Homework

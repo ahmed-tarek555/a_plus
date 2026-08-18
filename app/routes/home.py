@@ -61,7 +61,6 @@ def get_private(request: Request, db: Session = Depends(get_db)):
             "price": float(lec.price),
             "teacher_first_name": teacher.first_name,
             "teacher_last_name": teacher.last_name,
-            "teacher_phone_number": teacher.phone_number,
             "teacher_pfp_url": generate_url(teacher.pfp_public_id)
         }
         for lec, teacher in result

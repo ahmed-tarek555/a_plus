@@ -42,7 +42,7 @@ def course_data(request: Request, course_id: int, db: Session = Depends(get_db))
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     course, teacher = course_info
-    lectures = db.query(Lecture).filter(Lecture.course_id == course.id).all()
+    lectures = db.query(Lecture).filter(Lecture.course_id == course.id).order_by(Lecture.id).all()
     course_lectures = [
         {
             "id": lec.id,

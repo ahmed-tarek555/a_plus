@@ -9,7 +9,7 @@ class User(Base):
     last_name = Column(String(20), nullable=False)
     username = Column(String(20), nullable=False, unique=True)
     phone_number = Column(String(20), nullable=False, unique=True)
-    password = Column(String(40), nullable=False)
+    password = Column(String, nullable=False)
     parent_name = Column(String(20), nullable=True)
     parent_phone_number = Column(String(20), nullable=True)
     pfp_public_id = Column(String, nullable=True)

@@ -77,11 +77,16 @@ def upload_material(request: Request, course_id: int, payload: UploadLecture, db
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
+    try:
+        video_id = extract_youtube_id(payload.url)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
     lecture = Lecture(
         course_id=course.id,
         title=payload.title,
         price=payload.price,
-        video_id=extract_youtube_id(payload.url)
+        video_id=video_id
     )
     db.add(lecture)
 

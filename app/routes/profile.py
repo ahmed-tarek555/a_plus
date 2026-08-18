@@ -1,13 +1,9 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request, UploadFile, File
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from app.models.users_model import User
-from app.models.teachers_model import Teacher
-from app.models.courses_model import Course
-from app.models.enrollments_model import Enrollment
 from app.core.auth import validate_user
 from app.core.security import hash_password
 from app.schemas.user import EditProfile

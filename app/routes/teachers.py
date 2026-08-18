@@ -9,13 +9,14 @@ from app.models.teachers_model import Teacher
 from app.models.courses_model import Course
 from app.models.enrollments_model import Enrollment
 from app.models.packages_model import Package
-from app.models.package_items import PackageItem
+from app.models.package_courses import PackageCourse
+from app.models.package_lectures import PackageLecture
 from app.core.auth import validate_user
 from app.database import get_db
 from app.schemas.package import PackageCreate
 from app.schemas.private import CreatePrivate
 from app.schemas.private import PrivateLink
-from app.utils import is_valid_image, upload_image, delete_file, generate_url
+from app.utils import is_valid_image, upload_image, delete_file
 from app.config import BASE_DIR
 from decimal import Decimal
 
@@ -153,6 +154,10 @@ def create_package(request: Request, payload: PackageCreate, db: Session = Depen
     user , teacher = result
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+
+    if not payload.lectures_ids and not payload.courses_ids:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
     try:
         package = Package(
             title=payload.title,
@@ -162,11 +167,18 @@ def create_package(request: Request, payload: PackageCreate, db: Session = Depen
         db.flush()
 
         for item in payload.courses_ids:
-            package_item = PackageItem(
-                course_id=item.course_id,
+            package_course = PackageCourse(
+                course_id=item.item_id,
                 package_id=package.id
             )
-            db.add(package_item)
+            db.add(package_course)
+
+        for item in payload.lectures_ids:
+            package_lecture = PackageLecture(
+                lecture_id=item.item_id,
+                package_id=package.id
+            )
+            db.add(package_lecture)
 
         db.commit()
     except SQLAlchemyError:

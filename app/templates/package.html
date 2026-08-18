@@ -428,10 +428,6 @@
   <div class="page-shell">
     <section class="section">
       <div class="section-header">
-        <div class="section-header-text">
-          <span class="section-mark">01</span>
-          <h2>{{ package.title if package else 'Package' }}</h2>
-        </div>
         <small>Bundle details</small>
       </div>
 
@@ -451,7 +447,6 @@
     <section class="section">
       <div class="section-header">
         <div class="section-header-text">
-          <span class="section-mark">02</span>
           <h2>Included courses</h2>
         </div>
         <small>Learn more, save more</small>
@@ -484,6 +479,48 @@
         </div>
       {% else %}
         <div class="empty-state">No courses are included in this package yet.</div>
+      {% endif %}
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div class="section-header-text">
+          <h2>Included lectures</h2>
+        </div>
+        <small>Focused learning</small>
+      </div>
+
+      {% if lectures %}
+        <div class="courses-grid">
+          {% for lecture in lectures %}
+            <a href="/lecture/{{ lecture.id }}" class="course-card" style="background-image: url('{{ lecture.cover_url }}');">
+              <div class="course-top">
+                <span class="course-tag">{{ lecture.subject or 'Lecture' }}</span>
+                <span class="course-price">EGP{{ "%.2f"|format(lecture.price if lecture and lecture.price is not none else 0) }}</span>
+              </div>
+
+              <h3>{{ lecture.title or 'Lecture' }}</h3>
+              <p style="font-weight: 700;">Stage {{ lecture.stage or 'N/A' }} · Level {{ lecture.level or 'N/A' }}</p>
+
+              <div class="teacher-box" style="border-top: 1px solid rgba(255,255,255,0.18);">
+                <img
+                  class="teacher-avatar"
+                  src="{{ lecture.pfp_url or 'https://ui-avatars.com/api/?name=' ~ (lecture.teacher_first_name ~ ' ' ~ lecture.teacher_last_name) ~ '&background=DBEAFE&color=2563EB' }}"
+                  alt="{{ lecture.teacher_first_name or '' }} {{ lecture.teacher_last_name or '' }}"
+                />
+                <div>
+                  <div class="teacher-name">{{ (lecture.teacher_first_name or '') ~ ' ' ~ (lecture.teacher_last_name or '') }}</div>
+                </div>
+              </div>
+
+              <div class="course-meta" style="padding-top: 0; border-top: none;">
+                <span>Lecture #{{ lecture.id }}</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">No lectures are included in this package yet.</div>
       {% endif %}
     </section>
   </div>
@@ -539,7 +576,7 @@
         } else if (statusCode === 500) {
           showPackageStatus('error', 'Internal server error.');
         } else if (statusCode === 409) {
-          showPackageStatus('error', 'This package contains a course you have already purchased.');
+          showPackageStatus('error', 'This package contains a course or a lecture you have already purchased.');
         } else {
           showPackageStatus('error', `${detail}`);
         }

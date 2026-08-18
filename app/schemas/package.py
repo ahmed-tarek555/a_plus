@@ -4,12 +4,13 @@ from decimal import Decimal
 
 
 class PackageItem(BaseModel):
-    course_id: int
+    item_id: int
 
 class PackageCreate(BaseModel):
     title: str
     price: Decimal
-    courses_ids: List[PackageItem]
+    courses_ids: List[PackageItem] = None
+    lectures_ids: List[PackageItem] = None
 
 
 # example payload:
@@ -19,5 +20,8 @@ class PackageCreate(BaseModel):
 #     "price": some price,
 #     "courses_ids": [
 #     id1, id2, .....
-# ]
+#     ]
+#     "lectures_ids": [
+#         id1, id2, .....
+#     ]
 # }

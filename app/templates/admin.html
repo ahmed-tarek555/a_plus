@@ -168,21 +168,99 @@
 			position: relative;
 			display: flex;
 			flex-direction: column;
-			justify-content: flex-start;
-			min-height: 220px;
-			padding: 20px 20px 18px;
+			min-height: 250px;
+			padding: 22px;
 			border: 1px solid rgba(44, 117, 169, 0.18);
-			border-radius: 18px;
-			background: linear-gradient(145deg, #ffffff 0%, #f7fbff 58%, #eef6fc 100%);
-			box-shadow: 0 10px 28px rgba(43, 95, 130, 0.08);
+			border-radius: 16px;
+			background-size: cover;
+			background-position: center;
+			background-color: #14306b;
+			box-shadow: 0 12px 30px rgba(20, 48, 107, 0.14);
 			overflow: hidden;
 			cursor: pointer;
-			transition: transform 0.2s ease, box-shadow 0.2s ease;
+			transition: transform 0.18s ease, box-shadow 0.18s ease;
+			isolation: isolate;
+			color: #fff;
+		}
+
+		.course-card > a {
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+		}
+
+		.course-card::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(190deg, rgba(16, 33, 63, 0.14) 10%, rgba(16, 33, 63, 0.88) 100%);
+			z-index: 0;
+		}
+
+		.course-card > * {
+			position: relative;
+			z-index: 1;
 		}
 
 		.course-card:hover {
-			transform: translateY(-2px);
-			box-shadow: 0 14px 34px rgba(43, 95, 130, 0.12);
+			transform: translateY(-4px);
+			box-shadow: 0 20px 44px rgba(20, 48, 107, 0.22);
+		}
+
+		.package-card {
+			min-height: 160px;
+			padding: 18px 18px 16px;
+			background: #ffffff;
+			background-image: none;
+			box-shadow: 0 8px 20px rgba(43, 95, 130, 0.08);
+			color: #19324a;
+		}
+
+		.package-card::before {
+			display: none;
+		}
+
+		.package-card .course-card-top {
+			display: block;
+			margin-bottom: 8px;
+		}
+
+		.package-card .course-card-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			margin: 0 0 6px;
+			color: #19324a;
+		}
+
+		.package-card .course-card-header h3,
+		.package-card h3 {
+			display: block;
+			color: #19324a !important;
+			font-size: 1rem;
+			line-height: 1.35;
+			margin: 0;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			font-weight: 700;
+		}
+
+		.package-card .course-tag {
+			background: #eef5ff;
+			border-color: rgba(47, 141, 204, 0.2);
+			color: #1d6fb8;
+		}
+
+		.package-card .course-price {
+			color: #19324a;
+		}
+
+		.package-card .course-meta {
+			color: #5b7488;
+		}
+
+		.package-card .course-card-bottom {
+			display: none;
 		}
 
 		.package-link {
@@ -208,8 +286,11 @@
 		}
 
 		.course-card-top {
-			padding-bottom: 14px;
-			border-bottom: 1px solid rgba(44, 117, 169, 0.12);
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 12px;
+			margin-bottom: 14px;
 		}
 
 		.course-card-package .course-card-top {
@@ -224,11 +305,27 @@
 			margin-bottom: 10px;
 		}
 
+		.course-tag {
+			font-family: "IBM Plex Mono", monospace;
+			font-size: 0.68rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: #eaf1ff;
+			background: rgba(255, 255, 255, 0.14);
+			border: 1px solid rgba(255, 255, 255, 0.28);
+			padding: 4px 10px;
+			border-radius: 999px;
+			flex-shrink: 0;
+		}
+
 		.course-card h3 {
 			margin: 0;
-			color: #19324a;
-			font-size: 1.08rem;
+			color: #ffffff;
+			font-size: 1.15rem;
 			line-height: 1.35;
+			font-family: "Fraunces", serif;
+			font-weight: 600;
 		}
 
 		.course-meta {
@@ -236,23 +333,47 @@
 			flex-wrap: wrap;
 			gap: 8px 12px;
 			margin-top: 10px;
-			color: #5b7488;
-			font-size: 0.95rem;
+			color: rgba(255, 255, 255, 0.85);
+			font-size: 0.9rem;
+			font-weight: 700;
 		}
 
 		.course-price {
-			margin-top: 10px;
-			color: #19324a;
-			font-weight: 800;
-			font-size: 1rem;
+			color: #ffffff;
+			font-weight: 700;
+			font-size: 0.98rem;
+			font-family: "IBM Plex Mono", monospace;
+			white-space: nowrap;
 		}
 
 		.course-card-bottom {
 			display: flex;
-			align-items: flex-start;
+			align-items: center;
 			gap: 12px;
-			margin-top: 14px;
-			padding-top: 10px;
+			margin-top: auto;
+			padding-top: 12px;
+			border-top: 1px solid rgba(255, 255, 255, 0.2);
+		}
+
+		.course-card-button {
+			position: relative;
+			z-index: 1;
+			align-self: flex-start;
+			margin-top: 10px;
+			padding: 9px 12px;
+			border: 1px solid rgba(255, 255, 255, 0.28);
+			border-radius: 8px;
+			background: rgba(255, 255, 255, 0.12);
+			color: #fff;
+			font-size: 0.82rem;
+			font-weight: 800;
+			cursor: pointer;
+			transition: background 0.2s ease, transform 0.2s ease;
+		}
+
+		.course-card-button:hover {
+			background: rgba(255, 255, 255, 0.18);
+			transform: translateY(-1px);
 		}
 
 		.course-teacher-avatar {
@@ -260,8 +381,8 @@
 			height: 52px;
 			border-radius: 50%;
 			object-fit: cover;
-			border: 2px solid rgba(44, 117, 169, 0.16);
-			background: #e8f2fb;
+			border: 2px solid rgba(255, 255, 255, 0.3);
+			background: rgba(255, 255, 255, 0.08);
 		}
 
 		.course-teacher-meta {
@@ -270,13 +391,13 @@
 		}
 
 		.course-teacher-name {
-			color: #19324a;
+			color: #ffffff;
 			font-size: 0.97rem;
 			font-weight: 800;
 		}
 
 		.course-teacher-phone {
-			color: #5b7488;
+			color: rgba(255, 255, 255, 0.85);
 			font-size: 0.88rem;
 		}
 
@@ -436,6 +557,21 @@
 			z-index: 2;
 		}
 
+		.lecture-item .package-option {
+			position: static;
+			top: auto;
+			right: auto;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 10px;
+			margin-left: auto;
+			white-space: nowrap;
+			background: rgba(255, 255, 255, 0.96);
+			box-shadow: none;
+			z-index: 1;
+		}
+
 		.package-option input {
 			margin: 0;
 		}
@@ -477,6 +613,31 @@
 			padding: 20px;
 			background: rgba(10, 26, 43, 0.45);
 			z-index: 999;
+		}
+
+		.lecture-side-modal {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: auto;
+			display: none;
+			padding: 0;
+			background: transparent;
+			z-index: 1000;
+		}
+
+		.lecture-side-modal.active {
+			display: flex;
+			justify-content: flex-end;
+		}
+
+		.lecture-side-modal .modal-card {
+			width: min(340px, 100%);
+			height: 100%;
+			padding: 24px 20px;
+			border-radius: 18px 0 0 18px;
+			box-shadow: -8px 0 18px rgba(10, 26, 43, 0.08);
 		}
 
 		.modal.active {
@@ -812,6 +973,16 @@
 			transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
 		}
 
+		.profile-button {
+			border: 1px solid rgba(47, 141, 204, 0.28);
+			background: #eaf5ff;
+			color: #1d6fb8;
+		}
+
+		.profile-button:hover {
+			background: #dfeeff;
+		}
+
 		.button:hover {
 			transform: translateY(-1px);
 		}
@@ -848,6 +1019,35 @@
 			background: rgba(255, 255, 255, 0.55);
 			color: #5b768b;
 			text-align: center;
+		}
+
+		.lecture-list {
+			display: grid;
+			gap: 12px;
+			margin-top: 14px;
+		}
+
+		.lecture-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			padding: 12px 14px;
+			border: 1px solid rgba(44, 117, 169, 0.18);
+			border-radius: 12px;
+			background: #fbfeff;
+		}
+
+		.lecture-item-title {
+			color: #19324a;
+			font-weight: 700;
+			line-height: 1.4;
+		}
+
+		.lecture-item-price {
+			color: #1d6fb8;
+			font-weight: 800;
+			white-space: nowrap;
 		}
 
 		@media (max-width: 1200px) {
@@ -945,7 +1145,7 @@
 					<p class="eyebrow">Administration</p>
 					<h1>{{ role }} dashboard</h1>
 				</div>
-				<a class="logout-button" href="/logout">Logout</a>
+				<a class="logout-button" href="/logout/">Logout</a>
 			</header>
 
 			<nav class="dashboard-nav" aria-label="Admin dashboard sections">
@@ -1085,11 +1285,14 @@
 						<div style="margin-top:12px; color:#4c687e; font-weight:700;">Selected courses</div>
 						<div id="selectedCourses" class="status" style="margin-top:8px; min-height:auto;">No courses
 							selected yet.</div>
+						<div style="margin-top:16px; color:#4c687e; font-weight:700;">Selected lectures</div>
+						<div id="selectedLectures" class="status" style="margin-top:8px; min-height:auto;">No lectures
+							selected yet.</div>
 						<div class="package-actions">
 							<button id="savePackageButton" class="button approve-button" type="button">Save</button>
 							<button id="cancelPackageButton" class="button delete-button" type="button">Cancel</button>
 						</div>
-						<div id="packageStatus" class="status">Choose a title, price, and at least one course.</div>
+						<div id="packageStatus" class="status">Choose a title, price, and at least one course or lecture.</div>
 					</div>
 				</div>
 			</section>
@@ -1219,6 +1422,19 @@
 		</div>
 	</div>
 
+	<div id="courseLecturesModal" class="lecture-side-modal" aria-hidden="true">
+		<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="courseLecturesTitle">
+			<div class="modal-header">
+				<div>
+					<h3 id="courseLecturesTitle">Course lectures</h3>
+				</div>
+				<button id="closeCourseLecturesModalButton" class="modal-close" type="button" aria-label="Close course lectures modal">×</button>
+			</div>
+			<div id="courseLecturesStatus" class="status" role="status" aria-live="polite">Loading lectures...</div>
+			<div id="courseLecturesList" class="lecture-list" aria-live="polite"></div>
+		</div>
+	</div>
+
 	<div id="editStudentModal" class="modal" aria-hidden="true">
 		<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="editStudentModalTitle">
 			<div class="modal-header">
@@ -1319,6 +1535,7 @@
 		const packageTitle = document.getElementById("packageTitle");
 		const packagePrice = document.getElementById("packagePrice");
 		const selectedCourses = document.getElementById("selectedCourses");
+		const selectedLectures = document.getElementById("selectedLectures");
 		const savePackageButton = document.getElementById("savePackageButton");
 		const cancelPackageButton = document.getElementById("cancelPackageButton");
 		const packageStatus = document.getElementById("packageStatus");
@@ -1352,6 +1569,11 @@
 		const permissionTypeCustom = document.getElementById("permissionTypeCustom");
 		const customPermissionLabel = document.getElementById("customPermissionLabel");
 		const permissionFormStatus = document.getElementById("permissionFormStatus");
+		const courseLecturesModal = document.getElementById("courseLecturesModal");
+		const courseLecturesTitle = document.getElementById("courseLecturesTitle");
+		const courseLecturesList = document.getElementById("courseLecturesList");
+		const courseLecturesStatus = document.getElementById("courseLecturesStatus");
+		const closeCourseLecturesModalButton = document.getElementById("closeCourseLecturesModalButton");
 		const navButtons = document.querySelectorAll(".nav-button");
 		const viewPanels = document.querySelectorAll(".view-panel");
 		const currentRole = "{{ role | default('admin') }}";
@@ -1365,6 +1587,8 @@
 		let allModerators = [];
 		let isPackageMode = false;
 		let selectedPackageCourseIds = new Set();
+		let selectedPackageLectureIds = new Set();
+		let courseLecturesByCourse = new Map();
 		let currentModeratorId = null;
 		let currentModeratorName = null;
 		let currentBookingTeacher = null;
@@ -1409,6 +1633,117 @@
 			if (!bookingModalStatus) return;
 			bookingModalStatus.textContent = text;
 			bookingModalStatus.classList.toggle("error", isError);
+		}
+
+		function setCourseLecturesStatus(text, isError = false) {
+			if (!courseLecturesStatus) return;
+			courseLecturesStatus.textContent = text;
+			courseLecturesStatus.classList.toggle("error", isError);
+		}
+
+		function renderCourseLectures(lectures) {
+			courseLecturesList.replaceChildren();
+
+			if (!lectures.length) {
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = "No lectures have been added to this course yet.";
+				courseLecturesList.appendChild(emptyState);
+				setCourseLecturesStatus("No lectures found for this course.");
+				return;
+			}
+
+			lectures.forEach((lecture) => {
+				const item = document.createElement("div");
+				item.className = "lecture-item";
+
+				const info = document.createElement("div");
+				info.style.display = "flex";
+				info.style.flexDirection = "column";
+				info.style.gap = "4px";
+
+				const title = document.createElement("div");
+				title.className = "lecture-item-title";
+				title.textContent = lecture.title || "Untitled lecture";
+
+				const price = document.createElement("div");
+				price.className = "lecture-item-price";
+				price.textContent = `EGP ${Number(lecture.price || 0).toFixed(2)}`;
+
+				info.append(title, price);
+				item.append(info);
+
+				if (isPackageMode) {
+					const selection = document.createElement("label");
+					selection.className = "package-option";
+					selection.style.position = "static";
+					selection.style.marginLeft = "auto";
+					selection.style.display = "inline-flex";
+					selection.style.whiteSpace = "nowrap";
+					const checkbox = document.createElement("input");
+					checkbox.type = "checkbox";
+					checkbox.checked = selectedPackageLectureIds.has(Number(lecture.id));
+					checkbox.addEventListener("change", (event) => {
+						if (event.target.checked) {
+							selectedPackageLectureIds.add(Number(lecture.id));
+						} else {
+							selectedPackageLectureIds.delete(Number(lecture.id));
+						}
+						updateSelectedCoursesList();
+					});
+					const labelText = document.createElement("span");
+					labelText.textContent = "Select";
+					selection.append(checkbox, labelText);
+					item.append(selection);
+				}
+
+				courseLecturesList.appendChild(item);
+			});
+
+			if (isPackageMode) {
+				setCourseLecturesStatus("Select the lectures you want to include in this package.");
+			} else {
+				setCourseLecturesStatus(`${lectures.length} lecture${lectures.length === 1 ? "" : "s"} loaded.`);
+			}
+		}
+
+		async function openCourseLecturesModal(course) {
+			if (!course || !course.id) {
+				return;
+			}
+
+			const courseName = course.subject || course.title || "Course";
+			courseLecturesTitle.textContent = `Lectures for ${courseName}`;
+			setCourseLecturesStatus("Loading lectures...");
+			courseLecturesList.replaceChildren();
+			courseLecturesModal.classList.add("active");
+			courseLecturesModal.setAttribute("aria-hidden", "false");
+
+			try {
+				const response = await fetch(`${basePath}/course_lectures/${course.id}`, { credentials: "include" });
+				if (!response.ok) {
+					throw new Error(response.status === 403 ? "You are not authorized to view this course's lectures." : "Unable to load course lectures.");
+				}
+
+				const data = await response.json();
+				const lectures = Array.isArray(data) ? data : [];
+				courseLecturesByCourse.set(Number(course.id), lectures);
+				renderCourseLectures(lectures);
+			} catch (error) {
+				courseLecturesList.replaceChildren();
+				const emptyState = document.createElement("div");
+				emptyState.className = "empty-state";
+				emptyState.textContent = error.message || "Unable to load lectures.";
+				courseLecturesList.appendChild(emptyState);
+				setCourseLecturesStatus(error.message || "Unable to load lectures.", true);
+			}
+		}
+
+		function closeCourseLecturesModal() {
+			courseLecturesModal.classList.remove("active");
+			courseLecturesModal.setAttribute("aria-hidden", "true");
+			courseLecturesList.replaceChildren();
+			setCourseLecturesStatus("Loading lectures...");
 		}
 
 		function setView(view) {
@@ -1516,13 +1851,7 @@
 			deleteButton.textContent = "Delete";
 			deleteButton.addEventListener("click", () => updateUser(user.id, "delete", card));
 
-			const editButton = document.createElement("button");
-			editButton.className = "button";
-			editButton.type = "button";
-			editButton.textContent = "Edit";
-			editButton.addEventListener("click", () => enterEditMode(card, user, 'user'));
-
-			actions.append(approveButton, editButton, deleteButton);
+			actions.append(approveButton, deleteButton);
 			card.append(information, actions);
 			return card;
 		}
@@ -1648,6 +1977,12 @@
 			const actions = document.createElement("div");
 			actions.className = "actions";
 
+			const profileButton = document.createElement("button");
+			profileButton.className = "button profile-button";
+			profileButton.type = "button";
+			profileButton.textContent = "Profile";
+			profileButton.addEventListener("click", () => window.location.href = `/student_profile/${student.id}`);
+
 			const deleteButton = document.createElement("button");
 			deleteButton.className = "button delete-button";
 			deleteButton.type = "button";
@@ -1660,7 +1995,7 @@
 			editButton.textContent = "Edit";
 			editButton.addEventListener("click", () => enterEditMode(card, student, 'student'));
 
-			actions.append(editButton, deleteButton);
+			actions.append(profileButton, editButton, deleteButton);
 			card.append(meta, actions);
 			return card;
 		}
@@ -1893,30 +2228,30 @@
 		function createCourseCard(course) {
 			const card = document.createElement("article");
 			card.className = "course-card";
+			if (course.cover_url) {
+				card.style.backgroundImage = `url('${course.cover_url}')`;
+			}
 			if (isPackageMode) {
 				card.classList.add("course-card-package");
 			}
 
-			const cardTop = document.createElement("div");
-			cardTop.className = "course-card-top";
-
-			const header = document.createElement("div");
-			header.className = "course-card-header";
-
-			const title = document.createElement("h3");
-			title.textContent = course.subject || "Untitled course";
-
-			const price = document.createElement("div");
+			const topRow = document.createElement("div");
+			topRow.className = "course-card-top";
+			const tag = document.createElement("span");
+			tag.className = "course-tag";
+			tag.textContent = course.subject || "General";
+			const price = document.createElement("span");
 			price.className = "course-price";
-			price.textContent = `EGP${Number(course.price || 0).toFixed(2)}`;
+			price.textContent = `EGP ${Number(course.price || 0).toFixed(2)}`;
+			topRow.append(tag, price);
 
-			header.append(title, price);
+			const stageLine = document.createElement("p");
+			stageLine.className = "course-meta";
+			stageLine.textContent = `Stage ${course.stage || "N/A"} · Level ${course.level ?? "N/A"}`;
 
-			const meta = document.createElement("div");
-			meta.className = "course-meta";
-			meta.innerHTML = `<span>Stage: ${course.stage || "N/A"}</span><span>Level: ${course.level ?? "N/A"}</span>`;
-
-			cardTop.append(header, meta);
+			const teacherLine = document.createElement("p");
+			teacherLine.style.color = "rgba(255,255,255,0.85)";
+			teacherLine.style.marginBottom = "0";
 
 			const cardBottom = document.createElement("div");
 			cardBottom.className = "course-card-bottom";
@@ -1941,6 +2276,26 @@
 			teacherMeta.append(teacherName, teacherPhone);
 			cardBottom.append(avatar, teacherMeta);
 
+			const link = document.createElement("a");
+			link.href = `${basePath}/course_details/${course.id}`;
+			link.setAttribute("aria-label", `View details for ${course.subject || "course"}`);
+			link.style.display = "flex";
+			link.style.flexDirection = "column";
+			link.style.flex = "1";
+			link.style.textDecoration = "none";
+			link.style.color = "inherit";
+			link.append(topRow, stageLine, teacherLine, cardBottom);
+
+			const lectureButton = document.createElement("button");
+			lectureButton.type = "button";
+			lectureButton.className = "course-card-button";
+			lectureButton.textContent = "View lectures";
+			lectureButton.addEventListener("click", (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				openCourseLecturesModal(course);
+			});
+
 			if (isPackageMode) {
 				const option = document.createElement("label");
 				option.className = "package-option";
@@ -1960,19 +2315,11 @@
 				const labelText = document.createElement("span");
 				labelText.textContent = "Select for package";
 				option.append(checkbox, labelText);
-				card.append(cardTop, cardBottom, option);
+				card.append(link, option, lectureButton);
 				return card;
 			}
 
-			const link = document.createElement("a");
-			link.href = `${basePath}/course_details/${course.id}`;
-			link.setAttribute("aria-label", `View details for ${course.subject || "course"}`);
-			link.style.display = "block";
-			link.style.textDecoration = "none";
-			link.style.color = "inherit";
-			link.appendChild(cardTop);
-			link.appendChild(cardBottom);
-			card.appendChild(link);
+			card.append(link);
 			return card;
 		}
 
@@ -1995,7 +2342,7 @@
 
 		function createPackageCard(pkg) {
 			const card = document.createElement("article");
-			card.className = "course-card";
+			card.className = "course-card package-card";
 
 			const link = document.createElement("a");
 			link.className = "package-link";
@@ -2009,6 +2356,12 @@
 
 			const title = document.createElement("h3");
 			title.textContent = pkg.title || "Untitled package";
+			title.style.color = "#19324a";
+			title.style.display = "block";
+			title.style.fontSize = "1rem";
+			title.style.fontWeight = "700";
+			title.style.lineHeight = "1.35";
+			title.style.margin = "0";
 
 			const price = document.createElement("div");
 			price.className = "course-price";
@@ -2065,6 +2418,19 @@
 			selectedCourses.textContent = selectedTitles.length
 				? selectedTitles.join(", ")
 				: "No courses selected yet.";
+
+			const selectedLectureTitles = [];
+			for (const lectures of courseLecturesByCourse.values()) {
+				lectures.forEach((lecture) => {
+					if (selectedPackageLectureIds.has(Number(lecture.id))) {
+						selectedLectureTitles.push(lecture.title || "Untitled lecture");
+					}
+				});
+			}
+
+			selectedLectures.textContent = selectedLectureTitles.length
+				? selectedLectureTitles.join(", ")
+				: "No lectures selected yet.";
 		}
 
 		function setCoursesStatus(text, isError = false) {
@@ -2090,24 +2456,28 @@
 		function openPackagePanel() {
 			isPackageMode = true;
 			selectedPackageCourseIds.clear();
+			selectedPackageLectureIds.clear();
+			courseLecturesByCourse.clear();
 			packagePanel.hidden = false;
 			packageTitle.value = "";
 			packagePrice.value = "";
 			updateSelectedCoursesList();
 			renderCourses(currentCourses);
-			setPackageStatus("Choose a title, price, and at least one course.");
+			setPackageStatus("Choose a title, price, and at least one course or lecture.");
 			packageTitle.focus();
 		}
 
 		function closePackagePanel() {
 			isPackageMode = false;
 			selectedPackageCourseIds.clear();
+			selectedPackageLectureIds.clear();
+			courseLecturesByCourse.clear();
 			packagePanel.hidden = true;
 			packageTitle.value = "";
 			packagePrice.value = "";
 			updateSelectedCoursesList();
 			renderCourses(currentCourses);
-			setPackageStatus("Choose a title, price, and at least one course.");
+			setPackageStatus("Choose a title, price, and at least one course or lecture.");
 		}
 
 		function openModeratorForm() {
@@ -2392,12 +2762,11 @@
 		async function savePackage() {
 			const title = packageTitle.value.trim();
 			const price = Number(packagePrice.value);
-			const selected = Array.from(document.querySelectorAll('.course-package-checkbox:checked')).map((checkbox) => ({
-				course_id: Number(checkbox.dataset.courseId || 0)
-			}));
+			const selectedCoursesIds = Array.from(selectedPackageCourseIds).map((id) => ({ item_id: Number(id) }));
+			const selectedLecturesIds = Array.from(selectedPackageLectureIds).map((id) => ({ item_id: Number(id) }));
 
-			if (!title || !price || !selected.length) {
-				setPackageStatus("Please enter a title, price, and select at least one course.", true);
+			if (!title || !price || (!selectedCoursesIds.length && !selectedLecturesIds.length)) {
+				setPackageStatus("Please enter a title, price, and select at least one course or lecture.", true);
 				return;
 			}
 
@@ -2409,7 +2778,12 @@
 					method: "POST",
 					credentials: "include",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ title, price, courses_ids: selected })
+					body: JSON.stringify({
+						title,
+						price,
+						courses_ids: selectedCoursesIds,
+						lectures_ids: selectedLecturesIds
+					})
 				});
 
 				if (!response.ok) {
@@ -2744,6 +3118,7 @@
 		closeBookingModalButton.addEventListener("click", closeBookingModal);
 		cancelBookingModalButton.addEventListener("click", closeBookingModal);
 		saveBookingButton.addEventListener("click", saveBooking);
+		closeCourseLecturesModalButton.addEventListener("click", closeCourseLecturesModal);
 		permissionModal.addEventListener("click", (event) => {
 			if (event.target === permissionModal) {
 				closePermissionModal();
@@ -2757,6 +3132,11 @@
 		bookingModal.addEventListener("click", (event) => {
 			if (event.target === bookingModal) {
 				closeBookingModal();
+			}
+		});
+		courseLecturesModal.addEventListener("click", (event) => {
+			if (event.target === courseLecturesModal) {
+				closeCourseLecturesModal();
 			}
 		});
 		setView("pending");

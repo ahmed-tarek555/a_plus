@@ -776,7 +776,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title, price, url })
                 });
-                if (!res.ok) throw new Error('Unable to upload lecture');
+                if (!res.ok){
+                    if (res.status === 400){
+                        throw new Error('Could not extract YouTube video ID from URL.');
+                    }
+                    else {
+                         throw new Error('Unable to upload lecture');
+                    }
+                }
                 const data = await res.json();
                 if (data.success) {
                     setStatus(lectureStatus, 'Lecture uploaded. Reloading list…');

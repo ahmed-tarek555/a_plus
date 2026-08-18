@@ -10,7 +10,8 @@ from app.models.courses_model import Course
 from app.models.teachers_model import Teacher
 from app.models.packages_model import Package
 from app.models.permissions_model import Permission
-from app.models.package_items import PackageItem
+from app.models.package_courses import PackageCourse
+from app.models.package_lectures import PackageLecture
 from app.models.private_lectures import PrivateLecture
 from app.models.lectures_model import Lecture
 from app.schemas.package import PackageCreate
@@ -166,13 +167,13 @@ def search_students(request: Request, payload: SearchStudents, db: Session = Dep
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     if payload.stage is not None and payload.level is None:
-        query = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.stage == payload.stage)
+        query = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.stage == payload.stage, User.is_active.is_(True))
     elif payload.level is not None and payload.stage is None:
-        query = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.level == payload.level)
+        query = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.level == payload.level, User.is_active.is_(True))
     elif payload.level is not None and payload.stage is not None:
-        query = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.stage == payload.stage, Student.level == payload.level)
+        query = db.query(User, Student).join(Student, Student.user_id == User.id).filter(Student.stage == payload.stage, Student.level == payload.level, User.is_active.is_(True))
     else:
-        query = db.query(User, Student).join(Student, Student.user_id == User.id)
+        query = db.query(User, Student).join(Student, Student.user_id == User.id).filter(User.is_active.is_(True))
 
     results = query.all()
 
@@ -239,12 +240,36 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
             "stage": course.stage,
             "level": course.level,
             "subject": course.subject,
+            "cover_url": generate_url(course.cover_public_id),
             "first_name": teacher.first_name,
             "last_name": teacher.last_name,
             "phone_number": teacher.phone_number,
             "pfp_url": generate_url(teacher.pfp_public_id)
         }
         for course, teacher in results
+    ]
+
+@router.get("/course_lectures/{course_id}")
+def get_course_lectures(request: Request, course_id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    lectures = db.query(Lecture).join(Course, Lecture.course_id == Course.id).filter(Course.id == course_id).all()
+
+    return [
+        {
+            "id": l.id,
+            "title": l.title,
+            "price": l.price
+        }
+        for l in lectures
     ]
 
 @router.post("/create_package")
@@ -268,11 +293,19 @@ def create_package(request: Request, payload: PackageCreate, db: Session = Depen
         db.flush()
 
         for item in payload.courses_ids:
-            package_item = PackageItem(
-                course_id=item.course_id,
+            package_course = PackageCourse(
+                course_id=item.item_id,
                 package_id=package.id
             )
-            db.add(package_item)
+            db.add(package_course)
+
+        for item in payload.lectures_ids:
+            package_lecture = PackageLecture(
+                lecture_id=item.item_id,
+                package_id=package.id
+            )
+            db.add(package_lecture)
+
         db.commit()
     except SQLAlchemyError:
         db.rollback()
