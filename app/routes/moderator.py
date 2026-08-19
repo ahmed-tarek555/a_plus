@@ -331,6 +331,44 @@ def get_courses(request: Request, db: Session = Depends(get_db)):
         for course, teacher in results
     ]
 
+@router.get("/course_details/{course_id}")
+def create_booking(request: Request, course_id: int, db: Session = Depends(get_db)):
+    token = request.cookies.get("access_token")
+    user_id, user_role = validate_user(token)
+    if user_role != "mod":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    if user.role != "mod":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    permission = db.query(Permission).filter(Permission.user_id == user_id, Permission.type == "manage_courses").first()
+    if not permission:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    course = db.query(Course).filter(Course.id == course_id).first()
+    if not course:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    course_info = {
+        "id": course.id,
+        "stage": course.stage,
+        "price": course.price,
+        "level": course.level,
+        "subject": course.subject,
+    }
+    lectures = db.query(Lecture).filter(Lecture.course_id == course_id).all()
+
+    course_lectures = [
+        {
+            "id": l.id,
+            "title": l.title,
+            "price": l.price,
+        }
+        for l in lectures
+    ]
+    return templates.TemplateResponse("course_details.html", {"request": request, "course_info": course_info, "lectures": course_lectures})
+
 @router.get("/course_lectures/{course_id}")
 def get_course_lectures(request: Request, course_id: int, db: Session = Depends(get_db)):
     token = request.cookies.get("access_token")

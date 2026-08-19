@@ -706,6 +706,21 @@
 							<input id="privateSubject" name="privateSubject" type="text" required />
 						</div>
 						<div class="field">
+							<label for="privateStage">Stage</label>
+							<select id="privateStage" name="privateStage" required>
+								<option value="">Select stage</option>
+								<option value="الثانوية">الثانوية</option>
+								<option value="الاعدادية">الاعدادية</option>
+								<option value="الابتدائية">الابتدائية</option>
+							</select>
+						</div>
+						<div class="field">
+							<label for="privateLevel">Level</label>
+							<select id="privateLevel" name="privateLevel" required>
+								<option value="">Select a level</option>
+							</select>
+						</div>
+						<div class="field">
 							<label for="privateStartDate">Start date</label>
 							<input id="privateStartDate" name="privateStartDate" type="datetime-local" required />
 						</div>
@@ -787,6 +802,8 @@
 
 		const stageSelect = document.getElementById('stage');
 		const levelSelect = document.getElementById('level');
+		const privateStageSelect = document.getElementById('privateStage');
+		const privateLevelSelect = document.getElementById('privateLevel');
 
 		const levelOptions = {
 			'الثانوية': [1, 2, 3],
@@ -797,21 +814,22 @@
 		let currentCourses = [];
 		let selectedPackageCourseIds = new Set();
 
-		function updateLevelOptions() {
-			const selectedStage = stageSelect.value;
-			levelSelect.innerHTML = '<option value="">Select a level</option>';
+		function updateLevelOptions(stageElement, levelElement) {
+			const selectedStage = stageElement.value;
+			levelElement.innerHTML = '<option value="">Select a level</option>';
 			
 			if (selectedStage && levelOptions[selectedStage]) {
 				levelOptions[selectedStage].forEach(level => {
 					const option = document.createElement('option');
 					option.value = level;
 					option.textContent = level;
-					levelSelect.appendChild(option);
+					levelElement.appendChild(option);
 				});
 			}
 		}
 
-		stageSelect.addEventListener('change', updateLevelOptions);
+		stageSelect.addEventListener('change', () => updateLevelOptions(stageSelect, levelSelect));
+		privateStageSelect.addEventListener('change', () => updateLevelOptions(privateStageSelect, privateLevelSelect));
 
 		// ---------- helpers ----------
 		function setStatus(el, text, kind) {
@@ -983,7 +1001,7 @@
 					meta.className = 'private-meta';
 					const badgeClass = lecture.student_id != null ? 'badge-booked' : 'badge-open';
 					const badgeText = lecture.student_id != null ? 'Booked' : 'Open';
-					meta.innerHTML = `<span>${lecture.subject || 'N/A'}</span><span class="badge ${badgeClass}">${badgeText}</span>`;
+					meta.innerHTML = `<span>${lecture.subject || 'N/A'}</span><span>${lecture.stage || 'N/A'} · Level ${lecture.level ?? 'N/A'}</span><span class="badge ${badgeClass}">${badgeText}</span>`;
 
 					const dates = document.createElement('div');
 					dates.className = 'private-dates';
@@ -1063,10 +1081,12 @@
 		addPrivateButton.addEventListener('click', async () => {
 			const title = document.getElementById('privateTitle').value.trim();
 			const subject = document.getElementById('privateSubject').value.trim();
+			const level = document.getElementById('privateLevel').value;
+			const stage = document.getElementById('privateStage').value;
 			const startDate = document.getElementById('privateStartDate').value;
 			const price = document.getElementById('privatePrice').value;
 
-			if (!title || !subject || !startDate || !price) {
+			if (!title || !subject || !level || !stage || !startDate || !price) {
 				setStatus(addPrivateStatus, 'Please complete all private lecture fields.', 'error');
 				return;
 			}
@@ -1078,6 +1098,8 @@
 				const payload = {
 					title,
 					subject,
+					level,
+					stage,
 					start_date: new Date(startDate).toISOString(),
 					price: Number(price)
 				};

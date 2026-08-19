@@ -1145,7 +1145,7 @@
 					<p class="eyebrow">Administration</p>
 					<h1>{{ role }} dashboard</h1>
 				</div>
-				<a class="logout-button" href="/logout/">Logout</a>
+				<a class="logout-button" href="/logout">Logout</a>
 			</header>
 
 			<nav class="dashboard-nav" aria-label="Admin dashboard sections">
@@ -1408,6 +1408,21 @@
 					Subject
 					<input id="bookingSubjectInput" type="text" placeholder="Enter lecture subject" />
 				</label>
+				<label>
+					Stage
+					<select id="bookingStageSelect">
+						<option value="">Select stage</option>
+						<option value="الثانوية">الثانوية</option>
+						<option value="الاعدادية">الاعدادية</option>
+						<option value="الابتدائية">الابتدائية</option>
+					</select>
+				</label>
+				<label>
+					Level
+					<select id="bookingLevelSelect">
+						<option value="">Select a level</option>
+					</select>
+				</label>
 				<label style="grid-column: 1 / -1;">
 					Start date
 					<input id="bookingStartDateInput" type="datetime-local" />
@@ -1554,6 +1569,8 @@
 		const bookingPhoneInput = document.getElementById("bookingPhoneInput");
 		const bookingTitleInput = document.getElementById("bookingTitleInput");
 		const bookingSubjectInput = document.getElementById("bookingSubjectInput");
+		const bookingStageSelect = document.getElementById("bookingStageSelect");
+		const bookingLevelSelect = document.getElementById("bookingLevelSelect");
 		const bookingStartDateInput = document.getElementById("bookingStartDateInput");
 		const bookingModalStatus = document.getElementById("bookingModalStatus");
 		const closeBookingModalButton = document.getElementById("closeBookingModalButton");
@@ -1592,6 +1609,12 @@
 		let currentModeratorId = null;
 		let currentModeratorName = null;
 		let currentBookingTeacher = null;
+
+		const bookingLevelOptions = {
+			"الثانوية": [1, 2, 3],
+			"الاعدادية": [1, 2, 3],
+			"الابتدائية": [1, 2, 3, 4, 5, 6]
+		};
 
 		const modeConfig = {
 			students: {
@@ -1633,6 +1656,18 @@
 			if (!bookingModalStatus) return;
 			bookingModalStatus.textContent = text;
 			bookingModalStatus.classList.toggle("error", isError);
+		}
+
+		function updateBookingLevelOptions() {
+			bookingLevelSelect.innerHTML = '<option value="">Select a level</option>';
+			const levels = bookingLevelOptions[bookingStageSelect.value] || [];
+
+			levels.forEach((level) => {
+				const option = document.createElement("option");
+				option.value = level;
+				option.textContent = level;
+				bookingLevelSelect.appendChild(option);
+			});
 		}
 
 		function setCourseLecturesStatus(text, isError = false) {
@@ -2521,6 +2556,8 @@
 			bookingPhoneInput.value = "";
 			bookingTitleInput.value = "";
 			bookingSubjectInput.value = "";
+			bookingStageSelect.value = "";
+			updateBookingLevelOptions();
 			bookingStartDateInput.value = "";
 			setBookingModalStatus("Fill the student ID and lecture details before saving.");
 			bookingModal.classList.add("active");
@@ -2542,10 +2579,12 @@
 			const studentId = bookingPhoneInput.value.trim();
 			const title = bookingTitleInput.value.trim();
 			const subject = bookingSubjectInput.value.trim();
+			const stage = bookingStageSelect.value;
+			const level = Number(bookingLevelSelect.value);
 			const startDate = bookingStartDateInput.value;
 
-			if (!studentId || !title || !subject || !startDate) {
-				setBookingModalStatus("Please fill in the student ID, title, subject, and start date.", true);
+			if (!studentId || !title || !subject || !stage || !level || !startDate) {
+				setBookingModalStatus("Please fill in the student ID, title, subject, stage, level, and start date.", true);
 				return;
 			}
 
@@ -2563,6 +2602,8 @@
 						student_id: studentId,
 						title,
 						subject,
+						level,
+						stage,
 						start_date: startDate
 					})
 				});
@@ -3101,6 +3142,7 @@
 		studentSearch.addEventListener("input", applyStudentFilter);
 		stageFilter.addEventListener("change", applyStudentFilter);
 		levelFilter.addEventListener("change", applyStudentFilter);
+		bookingStageSelect.addEventListener("change", updateBookingLevelOptions);
 		moderatorSearch.addEventListener("input", applyModeratorFilter);
 		createPackageButton.addEventListener("click", openPackagePanel);
 		cancelPackageButton.addEventListener("click", closePackagePanel);

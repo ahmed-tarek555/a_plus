@@ -493,7 +493,7 @@
       {% if lectures %}
         <div class="courses-grid">
           {% for lecture in lectures %}
-            <a href="/lecture/{{ lecture.id }}" class="course-card" style="background-image: url('{{ lecture.cover_url }}');">
+            <div class="course-card" style="background-image: url('{{ lecture.cover_url }}');">
               <div class="course-top">
                 <span class="course-tag">{{ lecture.subject or 'Lecture' }}</span>
                 <span class="course-price">EGP{{ "%.2f"|format(lecture.price if lecture and lecture.price is not none else 0) }}</span>
@@ -516,7 +516,7 @@
               <div class="course-meta" style="padding-top: 0; border-top: none;">
                 <span>Lecture #{{ lecture.id }}</span>
               </div>
-            </a>
+            </div>
           {% endfor %}
         </div>
       {% else %}

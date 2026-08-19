@@ -6,6 +6,6 @@ class Exam(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     lecture_id = Column(Integer, ForeignKey("lectures.id", ondelete="CASCADE"), nullable=False)
-    title = Column(String(20), nullable=False)
+    title = Column(String(50), nullable=False)
     start_time = Column(DateTime(timezone=True), nullable=False)
     end_time = Column(DateTime(timezone=True), nullable=False)

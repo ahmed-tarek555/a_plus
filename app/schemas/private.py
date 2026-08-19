@@ -6,6 +6,8 @@ from datetime import datetime
 class CreatePrivate(BaseModel):
     title: str
     subject: str
+    level: int
+    stage: str
     start_date: datetime
     price: Decimal
 
@@ -15,5 +17,7 @@ class PrivateLink(BaseModel):
 class ManualBook(BaseModel):
     title: str
     subject: str
+    level: int
+    stage: str
     start_date: datetime
     student_id: int

@@ -597,6 +597,8 @@ def create_booking(request: Request, teacher_id: int, payload: ManualBook, db: S
             student_id=student.id,
             title=payload.title,
             subject=payload.subject,
+            level=payload.level,
+            stage=payload.stage,
             start_date=payload.start_date,
             price=0
         )

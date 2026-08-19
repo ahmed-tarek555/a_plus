@@ -9,6 +9,6 @@ class Course(Base):
     price = Column(Numeric(12, 2), nullable=False)
     stage = Column(String, nullable=False)
     level = Column(Integer, nullable=False)
-    subject = Column(String(20), nullable=False)
+    subject = Column(String(50), nullable=False)
     cover_public_id = Column(String, nullable=False)
     is_public = Column(Boolean, nullable=False)

@@ -206,6 +206,8 @@ def get_private_lectures(request: Request, db: Session = Depends(get_db)):
             "student_id": lec.student_id,
             "title": lec.title,
             "subject": lec.subject,
+            "level": lec.level,
+            "stage": lec.stage,
             "start_date": lec.start_date,
             "price": float(lec.price),
             "link": lec.link
@@ -231,6 +233,8 @@ def add_private(request: Request, payload: CreatePrivate, db: Session = Depends(
             teacher_id=teacher.id,
             title=payload.title,
             subject=payload.subject,
+            level=payload.level,
+            stage=payload.stage,
             start_date=payload.start_date,
             price=payload.price,
         )
